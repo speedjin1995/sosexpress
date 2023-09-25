@@ -155,7 +155,7 @@ else{
         <div class="card card-primary">
           <div class="card-header">
             <div class="row">
-              <div class="col-9">Weight Billboard</div>
+              <div class="col-9">Booking</div>
               <div class="col-3">
                 <button type="button" class="btn btn-block bg-gradient-success btn-sm" id="newBooking">
                   <i class="fas fa-plus"></i>

@@ -21,9 +21,10 @@ else{
 
   $customers = $db->query("SELECT * FROM customers WHERE deleted = '0'");
   $customers2 = $db->query("SELECT * FROM customers WHERE deleted = '0'");
-  $branch = $db->query("SELECT * FROM branch WHERE deleted = '0'");
-  $branch2 = $db->query("SELECT * FROM branch WHERE deleted = '0'");
-  $users = $db->query("SELECT * FROM users WHERE deleted = '0'");
+  $hypermarket = $db->query("SELECT * FROM hypermarket WHERE deleted = '0'");
+  $states = $db->query("SELECT * FROM states WHERE deleted = '0'");
+  $zones = $db->query("SELECT * FROM zones WHERE deleted = '0'");
+  $outlet = $db->query("SELECT * FROM outlet WHERE deleted = '0'");
 }
 ?>
 
@@ -37,15 +38,8 @@ else{
 
 <select class="form-control" style="width: 100%;" id="zoneHidden" style="display: none;">
   <option value="" selected disabled hidden>Please Select</option>
-  <?php while($row3=mysqli_fetch_assoc($branch)){ ?>
-    <option value="<?=$row3['id'] ?>" data-index="<?=$row3['customer_id'] ?>"><?=$row3['name'] ?></option>
-  <?php } ?>
-</select>
-
-<select class="form-control" style="width: 100%;" id="branchHidden" style="display: none;">
-  <option value="" selected disabled hidden>Please Select</option>
-  <?php while($row2=mysqli_fetch_assoc($branch2)){ ?>
-    <option value="<?=$row2['id'] ?>"><?=$row2['address'] ?></option>
+  <?php while($row3=mysqli_fetch_assoc($zones)){ ?>
+    <option value="<?=$row3['id'] ?>" data-index="<?=$row3['states'] ?>"><?=$row3['zones'] ?></option>
   <?php } ?>
 </select>
 
@@ -155,11 +149,11 @@ else{
         <div class="card card-primary">
           <div class="card-header">
             <div class="row">
-              <div class="col-9">Weight Billboard</div>
+              <div class="col-9">DO Request</div>
               <div class="col-3">
                 <button type="button" class="btn btn-block bg-gradient-success btn-sm" id="newBooking">
                   <i class="fas fa-plus"></i>
-                  New Booking
+                  New DO REquest
                 </button>
               </div>
             </div>
@@ -171,10 +165,10 @@ else{
                 <tr>
                   <th>No</th>
                   <th>Customer</th>
-                  <th>Description</th>
-                  <th>Estimated Ctn</th>
-                  <th>Actual Ctn</th>
-                  <th>Pickup Method</th>
+                  <th>Hypermarket</th>
+                  <th>Outlet</th>
+                  <th>Delevery Date</th>
+                  <th>Number of Carton</th>
                   <th></th>
                 </tr>
               </thead>
@@ -192,7 +186,7 @@ else{
 
       <form role="form" id="extendForm">
         <div class="modal-header bg-gray-dark color-palette">
-          <h4 class="modal-title">Add New Booking</h4>
+          <h4 class="modal-title">Add New DO Request</h4>
           <button type="button" class="close bg-gray-dark color-palette" data-dismiss="modal" aria-label="Close">
             <span aria-hidden="true">&times;</span>
           </button>
@@ -203,15 +197,39 @@ else{
           <div class="row">
             <div class="col-4">
               <div class="form-group">
-                <label class="labelStatus">Pickup Method *</label>
-                <select class="form-control" id="pickup_method" name="pickup_method" required>
-                  <option value="" selected disabled hidden>Please Select</option>
-                  <option value="SOS Pickup">SOS Pickup</option>
-                  <option value="Outstation Pickup">Outstation Pickup</option>
-                  <option value="Send By Own">Send By Own</option>
-                </select>
+                <label>Booking Date *</label>
+                  <div class='input-group date' id="bookingDate" data-target-input="nearest">
+                    <input type='text' class="form-control datetimepicker-input" data-target="#bookingDate" id="booking_date" name="bookingDate" required/>
+                    <div class="input-group-append" data-target="#bookingDate" data-toggle="datetimepicker">
+                      <div class="input-group-text"><i class="fa fa-calendar"></i></div>
+                    </div>
+                  </div>
               </div>
             </div>
+            <div class="col-4">
+              <div class="form-group">
+                <label>Delivery Date *</label>
+                  <div class='input-group date' id="deliveryDate" data-target-input="nearest">
+                    <input type='text' class="form-control datetimepicker-input" data-target="#deliveryDate" id="delivery_date" name="deliveryDate" required/>
+                    <div class="input-group-append" data-target="#deliveryDate" data-toggle="datetimepicker">
+                      <div class="input-group-text"><i class="fa fa-calendar"></i></div>
+                    </div>
+                  </div>
+              </div>
+            </div>
+            <div class="col-4">
+              <div class="form-group">
+                <label>Cancellation Date *</label>
+                  <div class='input-group date' id="cancellationDate" data-target-input="nearest">
+                    <input type='text' class="form-control datetimepicker-input" data-target="#cancellationDate" id="cancellation_date" name="cancellationDate" required/>
+                    <div class="input-group-append" data-target="#cancellationDate" data-toggle="datetimepicker">
+                      <div class="input-group-text"><i class="fa fa-calendar"></i></div>
+                    </div>
+                  </div>
+              </div>
+            </div>
+          </div>
+          <div class="row">
             <div class="col-4">
               <div class="form-group">
                 <label class="labelStatus">Customer *</label>
@@ -225,77 +243,95 @@ else{
             </div>
             <div class="col-4">
               <div class="form-group">
-                <label class="labelStatus">Branch </label>
-                <select class="form-control" id="branch" name="branch"></select>
+                <label class="labelStatus">Hypermarket *</label>
+                <select class="form-control" id="hypermarket" name="hypermarket" required>
+                  <option value="" selected disabled hidden>Please Select</option>
+                  <?php while($rowhypermarket=mysqli_fetch_assoc($hypermarket)){ ?>
+                    <option value="<?=$rowhypermarket['id'] ?>"><?=$rowhypermarket['name'] ?></option>
+                  <?php } ?>
+                </select>
+              </div>
+            </div>
+            <div class="col-4">
+              <div class="form-group">
+                <label class="labelStatus">States *</label>
+                <select class="form-control" id="states" name="states" required>
+                  <option value="" selected disabled hidden>Please Select</option>
+                  <?php while($rowCustomer=mysqli_fetch_assoc($states)){ ?>
+                    <option value="<?=$rowCustomer['id'] ?>"><?=$rowCustomer['states'] ?></option>
+                  <?php } ?>
+                </select>
               </div>
             </div>
           </div>
           <div class="row">
-            <div class="col-6">
+            <div class="col-4">
               <div class="form-group">
-                <label>Pickup Address </label>
-                <textarea class="form-control" id="address" name="address" placeholder="Enter your address"></textarea>
+                <label for="rate">Zones *</label>
+                <select class="form-control" style="width: 100%;" id="zones" name="zones" required></select>
               </div>
             </div>
-            <div class="col-6">
+            <div class="col-4">
               <div class="form-group">
-                <label>Description</label>
+                <label for="rate">Outlet *</label>
+                <select class="form-control" style="width: 100%;" id="outlets" name="outlets" required></select>
+              </div>
+            </div>
+            <div class="col-4">
+              <div class="form-group">
+                <label for="rate">DO Type *</label>
+                <select class="form-control" id="do_type" name="do_type" required>
+                  <option value="" selected disabled hidden>Please Select</option>
+                  <option value="DO">DO</option>
+                  <option value="Consignment">Consignment</option>
+                  <option value="Non-trade">Non-trade</option>
+                </select>
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-4">
+              <div class="form-group">
+                <label>DO No.</label>
+                <input class="form-control" type="text" placeholder="DO No." id="do_no" name="do_no">
+              </div>
+            </div>
+            <div class="col-4">
+              <div class="form-group">
+                <label>PO No.</label>
+                <input class="form-control" type="text" placeholder="PO Number" id="po_no" name="po_no">
+              </div>
+            </div>
+            <div class="col-4">
+              <div class="form-group">
+                <label class="labelStatus">Notes</label>
                 <textarea class="form-control" id="description" name="description" placeholder="Enter your description"></textarea>
               </div>
             </div>
           </div>
           <div class="row">
-            <div class="form-group col-2">
-              <label>Extimated Ctn *</label>
-              <input class="form-control" type="number" placeholder="Extimated Carton" id="extimated_ctn" name="extimated_ctn" min="0" required/>                        
-            </div>
-            <div class="form-group col-2">
-              <label>Actual Ctn</label>
-              <input class="form-control" type="number" placeholder="Actual Carton" id="actual_ctn" name="actual_ctn" min="0"/>                        
-            </div>
-            <div class="form-group col-4">
-              <label>Gate</label>
-              <input class="form-control" type="text" placeholder="Gate" id="gate" name="gate" />                        
-            </div>
-            <div class="form-group col-4">
-              <label>Checker</label>
-              <select class="form-control" id="checker" name="checker">
-                <option value="" selected disabled hidden>Please Select</option>
-                <?php while($rowUser=mysqli_fetch_assoc($users)){ ?>
-                  <option value="<?=$rowUser['id'] ?>"><?=$rowUser['name'] ?></option>
-                <?php } ?>
-              </select>
-            </div>
-          </div>
-
-          <div class="row">
             <div class="col-4">
               <div class="form-group">
-                <label>Vehicle No</label>
-                <input class="form-control" type="text" placeholder="Vehicle No." id="vehicleNoTxt" name="vehicleNoTxt">
+                <label>Actual Carton *</label>
+                <input class="form-control" type="number" placeholder="Actual Carton" id="actual_ctn" name="actual_ctn" required>
               </div>
             </div>
             <div class="col-4">
               <div class="form-group">
-                <label>Pickup Form Number</label>
-                <input class="form-control" type="text" placeholder="Pickup Form Number" id="form_no" name="form_no">
-              </div>
-            </div>
-            <div class="col-2">
-              <div class="form-group">
-                <label class="labelStatus">Col Goods</label>
-                <select class="form-control" id="col_goods" name="col_goods">
+                <label>Need GRN *</label>
+                <select class="form-control" id="need_grn" name="need_grn" required>
                   <option value="Yes">Yes</option>
-                  <option value="No" selected>No</option>
+                  <option value="No">No</option>
                 </select>
               </div>
             </div>
-            <div class="col-2">
+            <div class="col-4">
               <div class="form-group">
-                <label class="labelStatus">Col Chq</label>
-                <select class="form-control" id="col_chk" name="col_chk">
-                  <option value="Yes">Yes</option>
-                  <option value="No"selected>No</option>
+                <label>Loading </label>
+                <select class="form-control" id="loadingTime" name="loadingTime">
+                  <option value="" selected disabled hidden>Please Select</option>
+                  <option value="M">Morning</option>
+                  <option value="N">Night</option>
                 </select>
               </div>
             </div>
@@ -325,15 +361,15 @@ $(function () {
     'order': [[ 1, 'asc' ]],
     'columnDefs': [ { orderable: false, targets: [0] }],
     'ajax': {
-      'url':'php/loadBooking.php'
+      'url':'php/loadDO.php'
     },
     'columns': [
       { data: 'no' },
       { data: 'customer_name' },
-      { data: 'description' },
-      { data: 'estimated_ctn' },
-      { data: 'actual_ctn' },
-      { data: 'pickup_method' },
+      { data: 'hypermarket' },
+      { data: 'outlet' },
+      { data: 'delivery_date' },
+      { data: 'actual_carton' },
       { 
         className: 'dt-control',
         orderable: false,
@@ -424,11 +460,29 @@ $(function () {
       defaultDate: new Date
   });*/
 
+  $('#bookingDate').datetimepicker({
+    icons: { time: 'far fa-clock' },
+    format: 'DD/MM/YYYY HH:mm:ss A',
+    defaultDate: new Date
+  });
+
+  $('#deliveryDate').datetimepicker({
+    icons: { time: 'far fa-clock' },
+    format: 'DD/MM/YYYY HH:mm:ss A',
+    defaultDate: new Date
+  });
+
+  $('#cancellationDate').datetimepicker({
+    icons: { time: 'far fa-clock' },
+    format: 'DD/MM/YYYY HH:mm:ss A',
+    defaultDate: new Date
+  });
+
   $.validator.setDefaults({
     submitHandler: function () {
       if($('#extendModal').hasClass('show')){
         $('#spinnerLoading').show();
-        $.post('php/booking.php', $('#extendForm').serialize(), function(data){
+        $.post('php/doRequest.php', $('#extendForm').serialize(), function(data){
           var obj = JSON.parse(data); 
           if(obj.status === 'success'){
             $('#extendModal').modal('hide');
@@ -449,20 +503,23 @@ $(function () {
   });
 
   $('#newBooking').on('click', function(){
+    var date = new Date();
     $('#extendModal').find('#id').val("");
-    $('#extendModal').find('#pickup_method').val("");
+    $('#extendModal').find('#booking_date').val(date.toLocaleString('en-AU', { hour12: false }));
+    $('#extendModal').find('#delivery_date').val(date.toLocaleString('en-AU', { hour12: false }));
+    $('#extendModal').find('#cancellation_date').val(date.toLocaleString('en-AU', { hour12: false }));
     $('#extendModal').find('#customerNo').val("");
-    $('#extendModal').find('#branch').val("");
-    $('#extendModal').find('#address').val("");
+    $('#extendModal').find('#hypermarket').val("");
+    $('#extendModal').find('#states').val("");
+    $('#extendModal').find('#zones').empty().val("");
+    $('#extendModal').find('#outlets').empty().val("");
+    $('#extendModal').find('#do_type').val("DO");
+    $('#extendModal').find('#do_no').val("");
+    $('#extendModal').find('#po_no').val("");
     $('#extendModal').find('#description').val("");
-    $('#extendModal').find('#extimated_ctn').val("");
     $('#extendModal').find('#actual_ctn').val("");
-    $('#extendModal').find('#gate').val("");
-    $('#extendModal').find('#checker').val("");
-    $('#extendModal').find('#vehicleNoTxt').val("");
-    $('#extendModal').find('#form_no').val("");
-    $('#extendModal').find('#col_goods').val("No");
-    $('#extendModal').find('#col_chk').val("No");
+    $('#extendModal').find('#need_grn').val("No");
+    $('#extendModal').find('#loadingTime').val("");
     $('#extendModal').modal('show');
     
     $('#extendForm').validate({
@@ -480,35 +537,40 @@ $(function () {
     });
   });
   
-  $('#customerNo').on('change', function(){
-    $('#branch').empty();
+  $('#states').on('change', function(){
+    $('#zones').empty();
     var dataIndexToMatch = $(this).val();
-    $('#branch').append('<option value="0" data-index="0">Others</option>');
 
     $('#zoneHidden option').each(function() {
-      var dataIndex = $(this).data('index');
+        var dataIndex = $(this).data('index');
 
-      if (dataIndex == dataIndexToMatch) {
-        $('#branch').append($(this).clone());
-      }
+        if (dataIndex == dataIndexToMatch) {
+          $('#zones').append($(this).clone());
+          $('#zones').trigger('change');
+        }
     });
   });
 
-  $('#branch').on('change', function(){
-    if($(this).val() != '0'){
-      var selectedBranchValue = $(this).val();
-      var hiddenDropdownOption = $('#branchHidden').find('option[value="' + selectedBranchValue + '"]');
+  $('#zones').on('change', function(){
+    if($('#states').val() && $('#zones').val() && $('#hypermarket').val()){
+      $('#extendModal').find('#outlets').empty();
 
-      if (hiddenDropdownOption.length > 0) {
-        var selectedBranchText = hiddenDropdownOption.text(); // Get the corresponding branch's text (address)
-        $('#address').val(selectedBranchText); // Set the selected branch's text (address) into the textarea
-      } 
-      else {
-        $('#address').val(''); // Clear the textarea or provide a default value
-      }
-    }
-    else{
-      $('#address').val('');
+      $.post('php/listOutlets.php', {states: $('#states').val(), zones: $('#zones').val(), hypermarket: $('#hypermarket').val()}, function(data){
+        var obj = JSON.parse(data);
+        
+        if(obj.status === 'success'){
+          for(var i=0; i<obj.message.length; i++){
+            $('#extendModal').find('#outlets').append('<option value="'+obj.message[i].id+'">'+obj.message[i].name+'</option>')
+          }
+        }
+        else if(obj.status === 'failed'){
+          toastr["error"](obj.message, "Failed:");
+        }
+        else{
+          toastr["error"]("Something wrong when pull data", "Failed:");
+        }
+        $('#spinnerLoading').hide();
+      });
     }
   });
 
