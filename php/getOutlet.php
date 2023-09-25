@@ -23,9 +23,10 @@ if(isset($_POST['userID'])){
             
             while ($row = $result->fetch_assoc()) {
                 $message['id'] = $row['id'];
-                $message['currency'] = $row['currency'];
-                $message['description'] = $row['description'];
-                $message['rate'] = $row['rate'];
+                $message['name'] = $row['name'];
+                $message['hypermarket'] = $row['hypermarket'];
+                $message['states'] = $row['states'];
+                $message['zones'] = $row['zones'];
             }
             
             echo json_encode(

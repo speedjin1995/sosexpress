@@ -8,14 +8,12 @@ if(!isset($_SESSION['userID'])){
     echo 'window.location.href = "../login.html";</script>';
 }
 
-if(isset($_POST['units'], $_POST['desc'], $_POST['rate'])){
+if(isset($_POST['units'])){
     $lotsNumber = filter_input(INPUT_POST, 'units', FILTER_SANITIZE_STRING);
-    $desc = filter_input(INPUT_POST, 'desc', FILTER_SANITIZE_STRING);
-    $rate = filter_input(INPUT_POST, 'rate', FILTER_SANITIZE_STRING);
 
     if($_POST['id'] != null && $_POST['id'] != ''){
-        if ($update_stmt = $db->prepare("UPDATE currency SET currency=?, description=?, rate=? WHERE id=?")) {
-            $update_stmt->bind_param('ssss', $lotsNumber, $desc, $rate, $_POST['id']);
+        if ($update_stmt = $db->prepare("UPDATE hypermarket SET name=? WHERE id=?")) {
+            $update_stmt->bind_param('ss', $lotsNumber, $_POST['id']);
             
             // Execute the prepared query.
             if (! $update_stmt->execute()) {
@@ -40,8 +38,8 @@ if(isset($_POST['units'], $_POST['desc'], $_POST['rate'])){
         }
     }
     else{
-        if ($insert_stmt = $db->prepare("INSERT INTO currency (currency, description, rate) VALUES (?, ?, ?)")) {
-            $insert_stmt->bind_param('sss', $lotsNumber, $desc, $rate);
+        if ($insert_stmt = $db->prepare("INSERT INTO hypermarket (name) VALUES (?)")) {
+            $insert_stmt->bind_param('s', $lotsNumber);
             
             // Execute the prepared query.
             if (! $insert_stmt->execute()) {

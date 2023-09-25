@@ -9,14 +9,23 @@ if(!isset($_SESSION['userID'])){
 }
 else{
   $user = $_SESSION['userID'];
+  $states = $db->query("SELECT * FROM states WHERE deleted = '0'");
+  $hypermarket = $db->query("SELECT * FROM hypermarket WHERE deleted = '0'");
+  $zones = $db->query("SELECT * FROM zones WHERE deleted = '0'");
 }
 ?>
+<select class="form-control" style="width: 100%;" id="zoneHidden" style="display: none;">
+  <option value="" selected disabled hidden>Please Select</option>
+  <?php while($row3=mysqli_fetch_assoc($zones)){ ?>
+    <option value="<?=$row3['id'] ?>" data-index="<?=$row3['states'] ?>"><?=$row3['zones'] ?></option>
+  <?php } ?>
+</select>
 
 <div class="content-header">
     <div class="container-fluid">
         <div class="row mb-2">
 			<div class="col-sm-6">
-				<h1 class="m-0 text-dark">Currencies</h1>
+				<h1 class="m-0 text-dark">Outlets</h1>
 			</div><!-- /.col -->
         </div><!-- /.row -->
     </div><!-- /.container-fluid -->
@@ -42,9 +51,8 @@ else{
 							<thead>
 								<tr>
 									<th>No.</th>
-									<th>Currency</th>
-                                    <th>Description</th>
-                                    <th>Rate</th>
+									<th>Hypermarket</th>
+                                    <th>Outlets</th>
 									<th>Actions</th>
 								</tr>
 							</thead>
@@ -61,7 +69,7 @@ else{
       <div class="modal-content">
         <form role="form" id="unitForm">
             <div class="modal-header">
-              <h4 class="modal-title">Add Currency</h4>
+              <h4 class="modal-title">Add Outlet</h4>
               <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                 <span aria-hidden="true">&times;</span>
               </button>
@@ -72,16 +80,30 @@ else{
     					<input type="hidden" class="form-control" id="id" name="id">
     				</div>
     				<div class="form-group">
-    					<label for="units">Currency *</label>
-    					<input type="text" class="form-control" name="units" id="units" placeholder="Enter Currency" required>
+    					<label for="units">Name *</label>
+    					<input type="text" class="form-control" name="names" id="names" placeholder="Enter Outlet" required>
     				</div>
                     <div class="form-group">
-    					<label for="desc">Description *</label>
-    					<input type="text" class="form-control" name="desc" id="desc" placeholder="Enter Currency Description" required>
+    					<label for="desc">Hypermarket *</label>
+    					<select class="form-control" style="width: 100%;" id="hypermarket" name="hypermarket" required>
+                            <option selected="selected">-</option>
+                            <?php while($row=mysqli_fetch_assoc($hypermarket)){ ?>
+                                <option value="<?=$row['id'] ?>"><?=$row['name'] ?></option>
+                            <?php } ?>
+                        </select>
     				</div>
                     <div class="form-group">
-    					<label for="rate">Rate *</label>
-    					<input type="number" class="form-control" name="rate" id="rate" placeholder="Enter Currency Rate" required>
+    					<label for="rate">States *</label>
+    					<select class="form-control" style="width: 100%;" id="states" name="states" required>
+                            <option selected="selected">-</option>
+                            <?php while($row2=mysqli_fetch_assoc($states)){ ?>
+                                <option value="<?=$row2['id'] ?>"><?=$row2['states'] ?></option>
+                            <?php } ?>
+                        </select>
+    				</div>
+                    <div class="form-group">
+    					<label for="rate">Zones *</label>
+    					<select class="form-control" style="width: 100%;" id="zones" name="zones" required></select>
     				</div>
     			</div>
             </div>
@@ -107,13 +129,12 @@ $(function () {
         'order': [[ 1, 'asc' ]],
         'columnDefs': [ { orderable: false, targets: [0] }],
         'ajax': {
-            'url':'php/loadCurrency.php'
+            'url':'php/loadOutlet.php'
         },
         'columns': [
             { data: 'counter' },
-            { data: 'currency' },
-            { data: 'description' },
-            { data: 'rate' },
+            { data: 'hypermarket' },
+            { data: 'name' },
             { 
                 data: 'id',
                 render: function ( data, type, row ) {
@@ -155,9 +176,10 @@ $(function () {
 
     $('#addUnits').on('click', function(){
         $('#unitModal').find('#id').val("");
-        $('#unitModal').find('#units').val("");
-        $('#unitModal').find('#desc').val("");
-        $('#unitModal').find('#rate').val("");
+        $('#unitModal').find('#names').val("");
+        $('#unitModal').find('#hypermarket').val("");
+        $('#unitModal').find('#states').val("");
+        $('#unitModal').find('#zones').val("");
         $('#unitModal').modal('show');
         
         $('#unitForm').validate({
@@ -178,14 +200,15 @@ $(function () {
 
 function edit(id){
     $('#spinnerLoading').show();
-    $.post('php/getCurrency.php', {userID: id}, function(data){
+    $.post('php/getOutlet.php', {userID: id}, function(data){
         var obj = JSON.parse(data);
         
         if(obj.status === 'success'){
             $('#unitModal').find('#id').val(obj.message.id);
-            $('#unitModal').find('#units').val(obj.message.currency);
-            $('#unitModal').find('#desc').val(obj.message.description);
-            $('#unitModal').find('#rate').val(obj.message.rate);
+            $('#unitModal').find('#names').val(obj.message.name);
+            $('#unitModal').find('#hypermarket').val(obj.message.hypermarket);
+            $('#unitModal').find('#states').val(obj.message.states);
+            $('#unitModal').find('#zones').val(obj.message.zones);
             $('#unitModal').modal('show');
             
             $('#unitForm').validate({
@@ -214,12 +237,12 @@ function edit(id){
 
 function deactivate(id){
     $('#spinnerLoading').show();
-    $.post('php/deleteCurrency.php', {userID: id}, function(data){
+    $.post('php/deleteOutlet.php', {userID: id}, function(data){
         var obj = JSON.parse(data);
         
         if(obj.status === 'success'){
             toastr["success"](obj.message, "Success:");
-            $.get('currency.php', function(data) {
+            $.get('outlet.php', function(data) {
                 $('#mainContents').html(data);
                 $('#spinnerLoading').hide();
             });

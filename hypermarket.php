@@ -16,7 +16,7 @@ else{
     <div class="container-fluid">
         <div class="row mb-2">
 			<div class="col-sm-6">
-				<h1 class="m-0 text-dark">Units</h1>
+				<h1 class="m-0 text-dark">Hypermarket</h1>
 			</div><!-- /.col -->
         </div><!-- /.row -->
     </div><!-- /.container-fluid -->
@@ -33,7 +33,7 @@ else{
                         <div class="row">
                             <div class="col-9"></div>
                             <div class="col-3">
-                                <button type="button" class="btn btn-block bg-gradient-warning btn-sm" id="addUnits">Add Units</button>
+                                <button type="button" class="btn btn-block bg-gradient-warning btn-sm" id="addUnits">Add Hypermarket</button>
                             </div>
                         </div>
                     </div>
@@ -42,7 +42,7 @@ else{
 							<thead>
 								<tr>
 									<th>No.</th>
-									<th>Units</th>
+									<th>Hypermarket</th>
 									<th>Actions</th>
 								</tr>
 							</thead>
@@ -59,7 +59,7 @@ else{
       <div class="modal-content">
         <form role="form" id="unitForm">
             <div class="modal-header">
-              <h4 class="modal-title">Add Lots</h4>
+              <h4 class="modal-title">Add Hypermarket</h4>
               <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                 <span aria-hidden="true">&times;</span>
               </button>
@@ -70,7 +70,7 @@ else{
     					<input type="hidden" class="form-control" id="id" name="id">
     				</div>
     				<div class="form-group">
-    					<label for="units">Units*</label>
+    					<label for="units">Hypermarket *</label>
     					<input type="text" class="form-control" name="units" id="units" placeholder="Enter Units" required>
     				</div>
     			</div>
@@ -97,11 +97,11 @@ $(function () {
         'order': [[ 1, 'asc' ]],
         'columnDefs': [ { orderable: false, targets: [0] }],
         'ajax': {
-            'url':'php/loadUnits.php'
+            'url':'php/loadHypermarket.php'
         },
         'columns': [
             { data: 'counter' },
-            { data: 'units' },
+            { data: 'name' },
             { 
                 data: 'id',
                 render: function ( data, type, row ) {
@@ -118,14 +118,14 @@ $(function () {
     $.validator.setDefaults({
         submitHandler: function () {
             $('#spinnerLoading').show();
-            $.post('php/units.php', $('#unitForm').serialize(), function(data){
+            $.post('php/hypermarket.php', $('#unitForm').serialize(), function(data){
                 var obj = JSON.parse(data); 
                 
                 if(obj.status === 'success'){
                     $('#unitModal').modal('hide');
                     toastr["success"](obj.message, "Success:");
                     
-                    $.get('units.php', function(data) {
+                    $.get('hypermarket.php', function(data) {
                         $('#mainContents').html(data);
                         $('#spinnerLoading').hide();
                     });
@@ -165,12 +165,12 @@ $(function () {
 
 function edit(id){
     $('#spinnerLoading').show();
-    $.post('php/getUnits.php', {userID: id}, function(data){
+    $.post('php/getHypermarket.php', {userID: id}, function(data){
         var obj = JSON.parse(data);
         
         if(obj.status === 'success'){
             $('#unitModal').find('#id').val(obj.message.id);
-            $('#unitModal').find('#units').val(obj.message.units);
+            $('#unitModal').find('#units').val(obj.message.name);
             $('#unitModal').modal('show');
             
             $('#unitForm').validate({
@@ -199,12 +199,12 @@ function edit(id){
 
 function deactivate(id){
     $('#spinnerLoading').show();
-    $.post('php/deleteUnit.php', {userID: id}, function(data){
+    $.post('php/deleteHypermarket.php', {userID: id}, function(data){
         var obj = JSON.parse(data);
         
         if(obj.status === 'success'){
             toastr["success"](obj.message, "Success:");
-            $.get('units.php', function(data) {
+            $.get('hypermarket.php', function(data) {
                 $('#mainContents').html(data);
                 $('#spinnerLoading').hide();
             });

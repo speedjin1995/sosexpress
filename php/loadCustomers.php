@@ -23,24 +23,45 @@ $records = mysqli_fetch_assoc($sel);
 $totalRecords = $records['allcount'];
 
 ## Total number of record with filtering
-$sel = mysqli_query($db,"select count(*) as allcount from customers WHERE customer_status = 'CUSTOMERS' AND deleted = '0'".$searchQuery);
+$sel = mysqli_query($db,"select count(*) as allcount from customers WHERE deleted = '0'".$searchQuery);
 $records = mysqli_fetch_assoc($sel);
 $totalRecordwithFilter = $records['allcount'];
 
 ## Fetch records
-$empQuery = "select * from customers WHERE customer_status = 'CUSTOMERS' AND deleted = '0'".$searchQuery." order by ".$columnName." ".$columnSortOrder." limit ".$row.",".$rowperpage;
+$empQuery = "select * from customers WHERE deleted = '0'".$searchQuery." order by ".$columnName." ".$columnSortOrder." limit ".$row.",".$rowperpage;
 $empRecords = mysqli_query($db, $empQuery);
 $data = array();
 
 while($row = mysqli_fetch_assoc($empRecords)) {
-    $data[] = array( 
-      "id"=>$row['id'],
-      "customer_code"=>$row['customer_code'],
-      "customer_name"=>$row['customer_name'],
-      "customer_address"=>$row['customer_address'],
-      "customer_phone"=>$row['customer_phone'],
-      "customer_email"=>$row['customer_email']
+  $empQuery2 = "select * from branch WHERE deleted = '0' AND customer_id = ".$row['id'];
+  $empRecords2 = mysqli_query($db, $empQuery2);
+  $data2 = array();
+
+  while($row2 = mysqli_fetch_assoc($empRecords2)) {
+    $data2[] = array( 
+      "id"=>$row2['id'],
+      "customer_id"=>$row2['customer_id'],
+      "name"=>$row2['name'],
+      "address"=>$row2['address']
     );
+  }
+
+  $data[] = array( 
+    "id"=>$row['id'],
+    "customer_code"=>$row['customer_code'],
+    "customer_name"=>$row['customer_name'],
+    "customer_address"=>$row['customer_address'],
+    "customer_phone"=>$row['customer_phone'],
+    "customer_email"=>$row['customer_email'],
+    "short_name"=>$row['short_name'],
+    "reg_no"=>$row['reg_no'],
+    "pic"=>$row['pic'],
+    "payment_term"=>$row['payment_term'],
+    "payment_details"=>$row['payment_details'],
+    "rate"=>$row['rate'],
+    "pricing"=>json_decode($row['pricing'], true),
+    "branches"=>$data2
+  );
 }
 
 ## Response

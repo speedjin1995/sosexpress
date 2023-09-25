@@ -8,12 +8,14 @@ if(!isset($_SESSION['userID'])){
     echo 'window.location.href = "../login.html";</script>';
 }
 
-if(isset($_POST['units'])){
-    $lotsNumber = filter_input(INPUT_POST, 'units', FILTER_SANITIZE_STRING);
+if(isset($_POST['id'], $_POST['name'], $_POST['address'])){
+    $id = filter_input(INPUT_POST, 'id', FILTER_SANITIZE_STRING);
+    $name = filter_input(INPUT_POST, 'name', FILTER_SANITIZE_STRING);
+    $address = filter_input(INPUT_POST, 'address', FILTER_SANITIZE_STRING);
 
     if($_POST['id'] != null && $_POST['id'] != ''){
-        if ($update_stmt = $db->prepare("UPDATE units SET units=? WHERE id=?")) {
-            $update_stmt->bind_param('ss', $lotsNumber, $_POST['id']);
+        if ($update_stmt = $db->prepare("UPDATE branch SET name=?, address=? WHERE id=?")) {
+            $update_stmt->bind_param('sss', $name, $address, $id);
             
             // Execute the prepared query.
             if (! $update_stmt->execute()) {
@@ -37,9 +39,9 @@ if(isset($_POST['units'])){
             }
         }
     }
-    else{
-        if ($insert_stmt = $db->prepare("INSERT INTO units (units) VALUES (?)")) {
-            $insert_stmt->bind_param('s', $lotsNumber);
+    /*else{
+        if ($insert_stmt = $db->prepare("INSERT INTO currency (currency, description, rate) VALUES (?, ?, ?)")) {
+            $insert_stmt->bind_param('sss', $lotsNumber, $desc, $rate);
             
             // Execute the prepared query.
             if (! $insert_stmt->execute()) {
@@ -62,7 +64,7 @@ if(isset($_POST['units'])){
                 );
             }
         }
-    }
+    }*/
 }
 else{
     echo json_encode(

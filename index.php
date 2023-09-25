@@ -331,12 +331,12 @@ to get the desired effect
               <p>Weight Weighing</p>
             </a>
           </li-->
-          <li class="nav-item">
+          <!--li class="nav-item">
             <a href="#dashboard" data-file="dashboard.php" class="nav-link link">
               <i class="nav-icon fas fa-chart-bar"></i>
               <p>Dashboard</p>
             </a>
-          </li>
+          </li-->
           <li class="nav-item has-treeview menu-open">
             <a href="#" class="nav-link">
               <i class="nav-icon fas fa-users"></i>
@@ -355,15 +355,15 @@ to get the desired effect
                   <p>DO Request</p>
                 </a>
               </li>
-              <li class="nav-item">
+              <!--li class="nav-item">
                 <a href="#loading" data-file="loading.php" class="nav-link link">
                   <i class="nav-icon fas fa-truck"></i>
                   <p>Loading</p>
                 </a>
-              </li>
+              </li-->
             </ul>
           </li>
-          <li class="nav-item has-treeview">
+          <!--li class="nav-item has-treeview">
             <a href="#" class="nav-link">
               <i class="nav-icon fas fa-book"></i>
               <p>Accounting<i class="fas fa-angle-left right"></i></p>
@@ -382,7 +382,7 @@ to get the desired effect
             <i class="nav-icon fas fa-receipt"></i>
               <p>Tasks</p>
             </a>
-          </li>
+          </li-->
           <?php 
               if($role == "ADMIN"){
                 echo '<li class="nav-item">
@@ -405,8 +405,14 @@ to get the desired effect
                   </li>
                   <li class="nav-item">
                     <a href="#hypermarket" data-file="hypermarket.php" class="nav-link link">
-                      <i class="nav-icon fas fa-store"></i>
+                      <i class="nav-icon fas fa-shopping-cart"></i>
                       <p>Hypermarket</p>
+                    </a>
+                  </li>
+                  <li class="nav-item">
+                    <a href="#outlet" data-file="outlet.php" class="nav-link link">
+                      <i class="nav-icon fas fa-store"></i>
+                      <p>Outlet</p>
                     </a>
                   </li>
                   <li class="nav-item">
