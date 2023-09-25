@@ -560,7 +560,7 @@ $(function () {
       });
   });
   
-  $("a[href='#billboard']").click();
+  $("a[href='#booking']").click();
 });
 </script>
 </body>

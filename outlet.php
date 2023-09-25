@@ -14,6 +14,7 @@ else{
   $zones = $db->query("SELECT * FROM zones WHERE deleted = '0'");
 }
 ?>
+
 <select class="form-control" style="width: 100%;" id="zoneHidden" style="display: none;">
   <option value="" selected disabled hidden>Please Select</option>
   <?php while($row3=mysqli_fetch_assoc($zones)){ ?>
@@ -146,18 +147,20 @@ $(function () {
             $('td', row).css('background-color', '#E6E6FA');
         },
     });
+
+    $("#zoneHidden").hide();
     
     $.validator.setDefaults({
         submitHandler: function () {
             $('#spinnerLoading').show();
-            $.post('php/currency.php', $('#unitForm').serialize(), function(data){
+            $.post('php/outlet.php', $('#unitForm').serialize(), function(data){
                 var obj = JSON.parse(data); 
                 
                 if(obj.status === 'success'){
                     $('#unitModal').modal('hide');
                     toastr["success"](obj.message, "Success:");
                     
-                    $.get('currency.php', function(data) {
+                    $.get('outlet.php', function(data) {
                         $('#mainContents').html(data);
                         $('#spinnerLoading').hide();
                     });
@@ -193,6 +196,19 @@ $(function () {
             },
             unhighlight: function (element, errorClass, validClass) {
                 $(element).removeClass('is-invalid');
+            }
+        });
+    });
+
+    $('#states').on('change', function(){
+        $('#zones').empty();
+        var dataIndexToMatch = $(this).val();
+
+        $('#zoneHidden option').each(function() {
+            var dataIndex = $(this).data('index');
+
+            if (dataIndex == dataIndexToMatch) {
+                $('#zones').append($(this).clone());
             }
         });
     });
