@@ -9,6 +9,7 @@ if(!isset($_SESSION['userID'])){
 }
 else{
   $user = $_SESSION['userID'];
+  $pricing_type = $db->query("SELECT * FROM pricing_type WHERE deleted = '0'");
 }
 ?>
 
@@ -222,9 +223,9 @@ else{
   <tr class="details">
     <td>
         <select class="form-control" style="width: 100%;" id="type" name="type" required>
-            <option value="Size" selected="selected">Size</option>
-            <option value="MOQ">M.O.Q</option>
-            <option value="Fixed">Fixed</option>
+            <?php while($row3=mysqli_fetch_assoc($pricing_type)){ ?>
+                <option value="<?=$row3['type'] ?>"><?=$row3['type'] ?></option>
+            <?php } ?>
         </select>
     </td>
     <td>

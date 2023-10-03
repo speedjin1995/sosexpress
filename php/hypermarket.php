@@ -8,12 +8,13 @@ if(!isset($_SESSION['userID'])){
     echo 'window.location.href = "../login.html";</script>';
 }
 
-if(isset($_POST['units'])){
+if(isset($_POST['units'], $_POST['minimum'])){
     $lotsNumber = filter_input(INPUT_POST, 'units', FILTER_SANITIZE_STRING);
+    $minimum = filter_input(INPUT_POST, 'minimum', FILTER_SANITIZE_STRING);
 
     if($_POST['id'] != null && $_POST['id'] != ''){
-        if ($update_stmt = $db->prepare("UPDATE hypermarket SET name=? WHERE id=?")) {
-            $update_stmt->bind_param('ss', $lotsNumber, $_POST['id']);
+        if ($update_stmt = $db->prepare("UPDATE hypermarket SET name=?, minimum_charge=? WHERE id=?")) {
+            $update_stmt->bind_param('sss', $lotsNumber, $minimum, $_POST['id']);
             
             // Execute the prepared query.
             if (! $update_stmt->execute()) {
@@ -38,8 +39,8 @@ if(isset($_POST['units'])){
         }
     }
     else{
-        if ($insert_stmt = $db->prepare("INSERT INTO hypermarket (name) VALUES (?)")) {
-            $insert_stmt->bind_param('s', $lotsNumber);
+        if ($insert_stmt = $db->prepare("INSERT INTO hypermarket (name, minimum_charge) VALUES (?, ?)")) {
+            $insert_stmt->bind_param('ss', $lotsNumber, $minimum);
             
             // Execute the prepared query.
             if (! $insert_stmt->execute()) {

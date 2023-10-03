@@ -16,6 +16,7 @@ if(isset($_POST['pickup_method'], $_POST['customerNo'], $_POST['extimated_ctn'])
 	$gate = null;
 	$checker = null;
 	$vehicleNoTxt = null;
+	$internal_notes = null;
 	$form_no = null;
 	$col_goods = filter_input(INPUT_POST, 'col_goods', FILTER_SANITIZE_STRING);
 	$col_chk = filter_input(INPUT_POST, 'col_chk', FILTER_SANITIZE_STRING);
@@ -30,6 +31,10 @@ if(isset($_POST['pickup_method'], $_POST['customerNo'], $_POST['extimated_ctn'])
 
 	if($_POST['description'] != null && $_POST['description'] != ''){
 		$description = filter_input(INPUT_POST, 'description', FILTER_SANITIZE_STRING);
+	}
+
+	if($_POST['internal_notes'] != null && $_POST['internal_notes'] != ''){
+		$internal_notes = filter_input(INPUT_POST, 'internal_notes', FILTER_SANITIZE_STRING);
 	}
 
 	if($_POST['actual_ctn'] != null && $_POST['actual_ctn'] != ''){
@@ -54,9 +59,9 @@ if(isset($_POST['pickup_method'], $_POST['customerNo'], $_POST['extimated_ctn'])
 
 	if(isset($_POST['id']) && $_POST['id'] != null && $_POST['id'] != ''){
 		if ($update_stmt = $db->prepare("UPDATE booking SET pickup_method=?, customer=?, pickup_location=?, description=?, estimated_ctn=?, actual_ctn=?, vehicle_no=?, col_goods=?
-		, col_chq=?, form_no=?, gate=?, checker=? WHERE id=?")){
-			$update_stmt->bind_param('sssssssssssss', $pickup_method, $customerNo, $address, $description, $extimated_ctn, $actual_ctn, $vehicleNoTxt, $col_goods,
-			$col_chk, $form_no, $gate, $checker, $_POST['id']);
+		, col_chq=?, form_no=?, gate=?, checker=?, internal_notes=? WHERE id=?")){
+			$update_stmt->bind_param('ssssssssssssss', $pickup_method, $customerNo, $address, $description, $extimated_ctn, $actual_ctn, $vehicleNoTxt, $col_goods,
+			$col_chk, $form_no, $gate, $checker, $internal_notes, $_POST['id']);
 		
 			// Execute the prepared query.
 			if (! $update_stmt->execute()){
@@ -90,9 +95,9 @@ if(isset($_POST['pickup_method'], $_POST['customerNo'], $_POST['extimated_ctn'])
 	}
 	else{
 		if ($insert_stmt = $db->prepare("INSERT INTO booking (pickup_method, customer, branch, pickup_location, description, estimated_ctn, actual_ctn, vehicle_no, 
-		col_goods, col_chq, form_no, gate, checker) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")){
-			$insert_stmt->bind_param('sssssssssssss', $pickup_method, $customerNo, $branch, $address, $description, $extimated_ctn, $actual_ctn,
-			$vehicleNoTxt, $col_goods, $col_chk, $form_no, $gate, $checker);
+		col_goods, col_chq, form_no, gate, checker, internal_notes) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")){
+			$insert_stmt->bind_param('ssssssssssssss', $pickup_method, $customerNo, $branch, $address, $description, $extimated_ctn, $actual_ctn,
+			$vehicleNoTxt, $col_goods, $col_chk, $form_no, $gate, $checker, $internal_notes);
 			
 			// Execute the prepared query.
 			if (! $insert_stmt->execute()){

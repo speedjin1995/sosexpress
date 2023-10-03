@@ -231,16 +231,22 @@ else{
             </div>
           </div>
           <div class="row">
-            <div class="col-6">
+            <div class="col-4">
               <div class="form-group">
                 <label>Pickup Address </label>
                 <textarea class="form-control" id="address" name="address" placeholder="Enter your address"></textarea>
               </div>
             </div>
-            <div class="col-6">
+            <div class="col-4">
               <div class="form-group">
                 <label>Description</label>
                 <textarea class="form-control" id="description" name="description" placeholder="Enter your description"></textarea>
+              </div>
+            </div>
+            <div class="col-4">
+              <div class="form-group">
+                <label>Internal Notes</label>
+                <textarea class="form-control" id="internal_notes" name="internal_notes" placeholder="Enter Internal Notes"></textarea>
               </div>
             </div>
           </div>
@@ -455,6 +461,7 @@ $(function () {
     $('#extendModal').find('#branch').val("");
     $('#extendModal').find('#address').val("");
     $('#extendModal').find('#description').val("");
+    $('#extendModal').find('#internal_notes').val("");
     $('#extendModal').find('#extimated_ctn').val("");
     $('#extendModal').find('#actual_ctn').val("");
     $('#extendModal').find('#gate').val("");
@@ -732,6 +739,7 @@ function edit(id) {
       $('#extendModal').find('#form_no').val(obj.message.form_no);
       $('#extendModal').find('#col_goods').val(obj.message.col_goods);
       $('#extendModal').find('#col_chk').val(obj.message.col_chq);
+      $('#extendModal').find('#internal_notes').val(obj.message.internal_notes);
 
       $('#extendModal').modal('show');
       $('#extendForm').validate({

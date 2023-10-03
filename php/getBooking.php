@@ -28,6 +28,7 @@ if(isset($_POST['userID'])){
                 $message["branch"]=$row['branch'];
                 $message["pickup_location"]=$row['pickup_location'];
                 $message["description"]=$row['description'];
+                $message["internal_notes"]=$row['internal_notes'];
                 $message["estimated_ctn"]=$row['estimated_ctn'];
                 $message["actual_ctn"]=$row['actual_ctn'];
                 $message["vehicle_no"]=$row['vehicle_no'];

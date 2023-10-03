@@ -363,7 +363,7 @@ to get the desired effect
               </li-->
             </ul>
           </li>
-          <!--li class="nav-item has-treeview">
+          <li class="nav-item has-treeview">
             <a href="#" class="nav-link">
               <i class="nav-icon fas fa-book"></i>
               <p>Accounting<i class="fas fa-angle-left right"></i></p>
@@ -377,7 +377,7 @@ to get the desired effect
               </li>
             </ul>
           </li>
-          <li class="nav-item">
+          <!--li class="nav-item">
             <a href="#tasks" data-file="tasks.php" class="nav-link link">
             <i class="nav-icon fas fa-receipt"></i>
               <p>Tasks</p>
@@ -385,11 +385,25 @@ to get the desired effect
           </li-->
           <?php 
               if($role == "ADMIN"){
-                echo '<li class="nav-item">
-                <a href="#users" data-file="users.php" class="nav-link link">
-                  <i class="nav-icon fas fa-user"></i>
-                  <p>Staffs</p>
+                echo '<li class="nav-item has-treeview">
+                <a href="#" class="nav-link">
+                  <i class="nav-icon fas fa-users"></i>
+                  <p>User Managements<i class="fas fa-angle-left right"></i></p>
                 </a>
+                <ul class="nav nav-treeview" style="display: none;">
+                  <li class="nav-item">
+                    <a href="#roles" data-file="roles.php" class="nav-link link">
+                      <i class="nav-icon fas fa-critical-role"></i>
+                      <p>Roles</p>
+                    </a>
+                  </li>
+                  <li class="nav-item">
+                    <a href="#users" data-file="users.php" class="nav-link link">
+                      <i class="nav-icon fas fa-user"></i>
+                      <p>Staffs</p>
+                    </a>
+                  </li>
+                </ul>
               </li>
               <li class="nav-item has-treeview">
                 <a href="#" class="nav-link">
@@ -401,6 +415,12 @@ to get the desired effect
                     <a href="#customers" data-file="customers.php" class="nav-link link">
                       <i class="nav-icon fas fa-book"></i>
                       <p>Customers</p>
+                    </a>
+                  </li>
+                  <li class="nav-item">
+                    <a href="#outlet" data-file="outlet.php" class="nav-link link">
+                      <i class="nav-icon fas fa-building"></i>
+                      <p>Outlets</p>
                     </a>
                   </li>
                   <li class="nav-item">
@@ -425,6 +445,12 @@ to get the desired effect
                     <a href="#zones" data-file="zones.php" class="nav-link link">
                       <i class="nav-icon fas fa-chart-area"></i>
                       <p>Zone</p>
+                    </a>
+                  </li>
+                  <li class="nav-item">
+                    <a href="#pricing" data-file="pricing.php" class="nav-link link">
+                      <i class="nav-icon fas fa-dollar-sign"></i>
+                      <p>Pricing Type</p>
                     </a>
                   </li>
                 </ul>
