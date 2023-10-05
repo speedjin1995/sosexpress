@@ -89,12 +89,12 @@ else{
 
               <div class="col-3">
                 <div class="form-group">
-                  <label>Status</label>
-                  <select class="form-control Status" id="statusFilter" name="statusFilter" style="width: 100%;">
-                    <option selected="selected">-</option>
-                    <?php while($rowStatus=mysqli_fetch_assoc($status2)){ ?>
-                      <option value="<?=$rowStatus['id'] ?>"><?=$rowStatus['status'] ?></option>
-                    <?php } ?>
+                  <label>Shipment Type</label>
+                  <select class="form-control" id="pickupMethod" name="pickupMethod">
+                    <option value="" selected disabled hidden>Please Select</option>
+                    <option value="SOS Pickup">SOS Pickup</option>
+                    <option value="Outstation Pickup">Outstation Pickup</option>
+                    <option value="Send By Own">Send By Own</option>
                   </select>
                 </div>
               </div>
@@ -102,34 +102,10 @@ else{
               <div class="col-3">
                 <div class="form-group">
                   <label>Customer No</label>
-                  <select class="form-control" style="width: 100%;" id="customerNoFilter" name="customerNoFilter"></select>
-                </div>
-              </div>
-            </div>
-
-            <div class="row">
-              <div class="form-group col-3">
-                <label>Vehicle No</label>
-                <input class="form-control" type="text" id="vehicleFilter" placeholder="Vehicle No">
-              </div>
-
-              <div class="form-group col-3">
-                <label>Invoice No</label>
-                <input class="form-control" type="text" id="invoiceFilter" placeholder="Invoice No">
-              </div>
-
-              <div class="form-group col-3">
-                <label>Batch No</label>
-                <input class="form-control" type="text" id="batchFilter" placeholder="Batch No">
-              </div>
-
-              <div class="col-3">
-                <div class="form-group">
-                  <label>Product</label>
-                  <select class="form-control" id="productFilter" style="width: 100%;">
-                    <option selected="selected">-</option>
-                    <?php while($rowProduct=mysqli_fetch_assoc($products2)){ ?>
-                      <option value="<?=$rowProduct['id'] ?>"><?=$rowProduct['product_name'] ?></option>
+                  <select class="form-control" id="customerNoFilter" name="customerNoFilter">
+                    <option value="" selected disabled hidden>Please Select</option>
+                    <?php while($rowCustomer2=mysqli_fetch_assoc($customers2)){ ?>
+                      <option value="<?=$rowCustomer2['id'] ?>"><?=$rowCustomer2['customer_name'] ?></option>
                     <?php } ?>
                   </select>
                 </div>
@@ -354,55 +330,6 @@ $(function () {
     },        
   });
 
-  /*var table = $("#weightTable").DataTable({
-    "responsive": true,
-    "autoWidth": false,
-    'processing': true,
-    'serverSide': true,
-    'serverMethod': 'post',
-    'searching': false,
-    'order': [[ 1, 'asc' ]],
-    'columnDefs': [ { orderable: false, targets: [0] }],
-    'ajax': {
-      'type': 'POST',
-      'url':'php/filterBillboard.php',
-      'data': {
-        fromDate:  new Date().getFullYear() + "-" + (new Date().getMonth() + 1) + "-" + new Date().getDate() + " 00:00:00",
-        toDate: new Date().getFullYear() + "-" + (new Date().getMonth() + 1) + "-" + new Date().getDate() + " 23:59:59",
-        status: '',
-        customer: '',
-        vehicle: '',
-        invoice: '',
-        batch: '',
-        product: '',
-      } 
-    },
-    'columns': [
-      { data: 'no' },
-      { data: 'pStatus' },
-      { data: 'status' },
-      { data: 'serialNo' },
-      { data: 'veh_number' },
-      { data: 'product_name' },
-      { data: 'currentWeight' },
-      { data: 'inCDateTime' },
-      { data: 'tare' },
-      { data: 'outGDateTime' },
-      { data: 'totalWeight' },
-      { 
-        className: 'dt-control',
-        orderable: false,
-        data: null,
-        render: function ( data, type, row ) {
-          return '<td class="table-elipse" data-toggle="collapse" data-target="#demo'+row.serialNo+'"><i class="fas fa-angle-down"></i></td>';
-        }
-      }
-    ],
-    "rowCallback": function( row, data, index ) {
-      //$('td', row).css('background-color', '#E6E6FA');
-    }
-  });*/
-
   // Add event listener for opening and closing details
   $('#weightTable tbody').on('click', 'td.dt-control', function () {
     var tr = $(this).closest('tr');
@@ -418,7 +345,7 @@ $(function () {
   });
 
   //Date picker
-  /*$('#fromDatePicker').datetimepicker({
+  $('#fromDatePicker').datetimepicker({
       icons: { time: 'far fa-clock' },
       format: 'DD/MM/YYYY HH:mm:ss A',
       defaultDate: new Date
@@ -428,7 +355,7 @@ $(function () {
       icons: { time: 'far fa-clock' },
       format: 'DD/MM/YYYY HH:mm:ss A',
       defaultDate: new Date
-  });*/
+  });
 
   $.validator.setDefaults({
     submitHandler: function () {
@@ -519,8 +446,8 @@ $(function () {
     }
   });
 
-  /*$('#filterSearch').on('click', function(){
-    $('#spinnerLoading').show();
+  $('#filterSearch').on('click', function(){
+    //$('#spinnerLoading').show();
 
     var fromDateValue = '';
     var toDateValue = '';
@@ -553,12 +480,8 @@ $(function () {
       toDateValue = date2.getFullYear() + "-" + (date2.getMonth() + 1) + "-" + date2.getDate() + " " + date2.getHours() + ":" + date2.getMinutes() + ":" + date2.getSeconds();
     }
 
-    var statusFilter = $('#statusFilter').val() ? $('#statusFilter').val() : '';
+    var pickupMethod = $('#pickupMethod').val() ? $('#pickupMethod').val() : '';
     var customerNoFilter = $('#customerNoFilter').val() ? $('#customerNoFilter').val() : '';
-    var vehicleFilter = $('#vehicleFilter').val() ? $('#vehicleFilter').val() : '';
-    var invoiceFilter = $('#invoiceFilter').val() ? $('#invoiceFilter').val() : '';
-    var batchFilter = $('#batchFilter').val() ? $('#batchFilter').val() : '';
-    var productFilter = $('#productFilter').val() ? $('#productFilter').val() : '';
 
     //Destroy the old Datatable
     $("#weightTable").DataTable().clear().destroy();
@@ -575,48 +498,34 @@ $(function () {
       'columnDefs': [ { orderable: false, targets: [0] }],
       'ajax': {
         'type': 'POST',
-        'url':'php/filterBillboard.php',
+        'url':'php/filterBooking.php',
         'data': {
           fromDate: fromDateValue,
           toDate: toDateValue,
-          status: statusFilter,
+          method: pickupMethod,
           customer: customerNoFilter,
-          vehicle: vehicleFilter,
-          invoice: invoiceFilter,
-          batch: batchFilter,
-          product: productFilter,
         } 
       },
       'columns': [
-      { data: 'no' },
-      { data: 'pStatus' },
-      { data: 'status' },
-      { data: 'serialNo' },
-      { data: 'veh_number' },
-      { data: 'product_name' },
-      { data: 'currentWeight' },
-      { data: 'inCDateTime' },
-      { data: 'tare' },
-      { data: 'outGDateTime' },
-      { data: 'totalWeight' },
-      { 
-        className: 'dt-control',
-        orderable: false,
-        data: null,
-        render: function ( data, type, row ) {
-          return '<td class="table-elipse" data-toggle="collapse" data-target="#demo'+row.serialNo+'"><i class="fas fa-angle-down"></i></td>';
+        { data: 'no' },
+        { data: 'customer_name' },
+        { data: 'description' },
+        { data: 'estimated_ctn' },
+        { data: 'actual_ctn' },
+        { data: 'pickup_method' },
+        { 
+          className: 'dt-control',
+          orderable: false,
+          data: null,
+          render: function ( data, type, row ) {
+            return '<td class="table-elipse" data-toggle="collapse" data-target="#demo'+row.serialNo+'"><i class="fas fa-angle-down"></i></td>';
+          }
         }
-      }
-    ],
-    "rowCallback": function( row, data, index ) {
-      $('td', row).css('background-color', '#E6E6FA');
-    },
-    "drawCallback": function(settings) {
-      $('#spinnerLoading').hide();
-      $('#salesInfo').html('Total Transaction: ' + settings.json.salesTotal + '<br>Total Incoming: ' + settings.json.salesWeight + ' kg<br>Total Outgoing: ' + settings.json.salesTare + ' kg<br>Total Net Weight: ' +settings.json.salesNet+ ' kg');
-      $('#purchaseInfo').html('Total Transaction: ' + settings.json.purchaseTotal + '<br>Total Incoming: ' + settings.json.purchaseWeight + ' kg<br>Total Outgoing: ' + settings.json.purchaseTare + ' kg<br>Total Net Weight: ' +settings.json.purchaseNet+ ' kg');
-      $('#localInfo').html('Total Transaction: ' + settings.json.localTotal + '<br>Total Incoming: ' + settings.json.localWeight + ' kg<br>Total Outgoing: ' + settings.json.localTare + ' kg<br>Total Net Weight: ' +settings.json.localNet+ ' kg');
-    }
+      ],
+      "rowCallback": function( row, data, index ) {
+        //$('td', row).css('background-color', '#E6E6FA');
+        //$('#spinnerLoading').hide();
+      },
       // "footerCallback": function ( row, data, start, end, display ) {
       //   var api = this.api();
 
@@ -653,7 +562,7 @@ $(function () {
       //   $(api.column(9).footer()).html('RM'+pageTotal7 +' ( RM'+ total7 +' total)');
       // }
     });
-  });*/
+  });
 });
 
 function format (row) {

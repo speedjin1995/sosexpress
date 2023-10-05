@@ -22,8 +22,11 @@ else{
   $customers = $db->query("SELECT * FROM customers WHERE deleted = '0'");
   $customers2 = $db->query("SELECT * FROM customers WHERE deleted = '0'");
   $hypermarket = $db->query("SELECT * FROM hypermarket WHERE deleted = '0'");
+  $hypermarket2 = $db->query("SELECT * FROM hypermarket WHERE deleted = '0'");
   $states = $db->query("SELECT * FROM states WHERE deleted = '0'");
+  $states2 = $db->query("SELECT * FROM states WHERE deleted = '0'");
   $zones = $db->query("SELECT * FROM zones WHERE deleted = '0'");
+  $zones2 = $db->query("SELECT * FROM zones WHERE deleted = '0'");
   $outlet = $db->query("SELECT * FROM outlet WHERE deleted = '0'");
 }
 ?>
@@ -57,7 +60,7 @@ else{
 <!-- Main content -->
 <div class="content">
   <div class="container-fluid">
-    <!--div class="row">
+    <div class="row">
       <div class="col-lg-12">
         <div class="card">
           <div class="card-body">
@@ -83,11 +86,11 @@ else{
 
               <div class="col-3">
                 <div class="form-group">
-                  <label>Status</label>
-                  <select class="form-control Status" id="statusFilter" name="statusFilter" style="width: 100%;">
-                    <option selected="selected">-</option>
-                    <?php while($rowStatus=mysqli_fetch_assoc($status2)){ ?>
-                      <option value="<?=$rowStatus['id'] ?>"><?=$rowStatus['status'] ?></option>
+                  <label>Customer No</label>
+                  <select class="form-control" id="customerNoFilter" name="customerNoFilter">
+                    <option value="" selected disabled hidden>Please Select</option>
+                    <?php while($rowCustomer2=mysqli_fetch_assoc($customers2)){ ?>
+                      <option value="<?=$rowCustomer2['id'] ?>"><?=$rowCustomer2['customer_name'] ?></option>
                     <?php } ?>
                   </select>
                 </div>
@@ -95,38 +98,36 @@ else{
 
               <div class="col-3">
                 <div class="form-group">
-                  <label>Customer No</label>
-                  <select class="form-control" style="width: 100%;" id="customerNoFilter" name="customerNoFilter"></select>
+                  <label>States</label>
+                  <select class="form-control" id="stateFilter" name="stateFilter" style="width: 100%;">
+                    <option selected="selected">-</option>
+                    <?php while($rowStatus2=mysqli_fetch_assoc($states2)){ ?>
+                      <option value="<?=$rowStatus2['id'] ?>"><?=$rowStatus2['states'] ?></option>
+                    <?php } ?>
+                  </select>
                 </div>
               </div>
             </div>
 
             <div class="row">
               <div class="form-group col-3">
-                <label>Vehicle No</label>
-                <input class="form-control" type="text" id="vehicleFilter" placeholder="Vehicle No">
+                <label>Zones</label>
+                <select class="form-control" id="zonesFilter" name="zonesFilter" style="width: 100%;"></select>
               </div>
 
               <div class="form-group col-3">
-                <label>Invoice No</label>
-                <input class="form-control" type="text" id="invoiceFilter" placeholder="Invoice No">
+                <label>Hypermarket</label>
+                <select class="form-control" id="hypermarketFilter" name="hypermarketFilter" style="width: 100%;">
+                  <option selected="selected">-</option>
+                  <?php while($rowhypermarket2=mysqli_fetch_assoc($hypermarket2)){ ?>
+                    <option value="<?=$rowhypermarket2['id'] ?>"><?=$rowhypermarket2['name'] ?></option>
+                  <?php } ?>
+                </select>
               </div>
 
               <div class="form-group col-3">
-                <label>Batch No</label>
-                <input class="form-control" type="text" id="batchFilter" placeholder="Batch No">
-              </div>
-
-              <div class="col-3">
-                <div class="form-group">
-                  <label>Product</label>
-                  <select class="form-control" id="productFilter" style="width: 100%;">
-                    <option selected="selected">-</option>
-                    <?php while($rowProduct=mysqli_fetch_assoc($products2)){ ?>
-                      <option value="<?=$rowProduct['id'] ?>"><?=$rowProduct['product_name'] ?></option>
-                    <?php } ?>
-                  </select>
-                </div>
+                <label>Outlets</label>
+                <select class="form-control" id="outletsFilter" name="outletsFilter" style="width: 100%;"></select>
               </div>
             </div>
 
@@ -142,7 +143,7 @@ else{
           </div>
         </div>
       </div>
-    </div-->
+    </div>
 
     <div class="row">
       <div class="col-lg-12">
@@ -274,7 +275,8 @@ else{
             <div class="col-4">
               <div class="form-group">
                 <label for="rate">Outlet *</label>
-                <select class="form-control" style="width: 100%;" id="outlets" name="outlets" required></select>
+                <select class="form-control" style="width: 100%;" id="outlets" name="outlets"></select>
+                <input class="form-control" type="text" placeholder="DO No." id="direct_store" name="direct_store">
               </div>
             </div>
             <div class="col-4">
@@ -351,6 +353,7 @@ else{
 $(function () {
   $("#zoneHidden").hide();
   $("#branchHidden").hide();
+  $('#direct_store').hide();
 
   var table = $("#weightTable").DataTable({
     "responsive": true,
@@ -379,59 +382,21 @@ $(function () {
         }
       }
     ],
+    "initComplete": function () {
+      // Calculate the total carton value
+      var totalCarton = this.api().column(5).data().reduce(function (acc, val) {
+        return acc + parseInt(val, 10);
+      }, 0);
+      
+      // Update the "info" message with the total carton value
+      var info = "Displaying _START_ to _END_ of _TOTAL_ DOs with Total Carton of " + totalCarton;
+      $(this).DataTable().settings()[0].oLanguage.sInfo = info;
+      $(this).DataTable().draw();
+    },
     "rowCallback": function( row, data, index ) {
       //$('td', row).css('background-color', '#E6E6FA');
     },        
   });
-
-  /*var table = $("#weightTable").DataTable({
-    "responsive": true,
-    "autoWidth": false,
-    'processing': true,
-    'serverSide': true,
-    'serverMethod': 'post',
-    'searching': false,
-    'order': [[ 1, 'asc' ]],
-    'columnDefs': [ { orderable: false, targets: [0] }],
-    'ajax': {
-      'type': 'POST',
-      'url':'php/filterBillboard.php',
-      'data': {
-        fromDate:  new Date().getFullYear() + "-" + (new Date().getMonth() + 1) + "-" + new Date().getDate() + " 00:00:00",
-        toDate: new Date().getFullYear() + "-" + (new Date().getMonth() + 1) + "-" + new Date().getDate() + " 23:59:59",
-        status: '',
-        customer: '',
-        vehicle: '',
-        invoice: '',
-        batch: '',
-        product: '',
-      } 
-    },
-    'columns': [
-      { data: 'no' },
-      { data: 'pStatus' },
-      { data: 'status' },
-      { data: 'serialNo' },
-      { data: 'veh_number' },
-      { data: 'product_name' },
-      { data: 'currentWeight' },
-      { data: 'inCDateTime' },
-      { data: 'tare' },
-      { data: 'outGDateTime' },
-      { data: 'totalWeight' },
-      { 
-        className: 'dt-control',
-        orderable: false,
-        data: null,
-        render: function ( data, type, row ) {
-          return '<td class="table-elipse" data-toggle="collapse" data-target="#demo'+row.serialNo+'"><i class="fas fa-angle-down"></i></td>';
-        }
-      }
-    ],
-    "rowCallback": function( row, data, index ) {
-      //$('td', row).css('background-color', '#E6E6FA');
-    }
-  });*/
 
   // Add event listener for opening and closing details
   $('#weightTable tbody').on('click', 'td.dt-control', function () {
@@ -448,7 +413,7 @@ $(function () {
   });
 
   //Date picker
-  /*$('#fromDatePicker').datetimepicker({
+  $('#fromDatePicker').datetimepicker({
       icons: { time: 'far fa-clock' },
       format: 'DD/MM/YYYY HH:mm:ss A',
       defaultDate: new Date
@@ -458,7 +423,7 @@ $(function () {
       icons: { time: 'far fa-clock' },
       format: 'DD/MM/YYYY HH:mm:ss A',
       defaultDate: new Date
-  });*/
+  });
 
   $('#bookingDate').datetimepicker({
     icons: { time: 'far fa-clock' },
@@ -476,6 +441,174 @@ $(function () {
     icons: { time: 'far fa-clock' },
     format: 'DD/MM/YYYY HH:mm:ss A',
     defaultDate: new Date
+  });
+
+  $('#stateFilter').on('change', function(){
+    $('#zonesFilter').empty();
+    var dataIndexToMatch = $(this).val();
+
+    $('#zoneHidden option').each(function() {
+      var dataIndex = $(this).data('index');
+
+      if (dataIndex == dataIndexToMatch) {
+        $('#zonesFilter').append($(this).clone());
+        $('#zonesFilter').trigger('change');
+      }
+    });
+
+    if($('#stateFilter').val() && $('#zonesFilter').val() && $('#hypermarketFilter').val()){
+      $('#extendModal').find('#outlets').empty();
+
+      $.post('php/listOutlets.php', {states: $('#stateFilter').val(), zones: $('#zonesFilter').val(), hypermarket: $('#hypermarketFilter').val()}, function(data){
+        var obj = JSON.parse(data);
+        
+        if(obj.status === 'success'){
+          for(var i=0; i<obj.message.length; i++){
+            $('#outletsFilter').append('<option value="'+obj.message[i].id+'">'+obj.message[i].name+'</option>')
+          }
+        }
+        else if(obj.status === 'failed'){
+          toastr["error"](obj.message, "Failed:");
+        }
+        else{
+          toastr["error"]("Something wrong when pull data", "Failed:");
+        }
+        $('#spinnerLoading').hide();
+      });
+    }
+  });
+
+  $('#hypermarketFilter').on('change', function(){
+    if($('#stateFilter').val() && $('#zonesFilter').val() && $('#hypermarketFilter').val()){
+      $('#extendModal').find('#outlets').empty();
+
+      $.post('php/listOutlets.php', {states: $('#stateFilter').val(), zones: $('#zonesFilter').val(), hypermarket: $('#hypermarketFilter').val()}, function(data){
+        var obj = JSON.parse(data);
+        
+        if(obj.status === 'success'){
+          for(var i=0; i<obj.message.length; i++){
+            $('#outletsFilter').append('<option value="'+obj.message[i].id+'">'+obj.message[i].name+'</option>')
+          }
+        }
+        else if(obj.status === 'failed'){
+          toastr["error"](obj.message, "Failed:");
+        }
+        else{
+          toastr["error"]("Something wrong when pull data", "Failed:");
+        }
+        $('#spinnerLoading').hide();
+      });
+    }
+  });
+
+  $('#zonesFilter').on('change', function(){
+    if($('#stateFilter').val() && $('#zonesFilter').val() && $('#hypermarketFilter').val()){
+      $('#extendModal').find('#outlets').empty();
+
+      $.post('php/listOutlets.php', {states: $('#stateFilter').val(), zones: $('#zonesFilter').val(), hypermarket: $('#hypermarketFilter').val()}, function(data){
+        var obj = JSON.parse(data);
+        
+        if(obj.status === 'success'){
+          for(var i=0; i<obj.message.length; i++){
+            $('#outletsFilter').append('<option value="'+obj.message[i].id+'">'+obj.message[i].name+'</option>')
+          }
+        }
+        else if(obj.status === 'failed'){
+          toastr["error"](obj.message, "Failed:");
+        }
+        else{
+          toastr["error"]("Something wrong when pull data", "Failed:");
+        }
+        $('#spinnerLoading').hide();
+      });
+    }
+  });
+
+  $('#filterSearch').on('click', function(){
+    //$('#spinnerLoading').show();
+    var fromDateValue = '';
+    var toDateValue = '';
+
+    if($('#fromDate').val()){
+      var convert1 = $('#fromDate').val().replace(", ", " ");
+      convert1 = convert1.replace(":", "/");
+      convert1 = convert1.replace(":", "/");
+      convert1 = convert1.replace(" ", "/");
+      convert1 = convert1.replace(" pm", "");
+      convert1 = convert1.replace(" am", "");
+      convert1 = convert1.replace(" PM", "");
+      convert1 = convert1.replace(" AM", "");
+      var convert2 = convert1.split("/");
+      var date  = new Date(convert2[2], convert2[1] - 1, convert2[0], convert2[3], convert2[4], convert2[5]);
+      fromDateValue = date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate() + " " + date.getHours() + ":" + date.getMinutes() + ":" + date.getSeconds();
+    }
+    
+    if($('#toDate').val()){
+      var convert3 = $('#toDate').val().replace(", ", " ");
+      convert3 = convert3.replace(":", "/");
+      convert3 = convert3.replace(":", "/");
+      convert3 = convert3.replace(" ", "/");
+      convert3 = convert3.replace(" pm", "");
+      convert3 = convert3.replace(" am", "");
+      convert3 = convert3.replace(" PM", "");
+      convert3 = convert3.replace(" AM", "");
+      var convert4 = convert3.split("/");
+      var date2  = new Date(convert4[2], convert4[1] - 1, convert4[0], convert4[3], convert4[4], convert4[5]);
+      toDateValue = date2.getFullYear() + "-" + (date2.getMonth() + 1) + "-" + date2.getDate() + " " + date2.getHours() + ":" + date2.getMinutes() + ":" + date2.getSeconds();
+    }
+
+    var stateFilter = $('#stateFilter').val() ? $('#stateFilter').val() : '';
+    var customerNoFilter = $('#customerNoFilter').val() ? $('#customerNoFilter').val() : '';
+    var zonesFilter = $('#zonesFilter').val() ? $('#zonesFilter').val() : '';
+    var hypermarketFilter = $('#hypermarketFilter').val() ? $('#hypermarketFilter').val() : '';
+    var outletsFilter = $('#batchFilter').val() ? $('#outletsFilter').val() : '';
+
+    //Destroy the old Datatable
+    $("#weightTable").DataTable().clear().destroy();
+
+    //Create new Datatable
+    table = $("#weightTable").DataTable({
+      "responsive": true,
+      "autoWidth": false,
+      'processing': true,
+      'serverSide': true,
+      'serverMethod': 'post',
+      'searching': false,
+      'order': [[ 1, 'asc' ]],
+      'columnDefs': [ { orderable: false, targets: [0] }],
+      'ajax': {
+        'type': 'POST',
+        'url':'php/filterDORequest.php',
+        'data': {
+          fromDate: fromDateValue,
+          toDate: toDateValue,
+          state: stateFilter,
+          customer: customerNoFilter,
+          zones: zonesFilter,
+          hypermarket: hypermarketFilter,
+          outlets: outletsFilter
+        } 
+      },
+      'columns': [
+        { data: 'no' },
+        { data: 'customer_name' },
+        { data: 'hypermarket' },
+        { data: 'outlet' },
+        { data: 'delivery_date' },
+        { data: 'actual_carton' },
+        { 
+          className: 'dt-control',
+          orderable: false,
+          data: null,
+          render: function ( data, type, row ) {
+            return '<td class="table-elipse" data-toggle="collapse" data-target="#demo'+row.serialNo+'"><i class="fas fa-angle-down"></i></td>';
+          }
+        }
+      ],
+      "rowCallback": function( row, data, index ) {
+        //$('td', row).css('background-color', '#E6E6FA');
+      }
+    });
   });
 
   $.validator.setDefaults({
@@ -519,7 +652,11 @@ $(function () {
     $('#extendModal').find('#description').val("");
     $('#extendModal').find('#actual_ctn').val("");
     $('#extendModal').find('#need_grn').val("No");
-    $('#extendModal').find('#loadingTime').val("");
+    $('#extendModal').find('#loadingTime').val("M");
+    $('#extendModal').find('#direct_store').val("");
+    $('#extendModal').find('#outlets').attr('required', true);
+    $('#extendModal').find('#outlets').show();
+    $('#extendModal').find("#direct_store").hide();
     $('#extendModal').modal('show');
     
     $('#extendForm').validate({
@@ -542,18 +679,20 @@ $(function () {
     var dataIndexToMatch = $(this).val();
 
     $('#zoneHidden option').each(function() {
-        var dataIndex = $(this).data('index');
+      var dataIndex = $(this).data('index');
 
-        if (dataIndex == dataIndexToMatch) {
-          $('#zones').append($(this).clone());
-          $('#zones').trigger('change');
-        }
+      if (dataIndex == dataIndexToMatch) {
+        $('#zones').append($(this).clone());
+        $('#zones').trigger('change');
+      }
     });
-  });
 
-  $('#zones').on('change', function(){
-    if($('#states').val() && $('#zones').val() && $('#hypermarket').val()){
+    if($('#states').val() && $('#zones').val() && $('#hypermarket').val() && $('#hypermarket').val() != '0'){
       $('#extendModal').find('#outlets').empty();
+      $('#extendModal').find("#direct_store").attr('required', false);
+      $('#extendModal').find('#outlets').attr('required', true);
+      $('#extendModal').find('#outlets').show();
+      $('#extendModal').find("#direct_store").hide();
 
       $.post('php/listOutlets.php', {states: $('#states').val(), zones: $('#zones').val(), hypermarket: $('#hypermarket').val()}, function(data){
         var obj = JSON.parse(data);
@@ -572,161 +711,99 @@ $(function () {
         $('#spinnerLoading').hide();
       });
     }
+    else{
+      $('#extendModal').find('#outlets').attr('required', false);
+      $('#extendModal').find('#outlets').hide();
+      $('#extendModal').find("#direct_store").show();
+      $('#extendModal').find("#direct_store").attr('required', true);
+      $('#extendModal').find("#direct_store").val('');
+    }
   });
 
-  /*$('#filterSearch').on('click', function(){
-    $('#spinnerLoading').show();
+  $('#zones').on('change', function(){
+    if($('#states').val() && $('#zones').val() && $('#hypermarket').val() && $('#hypermarket').val() != '0'){
+      $('#extendModal').find('#outlets').empty();
+      $('#extendModal').find("#direct_store").attr('required', false);
+      $('#extendModal').find('#outlets').attr('required', true);
+      $('#extendModal').find('#outlets').show();
+      $('#extendModal').find("#direct_store").hide();
 
-    var fromDateValue = '';
-    var toDateValue = '';
-
-    if($('#fromDate').val()){
-      var convert1 = $('#fromDate').val().replace(", ", " ");
-      convert1 = convert1.replace(":", "/");
-      convert1 = convert1.replace(":", "/");
-      convert1 = convert1.replace(" ", "/");
-      convert1 = convert1.replace(" pm", "");
-      convert1 = convert1.replace(" am", "");
-      convert1 = convert1.replace(" PM", "");
-      convert1 = convert1.replace(" AM", "");
-      var convert2 = convert1.split("/");
-      var date  = new Date(convert2[2], convert2[1] - 1, convert2[0], convert2[3], convert2[4], convert2[5]);
-      fromDateValue = date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate() + " " + date.getHours() + ":" + date.getMinutes() + ":" + date.getSeconds();
-    }
-    
-    if($('#toDate').val()){
-      var convert3 = $('#toDate').val().replace(", ", " ");
-      convert3 = convert3.replace(":", "/");
-      convert3 = convert3.replace(":", "/");
-      convert3 = convert3.replace(" ", "/");
-      convert3 = convert3.replace(" pm", "");
-      convert3 = convert3.replace(" am", "");
-      convert3 = convert3.replace(" PM", "");
-      convert3 = convert3.replace(" AM", "");
-      var convert4 = convert3.split("/");
-      var date2  = new Date(convert4[2], convert4[1] - 1, convert4[0], convert4[3], convert4[4], convert4[5]);
-      toDateValue = date2.getFullYear() + "-" + (date2.getMonth() + 1) + "-" + date2.getDate() + " " + date2.getHours() + ":" + date2.getMinutes() + ":" + date2.getSeconds();
-    }
-
-    var statusFilter = $('#statusFilter').val() ? $('#statusFilter').val() : '';
-    var customerNoFilter = $('#customerNoFilter').val() ? $('#customerNoFilter').val() : '';
-    var vehicleFilter = $('#vehicleFilter').val() ? $('#vehicleFilter').val() : '';
-    var invoiceFilter = $('#invoiceFilter').val() ? $('#invoiceFilter').val() : '';
-    var batchFilter = $('#batchFilter').val() ? $('#batchFilter').val() : '';
-    var productFilter = $('#productFilter').val() ? $('#productFilter').val() : '';
-
-    //Destroy the old Datatable
-    $("#weightTable").DataTable().clear().destroy();
-
-    //Create new Datatable
-    table = $("#weightTable").DataTable({
-      "responsive": true,
-      "autoWidth": false,
-      'processing': true,
-      'serverSide': true,
-      'serverMethod': 'post',
-      'searching': false,
-      'order': [[ 1, 'asc' ]],
-      'columnDefs': [ { orderable: false, targets: [0] }],
-      'ajax': {
-        'type': 'POST',
-        'url':'php/filterBillboard.php',
-        'data': {
-          fromDate: fromDateValue,
-          toDate: toDateValue,
-          status: statusFilter,
-          customer: customerNoFilter,
-          vehicle: vehicleFilter,
-          invoice: invoiceFilter,
-          batch: batchFilter,
-          product: productFilter,
-        } 
-      },
-      'columns': [
-      { data: 'no' },
-      { data: 'pStatus' },
-      { data: 'status' },
-      { data: 'serialNo' },
-      { data: 'veh_number' },
-      { data: 'product_name' },
-      { data: 'currentWeight' },
-      { data: 'inCDateTime' },
-      { data: 'tare' },
-      { data: 'outGDateTime' },
-      { data: 'totalWeight' },
-      { 
-        className: 'dt-control',
-        orderable: false,
-        data: null,
-        render: function ( data, type, row ) {
-          return '<td class="table-elipse" data-toggle="collapse" data-target="#demo'+row.serialNo+'"><i class="fas fa-angle-down"></i></td>';
+      $.post('php/listOutlets.php', {states: $('#states').val(), zones: $('#zones').val(), hypermarket: $('#hypermarket').val()}, function(data){
+        var obj = JSON.parse(data);
+        
+        if(obj.status === 'success'){
+          for(var i=0; i<obj.message.length; i++){
+            $('#extendModal').find('#outlets').append('<option value="'+obj.message[i].id+'">'+obj.message[i].name+'</option>')
+          }
         }
-      }
-    ],
-    "rowCallback": function( row, data, index ) {
-      $('td', row).css('background-color', '#E6E6FA');
-    },
-    "drawCallback": function(settings) {
-      $('#spinnerLoading').hide();
-      $('#salesInfo').html('Total Transaction: ' + settings.json.salesTotal + '<br>Total Incoming: ' + settings.json.salesWeight + ' kg<br>Total Outgoing: ' + settings.json.salesTare + ' kg<br>Total Net Weight: ' +settings.json.salesNet+ ' kg');
-      $('#purchaseInfo').html('Total Transaction: ' + settings.json.purchaseTotal + '<br>Total Incoming: ' + settings.json.purchaseWeight + ' kg<br>Total Outgoing: ' + settings.json.purchaseTare + ' kg<br>Total Net Weight: ' +settings.json.purchaseNet+ ' kg');
-      $('#localInfo').html('Total Transaction: ' + settings.json.localTotal + '<br>Total Incoming: ' + settings.json.localWeight + ' kg<br>Total Outgoing: ' + settings.json.localTare + ' kg<br>Total Net Weight: ' +settings.json.localNet+ ' kg');
+        else if(obj.status === 'failed'){
+          toastr["error"](obj.message, "Failed:");
+        }
+        else{
+          toastr["error"]("Something wrong when pull data", "Failed:");
+        }
+        $('#spinnerLoading').hide();
+      });
     }
-      // "footerCallback": function ( row, data, start, end, display ) {
-      //   var api = this.api();
+    else{
+      $('#extendModal').find('#outlets').attr('required', false);
+      $('#extendModal').find('#outlets').hide();
+      $('#extendModal').find("#direct_store").show();
+      $('#extendModal').find("#direct_store").attr('required', true);
+      $('#extendModal').find("#direct_store").val('');
+    }
+  });
 
-      //   // Remove the formatting to get integer data for summation
-      //   var intVal = function (i) {
-      //     return typeof i === 'string' ? i.replace(/[\$,]/g, '')*1 : typeof i === 'number' ? i : 0;
-      //   };
+  $('#hypermarket').on('change', function(){
+    if($('#states').val() && $('#zones').val() && $('#hypermarket').val() && $('#hypermarket').val() != '0'){
+      $('#extendModal').find('#outlets').empty();
+      $('#extendModal').find("#direct_store").attr('required', false);
+      $('#extendModal').find('#outlets').attr('required', true);
+      $('#extendModal').find('#outlets').show();
+      $('#extendModal').find("#direct_store").hide();
 
-      //   // Total over all pages
-      //   total = api.column(3).data().reduce( function (a, b) { return intVal(a) + intVal(b); }, 0 );
-      //   total2 = api.column(4).data().reduce( function (a, b) { return intVal(a) + intVal(b); }, 0 );
-      //   total3 = api.column(5).data().reduce( function (a, b) { return intVal(a) + intVal(b); }, 0 );
-      //   total4 = api.column(6).data().reduce( function (a, b) { return intVal(a) + intVal(b); }, 0 );
-      //   total5 = api.column(7).data().reduce( function (a, b) { return intVal(a) + intVal(b); }, 0 );
-      //   total6 = api.column(8).data().reduce( function (a, b) { return intVal(a) + intVal(b); }, 0 );
-      //   total7 = api.column(9).data().reduce( function (a, b) { return intVal(a) + intVal(b); }, 0 );
-
-      //   // Total over this page
-      //   pageTotal = api.column(3, {page: 'current'}).data().reduce( function (a, b) {return intVal(a) + intVal(b);}, 0 );
-      //   pageTotal2 = api.column(4, {page: 'current'}).data().reduce( function (a, b) {return intVal(a) + intVal(b);}, 0 );
-      //   pageTotal3 = api.column(5, {page: 'current'}).data().reduce( function (a, b) {return intVal(a) + intVal(b);}, 0 );
-      //   pageTotal4 = api.column(6, {page: 'current'}).data().reduce( function (a, b) {return intVal(a) + intVal(b);}, 0 );
-      //   pageTotal5 = api.column(7, {page: 'current'}).data().reduce( function (a, b) {return intVal(a) + intVal(b);}, 0 );
-      //   pageTotal6 = api.column(8, {page: 'current'}).data().reduce( function (a, b) {return intVal(a) + intVal(b);}, 0 );
-      //   pageTotal7 = api.column(9, {page: 'current'}).data().reduce( function (a, b) {return intVal(a) + intVal(b);}, 0 );
-
-      //   // Update footer
-      //   $(api.column(3).footer()).html(pageTotal +' kg ( '+ total +' kg)');
-      //   $(api.column(4).footer()).html(pageTotal2 +' kg ( '+ total2 +' kg)');
-      //   $(api.column(5).footer()).html(pageTotal3 +' kg ( '+ total3 +' kg)');
-      //   $(api.column(6).footer()).html(pageTotal4 +' kg ( '+ total4 +' kg)');
-      //   $(api.column(7).footer()).html(pageTotal5 +' ('+ total5 +')');
-      //   $(api.column(8).footer()).html('RM'+pageTotal6 +' ( RM'+ total6 +' total)');
-      //   $(api.column(9).footer()).html('RM'+pageTotal7 +' ( RM'+ total7 +' total)');
-      // }
-    });
-  });*/
+      $.post('php/listOutlets.php', {states: $('#states').val(), zones: $('#zones').val(), hypermarket: $('#hypermarket').val()}, function(data){
+        var obj = JSON.parse(data);
+        
+        if(obj.status === 'success'){
+          for(var i=0; i<obj.message.length; i++){
+            $('#extendModal').find('#outlets').append('<option value="'+obj.message[i].id+'">'+obj.message[i].name+'</option>')
+          }
+        }
+        else if(obj.status === 'failed'){
+          toastr["error"](obj.message, "Failed:");
+        }
+        else{
+          toastr["error"]("Something wrong when pull data", "Failed:");
+        }
+        $('#spinnerLoading').hide();
+      });
+    }
+    else{
+      $('#extendModal').find('#outlets').attr('required', false);
+      $('#extendModal').find('#outlets').hide();
+      $('#extendModal').find("#direct_store").show();
+      $('#extendModal').find("#direct_store").attr('required', true);
+      $('#extendModal').find("#direct_store").val('');
+    }
+  });
 });
 
 function format (row) {
-  var returnString = '<div class="row"><div class="col-md-3"><p>Pickup Methode: '+row.pickup_method+
-  '</p></div><div class="col-md-3"><p>Customer Name: '+row.customer_name+
-  '</p></div><div class="col-md-3"><p>Pickup Location: '+row.pickup_location+
-  '</p></div><div class="col-md-3"><p>Description: '+row.description+
-  '</p></div></div><div class="row"><div class="col-md-3"><p>Estimated Ctn: '+row.estimated_ctn+
-  '</p></div><div class="col-md-3"><p>Actual Ctn: '+row.actual_ctn+
-  '</p></div><div class="col-md-3"><p>Vehicle No: '+row.vehicle_no+
-  '</p></div><div class="col-md-3"><p>Col Goods: '+row.col_goods+
-  '</p></div></div><div class="row"><div class="col-md-3">'+
-  '</div><div class="col-md-3"><p>Col Chq: '+row.col_chq+
-  '</p></div><div class="col-md-3"><p>Form No: '+row.form_no+
-  '</p></div><div class="col-md-3"><p>Gate: '+row.gate+
-  '</p></div></div><div class="row"><div class="col-md-3">'+
-  '</div><div class="col-md-3"><p>Checker: '+row.name+
-  '</p></div><div class="col-md-3"><p>Status: '+row.status+
+  var returnString = '<div class="row"><div class="col-md-3"><p>Booking Date: '+row.booking_date+
+  '</p></div><div class="col-md-3"><p>Delivery Date: '+row.delivery_date+
+  '</p></div><div class="col-md-3"><p>Cancellation Date: '+row.cancellation_date+
+  '</p></div><div class="col-md-3"><p>Customer: '+row.customer_name+
+  '</p></div></div><div class="row"><div class="col-md-3"><p>States: '+row.states+
+  '</p></div><div class="col-md-3"><p>Zones: '+row.zones+
+  '</p></div><div class="col-md-3"><p>Hypermarket: '+row.hypermarket+
+  '</p></div><div class="col-md-3"><p>Outlets: '+(row.direct_store != null ? row.direct_store:row.outlet)+
+  '</p></div></div><div class="row"><div class="col-md-3"><p>DO Type: '+row.do_type+
+  '</p></div><div class="col-md-3"><p>DO No: '+row.do_number+
+  '</p></div><div class="col-md-3"><p>PO No: '+row.po_number+
+  '</p></div><div class="col-md-3"><p>Actual Carton: '+row.actual_carton+
+  '</p></div></div><div class="row"><div class="col-md-3"><p>Loading Time: '+row.loading_time+
+  '</p></div><div class="col-md-3"><p>Note: '+row.note+
   '</p></div><div class="col-md-3">';
   
   if(row.status == 'Created'){
@@ -735,7 +812,7 @@ function format (row) {
   ')"><i class="fas fa-trash"></i></button></div><div class="col-3"><button type="button" class="btn btn-info btn-sm" onclick="picked('+row.id+
   ')"><i class="fas fa-truck"></i></button></div></div></div></div>';
   }
-  else if(row.status == 'Picked'){
+  else if(row.status == 'Loaded'){
     returnString +='<div class="row"><div class="col-3"><button type="button" class="btn btn-info btn-sm" onclick="invoice('+row.id+
   ')"><i class="fas fa-receipt"></i></button></div></div></div></div>';
   }
@@ -776,26 +853,46 @@ function formatNormal (row) {
 
 function edit(id) {
   $('#spinnerLoading').show();
-  $.post('php/getBooking.php', {userID: id}, function(data){
+  $.post('php/getDO.php', {userID: id}, function(data){
     var obj = JSON.parse(data);
     
     if(obj.status === 'success'){
       $('#extendModal').find('#id').val(obj.message.id);
-      $('#extendModal').find('#pickup_method').val(obj.message.pickup_method);
+      $('#extendModal').find('#booking_date').val(obj.message.booking_date.toLocaleString('en-AU', { hour12: false }));
+      $('#extendModal').find('#delivery_date').val(obj.message.delivery_date.toLocaleString('en-AU', { hour12: false }));
+      $('#extendModal').find('#cancellation_date').val(obj.message.cancellation_date.toLocaleString('en-AU', { hour12: false }));
       $('#extendModal').find('#customerNo').val(obj.message.customer);
-      $('#extendModal').find('#branch').val(obj.message.branch);
-      $('#extendModal').find('#address').val(obj.message.pickup_location);
-      $('#extendModal').find('#description').val(obj.message.description);
-      $('#extendModal').find('#extimated_ctn').val(obj.message.estimated_ctn);
-      $('#extendModal').find('#actual_ctn').val(obj.message.actual_ctn);
-      $('#extendModal').find('#gate').val(obj.message.gate);
-      $('#extendModal').find('#checker').val(obj.message.checker);
-      $('#extendModal').find('#vehicleNoTxt').val(obj.message.vehicle_no);
-      $('#extendModal').find('#form_no').val(obj.message.form_no);
-      $('#extendModal').find('#col_goods').val(obj.message.col_goods);
-      $('#extendModal').find('#col_chk').val(obj.message.col_chq);
+      $('#extendModal').find('#hypermarket').val(obj.message.hypermarket);
+      $('#extendModal').find('#states').val(obj.message.states);
+      $('#extendModal').find('#states').trigger('change');
+      $('#extendModal').find('#zones').val(obj.message.zone);
+      $('#extendModal').find('#hypermarket').trigger('change');
+      $('#extendModal').find('#do_type').val(obj.message.do_type);
+      $('#extendModal').find('#do_no').val(obj.message.do_number);
+      $('#extendModal').find('#po_no').val(obj.message.po_number);
+      $('#extendModal').find('#description').val(obj.message.note);
+      $('#extendModal').find('#actual_ctn').val(obj.message.actual_carton);
+      $('#extendModal').find('#need_grn').val(obj.message.need_grn);
+      $('#extendModal').find('#loadingTime').val(obj.message.loading_time);
 
+      if(obj.message.hypermarket == '0'){
+        $('#extendModal').find('#outlets').empty().val(obj.message.outlet);
+        $('#extendModal').find('#outlets').attr('required', false);
+        $('#extendModal').find('#direct_store').attr('required', true);
+        $('#extendModal').find('#direct_store').val(obj.message.direct_store);
+        $('#extendModal').find('#outlets').hide();
+        $('#extendModal').find("#direct_store").show();
+      }
+      else{
+        $('#extendModal').find('#zones').empty().val(obj.message.zone);
+        $('#extendModal').find('#outlets').attr('required', true);
+        $('#extendModal').find('#outlets').show();
+        $('#extendModal').find('#direct_store').val('');
+        $('#extendModal').find("#direct_store").hide();
+      }
+      
       $('#extendModal').modal('show');
+
       $('#extendForm').validate({
         errorElement: 'span',
         errorPlacement: function (error, element) {
@@ -823,7 +920,7 @@ function edit(id) {
 function deactivate(id) {
   if (confirm('Are you sure you want to delete this items?')) {
     $('#spinnerLoading').show();
-    $.post('php/deleteBooking.php', {userID: id}, function(data){
+    $.post('php/deleteDO.php', {userID: id}, function(data){
       var obj = JSON.parse(data);
 
       if(obj.status === 'success'){
@@ -843,7 +940,7 @@ function deactivate(id) {
 
 function picked(id) {
   $('#spinnerLoading').show();
-  $.post('php/pickedBooking.php', {userID: id}, function(data){
+  $.post('php/loadedDO.php', {userID: id}, function(data){
     var obj = JSON.parse(data);
 
     if(obj.status === 'success'){
@@ -861,7 +958,7 @@ function picked(id) {
 }
 
 function invoice(id) {
-  $.post('php/invoiceBooking.php', {userID: id}, function(data){
+  $.post('php/deliveredDO.php', {userID: id}, function(data){
     var obj = JSON.parse(data);
 
     if(obj.status === 'success'){

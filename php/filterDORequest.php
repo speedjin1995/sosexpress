@@ -13,10 +13,39 @@ $searchValue = mysqli_real_escape_string($db,$_POST['search']['value']); // Sear
 
 ## Search 
 $searchQuery = " ";
+
+if($_POST['fromDate'] != null && $_POST['fromDate'] != ''){
+    $searchQuery = " and do_request.booking_date >= '".$_POST['fromDate']."'";
+}
+
+if($_POST['toDate'] != null && $_POST['toDate'] != ''){
+  $searchQuery = " and do_request.booking_date <= '".$_POST['toDate']."'";
+}
+
+if($_POST['state'] != null && $_POST['state'] != '' && $_POST['state'] != '-'){
+  $searchQuery = " and do_request.states = '".$_POST['state']."'";
+}
+
+if($_POST['customer'] != null && $_POST['customer'] != '' && $_POST['customer'] != '-'){
+  $searchQuery = " and do_request.customer = '".$_POST['customer']."'";
+}
+
+if($_POST['zones'] != null && $_POST['zones'] != '' && $_POST['zones'] != '-'){
+  $searchQuery = " and do_request.zone = '".$_POST['zones']."'";
+}
+
+if($_POST['hypermarket'] != null && $_POST['hypermarket'] != '' && $_POST['hypermarket'] != '-'){
+  $searchQuery = " and do_request.hypermarket like '%".$_POST['hypermarket']."%'";
+}
+
+if($_POST['outlets'] != null && $_POST['outlets'] != '' && $_POST['outlets'] != '-'){
+  $searchQuery = " and do_request.batchNo like '%".$_POST['outlets']."%'";
+}
+
 if($searchValue != ''){
-   $searchQuery = " and (hypermarket.name like '%".$searchValue."%' or 
-        outlet.name like '%".$searchValue."%' or
-        customers.customer_name like'%".$searchValue."%' ) ";
+  $searchQuery = " and (hypermarket.name like '%".$searchValue."%' or 
+       outlet.name like '%".$searchValue."%' or
+       customers.customer_name like'%".$searchValue."%' ) ";
 }
 
 ## Total number of records without filtering
@@ -63,16 +92,17 @@ while($row = mysqli_fetch_assoc($empRecords)) {
     "status"=>$row['status']
   );
 
-  $counter++;
+ $counter++;
 }
 
 ## Response
 $response = array(
-  "draw" => intval($draw),
-  "iTotalRecords" => $totalRecords,
-  "iTotalDisplayRecords" => $totalRecordwithFilter,
-  "aaData" => $data
+ "draw" => intval($draw),
+ "iTotalRecords" => $totalRecords,
+ "iTotalDisplayRecords" => $totalRecordwithFilter,
+ "aaData" => $data
 );
+
 
 echo json_encode($response);
 
