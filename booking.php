@@ -131,7 +131,13 @@ else{
         <div class="card card-primary">
           <div class="card-header">
             <div class="row">
-              <div class="col-9">Booking</div>
+              <div class="col-6">Booking</div>
+              <div class="col-3">
+                <button type="button" class="btn btn-block bg-gradient-info btn-sm" id="updateStatus">
+                  <i class="fas fa-pen"></i>
+                  Update Status
+                </button>
+              </div>
               <div class="col-3">
                 <button type="button" class="btn btn-block bg-gradient-success btn-sm" id="newBooking">
                   <i class="fas fa-plus"></i>
@@ -145,7 +151,7 @@ else{
             <table id="weightTable" class="table table-bordered table-striped display">
               <thead>
                 <tr>
-                  <th>No</th>
+                  <th></th>
                   <th>Customer</th>
                   <th>Description</th>
                   <th>Estimated Ctn</th>
@@ -293,6 +299,43 @@ else{
   </div>
 </div>
 
+<div class="modal fade" id="updateModal">
+  <div class="modal-dialog modal-xl" style="max-width: 50%;">
+    <div class="modal-content">
+
+      <form role="form" id="updateForm">
+        <div class="modal-header bg-gray-dark color-palette">
+          <h4 class="modal-title">Update Status</h4>
+          <button type="button" class="close bg-gray-dark color-palette" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+
+        <div class="modal-body">
+          <input type="hidden" class="form-control" id="id" name="id">
+          <div class="row">
+            <div class="col-6">
+              <div class="form-group">
+                <label>Status *</label>
+                <select class="form-control" id="status" name="status">
+                  <option value="" selected disabled hidden>Please Select</option>
+                  <option value="Picked">Picked</option>
+                  <option value="Invoiced">Invoiced</option>
+                </select>
+              </div>
+            </div>
+          </div>  
+        </div>
+
+        <div class="modal-footer justify-content-between bg-gray-dark color-palette">
+          <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+          <button type="submit" class="btn btn-primary" id="saveButton">Save changes</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
 <script>
 $(function () {
   $("#zoneHidden").hide();
@@ -310,7 +353,15 @@ $(function () {
       'url':'php/loadBooking.php'
     },
     'columns': [
-      { data: 'no' },
+      {
+        // Add a checkbox with a unique ID for each row
+        data: 'id', // Assuming 'serialNo' is a unique identifier for each row
+        className: 'select-checkbox',
+        orderable: false,
+        render: function (data, type, row) {
+          return '<input type="checkbox" class="select-checkbox" id="checkbox_' + data + '" value="'+data+'"/>';
+        }
+      },
       { data: 'customer_name' },
       { data: 'description' },
       { data: 'estimated_ctn' },
@@ -378,6 +429,58 @@ $(function () {
           $('#spinnerLoading').hide();
         });
       }
+      else if($('#updateModal').hasClass('show')){
+        $('#spinnerLoading').show();
+        $.post('php/updateBooking.php', $('#updateForm').serialize(), function(data){
+          var obj = JSON.parse(data); 
+          if(obj.status === 'success'){
+            $('#updateModal').modal('hide');
+            toastr["success"](obj.message, "Success:");
+            $('#weightTable').DataTable().ajax.reload();
+          }
+          else if(obj.status === 'failed'){
+            toastr["error"](obj.message, "Failed:");
+          }
+          else{
+            toastr["error"]("Something wrong when edit", "Failed:");
+          }
+
+          $('#spinnerLoading').hide();
+        });
+      }
+    }
+  });
+
+  $("#updateStatus").on("click", function () {
+    var selectedIds = []; // An array to store the selected 'id' values
+
+    $("#weightTable tbody input[type='checkbox']").each(function () {
+      if (this.checked) {
+        selectedIds.push($(this).val());
+      }
+    });
+
+    if (selectedIds.length > 0) {
+      $("#updateModal").find('#id').val(selectedIds);
+      $("#updateModal").find('#status').val('');
+      $("#updateModal").modal("show");
+
+      $('#updateForm').validate({
+        errorElement: 'span',
+        errorPlacement: function (error, element) {
+          error.addClass('invalid-feedback');
+          element.closest('.form-group').append(error);
+        },
+        highlight: function (element, errorClass, validClass) {
+          $(element).addClass('is-invalid');
+        },
+        unhighlight: function (element, errorClass, validClass) {
+          $(element).removeClass('is-invalid');
+        }
+      });
+    } else {
+      // Optionally, you can display a message or take another action if no IDs are selected
+      alert("Please select at least one DO to update.");
     }
   });
 
@@ -507,7 +610,15 @@ $(function () {
         } 
       },
       'columns': [
-        { data: 'no' },
+        {
+          // Add a checkbox with a unique ID for each row
+          data: 'id', // Assuming 'serialNo' is a unique identifier for each row
+          className: 'select-checkbox',
+          orderable: false,
+          render: function (data, type, row) {
+            return '<input type="checkbox" class="select-checkbox" id="checkbox_' + data + '" value="'+data+'"/>';
+          }
+        },
         { data: 'customer_name' },
         { data: 'description' },
         { data: 'estimated_ctn' },

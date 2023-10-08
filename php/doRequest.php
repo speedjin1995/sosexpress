@@ -43,7 +43,40 @@ if(isset($_POST['bookingDate'], $_POST['deliveryDate'], $_POST['cancellationDate
 	
     if($hypermarket == '0' && isset($_POST['direct_store']) && $_POST['direct_store'] != null && $_POST['direct_store'] != ''){
         $direct_store = filter_input(INPUT_POST, 'direct_store', FILTER_SANITIZE_STRING);
+        $temp_direct_store = strtoupper($direct_store);
         $outlet = '0';
+
+        if ($update_stmt = $db->prepare("SELECT * FROM outlet WHERE UPPER(name)=?")) {
+            $update_stmt->bind_param('s', $temp_direct_store);
+            
+            // Execute the prepared query.
+            if ($update_stmt->execute()) {
+                $result = $update_stmt->get_result();
+                
+                if (($row = $result->fetch_assoc()) !== null) {
+                    $outlet = $row['id'];
+                }
+                else{
+                    if ($insert_stmt2 = $db->prepare("INSERT INTO outlet (name, hypermarket, states, zones) VALUES (?, ?, ?, ?)")) {
+                        $insert_stmt2->bind_param('ssss', $direct_store, $hypermarket, $states, $zone);
+                        
+                        // Execute the prepared query.
+                        if ($insert_stmt2->execute()) {
+                            $outlet = $insert_stmt2->insert_id;;
+                            $insert_stmt2->close();
+                        }
+                    }
+                }
+            }
+        }
+        else{
+            echo json_encode(
+                array(
+                    "status"=> "failed", 
+                    "message"=> "gg bro"
+                )
+            );
+        }
     }
     else{
         $outlet = filter_input(INPUT_POST, 'outlets', FILTER_SANITIZE_STRING);

@@ -18,25 +18,43 @@ if($searchValue != ''){
 }
 
 ## Total number of records without filtering
-$sel = mysqli_query($db,"select count(DISTINCT booking.id) as allcount from booking, customers, users WHERE (booking.checker = users.id OR booking.checker IS NULL) AND booking.customer = customers.id");
+$sel = mysqli_query($db,"select count(*) as allcount from booking, customers WHERE booking.customer = customers.id");
 $records = mysqli_fetch_assoc($sel);
 $totalRecords = $records['allcount'];
 
 ## Total number of record with filtering
-$sel = mysqli_query($db,"select count(DISTINCT booking.id) as allcount from booking, customers, users WHERE (booking.checker = users.id OR booking.checker IS NULL) AND booking.customer = customers.id".$searchQuery);
+$sel = mysqli_query($db,"select count(*) as allcount from booking, customers WHERE booking.customer = customers.id".$searchQuery);
 $records = mysqli_fetch_assoc($sel);
 $totalRecordwithFilter = $records['allcount'];
 
 ## Fetch records
-$empQuery = "SELECT DISTINCT booking.id, booking.pickup_method, customers.customer_name, booking.pickup_location, booking.description, 
+$empQuery = "SELECT booking.id, booking.pickup_method, customers.customer_name, booking.pickup_location, booking.description, 
 booking.estimated_ctn, booking.actual_ctn, booking.vehicle_no, booking.col_goods, booking.col_chq, booking.form_no, 
-booking.gate, users.name, booking.status FROM booking, customers, users WHERE (booking.checker = users.id OR booking.checker IS NULL) AND 
-booking.customer = customers.id".$searchQuery." order by ".$columnName." ".$columnSortOrder." limit ".$row.",".$rowperpage;
+booking.gate, booking.checker, booking.status FROM booking, customers WHERE booking.customer = customers.id".$searchQuery." 
+order by ".$columnName." ".$columnSortOrder." limit ".$row.",".$rowperpage;
 $empRecords = mysqli_query($db, $empQuery);
 $data = array();
 $counter = 1;
 
 while($row = mysqli_fetch_assoc($empRecords)) {
+  if($row['checker']!=null && $row['checker']!=''){
+    $id = $row['checker'];
+    $name = '';
+
+    if ($update_stmt = $db->prepare("SELECT * FROM users WHERE id=?")) {
+      $update_stmt->bind_param('s', $id);
+      
+      // Execute the prepared query.
+      if ($update_stmt->execute()) {
+        $result1 = $update_stmt->get_result();
+        
+        if ($row1 = $result1->fetch_assoc()) {
+          $name = $row1['name'];
+        }
+      }
+    }
+  }
+
   $data[] = array( 
     "no"=>$counter,
     "id"=>$row['id'],
@@ -51,7 +69,7 @@ while($row = mysqli_fetch_assoc($empRecords)) {
     "col_chq"=>$row['col_chq'],
     "form_no"=>$row['form_no'],
     "gate"=>$row['gate'],
-    "name"=>$row['name'],
+    "name"=>$name,
     "status"=>$row['status']
   );
 
