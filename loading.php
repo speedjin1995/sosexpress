@@ -50,7 +50,7 @@ else{
   <div class="container-fluid">
     <div class="row mb-2">
       <div class="col-sm-6">
-        <h1 class="m-0 text-dark">DO Request</h1>
+        <h1 class="m-0 text-dark">Loading</h1>
       </div><!-- /.col -->
     </div><!-- /.row -->
   </div><!-- /.container-fluid -->
@@ -149,7 +149,7 @@ else{
       <div class="col-lg-12">
         <div class="card card-primary">
           <div class="card-header">
-            <div class="row">
+            <!--div class="row">
               <div class="col-6">DO Request</div>
               <div class="col-3">
                 <button type="button" class="btn btn-block bg-gradient-info btn-sm" id="updateStatus">
@@ -163,7 +163,7 @@ else{
                   New DO REquest
                 </button>
               </div>
-            </div>
+            </div-->
           </div>
 
           <div class="card-body">
@@ -177,7 +177,7 @@ else{
                   <th>Outlet</th>
                   <th>Delevery Date</th>
                   <th>Number of Carton</th>
-                  <th></th>
+                  <!--th></th-->
                 </tr>
               </thead>
             </table>
@@ -283,8 +283,7 @@ else{
               <div class="form-group">
                 <label for="rate">Outlet *</label>
                 <select class="form-control" style="width: 100%;" id="outlets" name="outlets"></select>
-                <!--select class="js-data-example-ajax" id="direct_store" name="direct_store"></select-->
-                <input class="form-control" type="text" placeholder="Outlet" id="direct_store" name="direct_store">
+                <input class="form-control" type="text" placeholder="DO No." id="direct_store" name="direct_store">
               </div>
             </div>
             <div class="col-4">
@@ -399,7 +398,6 @@ $(function () {
   $("#zoneHidden").hide();
   $("#branchHidden").hide();
   $('#direct_store').hide();
-  //$('.select2-container').hide();
 
   var table = $("#weightTable").DataTable({
     "responsive": true,
@@ -410,7 +408,7 @@ $(function () {
     'order': [[ 1, 'asc' ]],
     'columnDefs': [ { orderable: false,  targets: [0] }],
     'ajax': {
-      'url':'php/loadDO.php'
+      'url':'php/loadLoading.php'
     },
     'columns': [
       {
@@ -427,15 +425,15 @@ $(function () {
       { data: 'hypermarket' },
       { data: 'outlet' },
       { data: 'delivery_date' },
-      { data: 'actual_carton' },
-      { 
+      { data: 'actual_carton' }
+      /*{ 
         className: 'dt-control',
         orderable: false,
         data: null,
         render: function ( data, type, row ) {
           return '<td class="table-elipse" data-toggle="collapse" data-target="#demo'+row.serialNo+'"><i class="fas fa-angle-down"></i></td>';
         }
-      }
+      }*/
     ],
     "initComplete": function () {
       // Calculate the total carton value
@@ -633,7 +631,7 @@ $(function () {
       'columnDefs': [ { orderable: false, targets: [0] }],
       'ajax': {
         'type': 'POST',
-        'url':'php/filterDORequest.php',
+        'url':'php/filterLoadingRequest.php',
         'data': {
           fromDate: fromDateValue,
           toDate: toDateValue,
@@ -659,7 +657,7 @@ $(function () {
         { data: 'hypermarket' },
         { data: 'outlet' },
         { data: 'delivery_date' },
-        { data: 'actual_carton' },
+        { data: 'actual_carton' }/*,
         { 
           className: 'dt-control',
           orderable: false,
@@ -667,7 +665,7 @@ $(function () {
           render: function ( data, type, row ) {
             return '<td class="table-elipse" data-toggle="collapse" data-target="#demo'+row.serialNo+'"><i class="fas fa-angle-down"></i></td>';
           }
-        }
+        }*/
       ],
       "rowCallback": function( row, data, index ) {
         //$('td', row).css('background-color', '#E6E6FA');
@@ -773,7 +771,6 @@ $(function () {
     $('#extendModal').find('#outlets').attr('required', true);
     $('#extendModal').find('#outlets').show();
     $('#extendModal').find("#direct_store").hide();
-    //$('#extendModal').find('.select2-container').hide();
     $('#extendModal').modal('show');
     
     $('#extendForm').validate({
@@ -810,7 +807,6 @@ $(function () {
       $('#extendModal').find('#outlets').attr('required', true);
       $('#extendModal').find('#outlets').show();
       $('#extendModal').find("#direct_store").hide();
-      //$('#extendModal').find('.select2-container').hide();
 
       $.post('php/listOutlets.php', {states: $('#states').val(), zones: $('#zones').val(), hypermarket: $('#hypermarket').val()}, function(data){
         var obj = JSON.parse(data);
@@ -835,7 +831,6 @@ $(function () {
       $('#extendModal').find("#direct_store").show();
       $('#extendModal').find("#direct_store").attr('required', true);
       $('#extendModal').find("#direct_store").val('');
-      //$('#extendModal').find('.select2-container').show();
     }
   });
 
@@ -846,7 +841,6 @@ $(function () {
       $('#extendModal').find('#outlets').attr('required', true);
       $('#extendModal').find('#outlets').show();
       $('#extendModal').find("#direct_store").hide();
-      //$('#extendModal').find('.select2-container').hide();
 
       $.post('php/listOutlets.php', {states: $('#states').val(), zones: $('#zones').val(), hypermarket: $('#hypermarket').val()}, function(data){
         var obj = JSON.parse(data);
@@ -871,7 +865,6 @@ $(function () {
       $('#extendModal').find("#direct_store").show();
       $('#extendModal').find("#direct_store").attr('required', true);
       $('#extendModal').find("#direct_store").val('');
-      //$('#extendModal').find('.select2-container').show();
     }
   });
 
@@ -882,7 +875,6 @@ $(function () {
       $('#extendModal').find('#outlets').attr('required', true);
       $('#extendModal').find('#outlets').show();
       $('#extendModal').find("#direct_store").hide();
-      //$('#extendModal').find('.select2-container').hide();
 
       $.post('php/listOutlets.php', {states: $('#states').val(), zones: $('#zones').val(), hypermarket: $('#hypermarket').val()}, function(data){
         var obj = JSON.parse(data);
@@ -906,29 +898,9 @@ $(function () {
       $('#extendModal').find('#outlets').hide();
       $('#extendModal').find("#direct_store").show();
       $('#extendModal').find("#direct_store").attr('required', true);
-      //$('#extendModal').find('.select2-container').show();
       $('#extendModal').find("#direct_store").val('');
     }
   });
-
-  /*$('.js-data-example-ajax').select2({
-    ajax: {
-      url: 'php/searchOutlets.php',
-      data: function (params) {
-        var query = {
-          search: params.term
-        }
-
-        return query;
-      },
-      processResults: function (data) {
-        // Transforms the top-level key of the response object from 'items' to 'results'
-        return {
-          results: data.results
-        };
-      }
-    }
-  });*/
 });
 
 function format (row) {
@@ -1028,7 +1000,6 @@ function edit(id) {
         $('#extendModal').find('#direct_store').val(obj.message.direct_store);
         $('#extendModal').find('#outlets').hide();
         $('#extendModal').find("#direct_store").show();
-        //$('#extendModal').find('.select2-container').show();
       }
       else{
         $('#extendModal').find('#zones').empty().val(obj.message.zone);
@@ -1036,7 +1007,6 @@ function edit(id) {
         $('#extendModal').find('#outlets').show();
         $('#extendModal').find('#direct_store').val('');
         $('#extendModal').find("#direct_store").hide();
-        //$('#extendModal').find('.select2-container').hide();
       }
       
       $('#extendModal').modal('show');

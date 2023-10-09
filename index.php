@@ -355,12 +355,12 @@ to get the desired effect
                   <p>DO Request</p>
                 </a>
               </li>
-              <!--li class="nav-item">
+              <li class="nav-item">
                 <a href="#loading" data-file="loading.php" class="nav-link link">
                   <i class="nav-icon fas fa-truck"></i>
                   <p>Loading</p>
                 </a>
-              </li-->
+              </li>
             </ul>
           </li>
           <li class="nav-item has-treeview">
