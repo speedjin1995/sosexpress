@@ -14,7 +14,7 @@ if(isset($_POST['oldPassword'], $_POST['newPassword'], $_POST['confirmPassword']
 	$newPassword = filter_input(INPUT_POST, 'newPassword', FILTER_SANITIZE_STRING);
 	$confirmPassword = filter_input(INPUT_POST, 'confirmPassword', FILTER_SANITIZE_STRING);
 	
-	$stmt = $db->prepare("SELECT * from users where id = ?");
+	$stmt = $db->prepare("SELECT * from customers where id = ?");
 	$stmt->bind_param('s', $id);
 	$stmt->execute();
 	$result = $stmt->get_result();

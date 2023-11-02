@@ -28,7 +28,7 @@ else{
         $pic = $row['pic'];
         $customer_address = $row['customer_address'];
         $customer_phone = $row['customer_phone'];
-        $email = $row['email'];
+        $email = $row['customer_email'];
     }
 }
 ?>
@@ -48,31 +48,31 @@ else{
 		<form role="form" id="profileForm" novalidate="novalidate">
 			<div class="card-body">
                 <input type="hidden" class="form-control" id="id" name="id" value="<?=$id ?>">
-                <div class="form-group col-6">
+                <div class="form-group">
                     <label for="name">Customer Name *</label>
                     <input type="text" class="form-control" name="name" id="name" placeholder="Enter Customer Name" value="<?=$customer_name ?>" required>
                 </div>
-                <div class="form-group col-6">
+                <div class="form-group">
                     <label for="name">Short Name </label>
                     <input type="text" class="form-control" name="shortname" id="shortname" value="<?=$short_name ?>" placeholder="Enter Customer Short Name">
                 </div>
-                <div class="form-group col-6">
+                <div class="form-group">
                     <label for="name">Registration No. *</label>
                     <input type="text" class="form-control" name="reg_no" id="reg_no" value="<?=$reg_no ?>" placeholder="Enter Customer Registration No." required>
                 </div>
-                <div class="form-group col-6">
+                <div class="form-group">
                     <label for="name">P.I.C.</label>
                     <input type="text" class="form-control" name="pic" id="pic" value="<?=$pic ?>" placeholder="Enter Person In Charge">
                 </div>
-                <div class="form-group col-12"> 
+                <div class="form-group"> 
                     <label for="address">Address *</label>
-                    <textarea class="form-control" id="address" name="address" value="<?=$customer_address ?>" placeholder="Enter your address" required></textarea>
+                    <textarea class="form-control" id="address" name="address" placeholder="Enter your address" required><?=$customer_address ?></textarea>
                 </div>
-                <div class="form-group col-6">
+                <div class="form-group">
                     <label for="phone">Phone *</label>
                     <input type="text" class="form-control" name="phone" id="phone" value="<?=$customer_phone ?>" placeholder="01x-xxxxxxx" required>
                 </div>
-                <div class="form-group col-6"> 
+                <div class="form-group"> 
                     <label for="email">Email *</label>
                     <input type="email" class="form-control" id="email" name="email" value="<?=$email ?>" placeholder="Enter your email" required>
                 </div>
