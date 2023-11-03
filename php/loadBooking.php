@@ -18,28 +18,29 @@ if($searchValue != ''){
 }
 
 ## Total number of records without filtering
-$sel = mysqli_query($db,"select count(*) as allcount from booking, customers WHERE booking.customer = customers.id");
+$sel = mysqli_query($db,"select count(*) as allcount from booking, customers WHERE booking.customer = customers.id AND booking.deleted = '0'");
 $records = mysqli_fetch_assoc($sel);
 $totalRecords = $records['allcount'];
 
 ## Total number of record with filtering
-$sel = mysqli_query($db,"select count(*) as allcount from booking, customers WHERE booking.customer = customers.id".$searchQuery);
+$sel = mysqli_query($db,"select count(*) as allcount from booking, customers WHERE booking.customer = customers.id AND booking.deleted = '0'".$searchQuery);
 $records = mysqli_fetch_assoc($sel);
 $totalRecordwithFilter = $records['allcount'];
 
 ## Fetch records
 $empQuery = "SELECT booking.id, booking.pickup_method, customers.customer_name, booking.pickup_location, booking.description, 
 booking.estimated_ctn, booking.actual_ctn, booking.vehicle_no, booking.col_goods, booking.col_chq, booking.form_no, 
-booking.gate, booking.checker, booking.status FROM booking, customers WHERE booking.customer = customers.id".$searchQuery." 
+booking.gate, booking.checker, booking.status FROM booking, customers WHERE booking.customer = customers.id AND booking.deleted = '0'".$searchQuery." 
 order by ".$columnName." ".$columnSortOrder." limit ".$row.",".$rowperpage;
 $empRecords = mysqli_query($db, $empQuery);
 $data = array();
 $counter = 1;
 
 while($row = mysqli_fetch_assoc($empRecords)) {
+  $name = '';
+  
   if($row['checker']!=null && $row['checker']!=''){
     $id = $row['checker'];
-    $name = '';
 
     if ($update_stmt = $db->prepare("SELECT * FROM users WHERE id=?")) {
       $update_stmt->bind_param('s', $id);

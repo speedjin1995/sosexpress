@@ -335,12 +335,12 @@ to get the desired effect
               <p>Dashboard</p>
             </a>
           </li-->
-          <li class="nav-item">
+          <!--li class="nav-item">
             <a href="#request" data-file="request.php" class="nav-link link">
               <i class="nav-icon fas fa-chart-bar"></i>
               <p>Requests</p>
             </a>
-          </li>
+          </li-->
           <li class="nav-item has-treeview menu-open">
             <a href="#" class="nav-link">
               <i class="nav-icon fas fa-users"></i>
@@ -382,6 +382,12 @@ to get the desired effect
             </a>
         
             <ul class="nav nav-treeview" style="display: none;">
+              <li class="nav-item">
+                <a href="#branch" data-file="branch.php" class="nav-link link">
+                  <i class="nav-icon fas fa-home"></i>
+                  <p>Branches</p>
+                </a>
+              </li>
               <li class="nav-item">
                 <a href="#company" data-file="company.php" class="nav-link link">
                   <i class="nav-icon fas fa-building"></i>
@@ -494,7 +500,7 @@ $(function () {
       });
   });
   
-  $("a[href='#request']").click();
+  $("a[href='#booking']").click();
 });
 </script>
 </body>
