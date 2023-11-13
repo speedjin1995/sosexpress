@@ -4,8 +4,9 @@ mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
 
 session_start();
 
-if(isset($_POST['pickup_method'], $_POST['customerNo'], $_POST['extimated_ctn'])){
+if(isset($_POST['bookingDate'], $_POST['pickup_method'], $_POST['customerNo'], $_POST['extimated_ctn'])){
 	$userId = $_SESSION['userID'];
+	$booking_date = filter_input(INPUT_POST, 'bookingDate', FILTER_SANITIZE_STRING);
 	$pickup_method = filter_input(INPUT_POST, 'pickup_method', FILTER_SANITIZE_STRING);
 	$customerNo = filter_input(INPUT_POST, 'customerNo', FILTER_SANITIZE_STRING);
 	$extimated_ctn = filter_input(INPUT_POST, 'extimated_ctn', FILTER_SANITIZE_STRING);
@@ -58,9 +59,9 @@ if(isset($_POST['pickup_method'], $_POST['customerNo'], $_POST['extimated_ctn'])
 	}
 
 	if(isset($_POST['id']) && $_POST['id'] != null && $_POST['id'] != ''){
-		if ($update_stmt = $db->prepare("UPDATE booking SET pickup_method=?, customer=?, pickup_location=?, description=?, estimated_ctn=?, actual_ctn=?, vehicle_no=?, col_goods=?
+		if ($update_stmt = $db->prepare("UPDATE booking SET booking_date=?, pickup_method=?, customer=?, pickup_location=?, description=?, estimated_ctn=?, actual_ctn=?, vehicle_no=?, col_goods=?
 		, col_chq=?, form_no=?, gate=?, checker=?, internal_notes=? WHERE id=?")){
-			$update_stmt->bind_param('ssssssssssssss', $pickup_method, $customerNo, $address, $description, $extimated_ctn, $actual_ctn, $vehicleNoTxt, $col_goods,
+			$update_stmt->bind_param('sssssssssssssss', $booking_date, $pickup_method, $customerNo, $address, $description, $extimated_ctn, $actual_ctn, $vehicleNoTxt, $col_goods,
 			$col_chk, $form_no, $gate, $checker, $internal_notes, $_POST['id']);
 		
 			// Execute the prepared query.
@@ -94,9 +95,11 @@ if(isset($_POST['pickup_method'], $_POST['customerNo'], $_POST['extimated_ctn'])
 		}
 	}
 	else{
-		if ($insert_stmt = $db->prepare("INSERT INTO booking (pickup_method, customer, branch, pickup_location, description, estimated_ctn, actual_ctn, vehicle_no, 
-		col_goods, col_chq, form_no, gate, checker, internal_notes) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")){
-			$insert_stmt->bind_param('ssssssssssssss', $pickup_method, $customerNo, $branch, $address, $description, $extimated_ctn, $actual_ctn,
+		$booking_date = DateTime::createFromFormat('d/m/Y H:i:s A', $booking_date)->format('Y-m-d H:i:s');
+
+		if ($insert_stmt = $db->prepare("INSERT INTO booking (booking_date, pickup_method, customer, branch, pickup_location, description, estimated_ctn, actual_ctn, vehicle_no, 
+		col_goods, col_chq, form_no, gate, checker, internal_notes) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")){
+			$insert_stmt->bind_param('sssssssssssssss', $booking_date, $pickup_method, $customerNo, $branch, $address, $description, $extimated_ctn, $actual_ctn,
 			$vehicleNoTxt, $col_goods, $col_chk, $form_no, $gate, $checker, $internal_notes);
 			
 			// Execute the prepared query.

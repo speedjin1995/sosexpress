@@ -185,6 +185,17 @@ else{
           <div class="row">
             <div class="col-4">
               <div class="form-group">
+                <label>Booking Date *</label>
+                  <div class='input-group date' id="bookingDate" data-target-input="nearest">
+                    <input type='text' class="form-control datetimepicker-input" data-target="#bookingDate" id="booking_date" name="bookingDate" required/>
+                    <div class="input-group-append" data-target="#bookingDate" data-toggle="datetimepicker">
+                      <div class="input-group-text"><i class="fa fa-calendar"></i></div>
+                    </div>
+                  </div>
+              </div>
+            </div>
+            <div class="col-4">
+              <div class="form-group">
                 <label class="labelStatus">Pickup Method *</label>
                 <select class="form-control" id="pickup_method" name="pickup_method" required>
                   <option value="" selected disabled hidden>Please Select</option>
@@ -205,14 +216,14 @@ else{
                 </select>
               </div>
             </div>
+          </div>
+          <div class="row">
             <div class="col-4">
               <div class="form-group">
                 <label class="labelStatus">Branch </label>
                 <select class="form-control" id="branch" name="branch"></select>
               </div>
             </div>
-          </div>
-          <div class="row">
             <div class="col-4">
               <div class="form-group">
                 <label>Pickup Address </label>
@@ -225,14 +236,14 @@ else{
                 <textarea class="form-control" id="description" name="description" placeholder="Enter your description"></textarea>
               </div>
             </div>
+          </div>
+          <div class="row">
             <div class="col-4">
               <div class="form-group">
                 <label>Internal Notes</label>
                 <textarea class="form-control" id="internal_notes" name="internal_notes" placeholder="Enter Internal Notes"></textarea>
               </div>
             </div>
-          </div>
-          <div class="row">
             <div class="form-group col-2">
               <label>Extimated Ctn *</label>
               <input class="form-control" type="number" placeholder="Extimated Carton" id="extimated_ctn" name="extimated_ctn" min="0" required/>                        
@@ -245,6 +256,8 @@ else{
               <label>Gate</label>
               <input class="form-control" type="text" placeholder="Gate" id="gate" name="gate" />                        
             </div>
+          </div>
+          <div class="row">
             <div class="form-group col-4">
               <label>Checker</label>
               <select class="form-control" id="checker" name="checker">
@@ -254,9 +267,6 @@ else{
                 <?php } ?>
               </select>
             </div>
-          </div>
-
-          <div class="row">
             <div class="col-4">
               <div class="form-group">
                 <label>Vehicle No</label>
@@ -269,6 +279,8 @@ else{
                 <input class="form-control" type="text" placeholder="Pickup Form Number" id="form_no" name="form_no">
               </div>
             </div>
+          </div>
+          <div class="row">
             <div class="col-2">
               <div class="form-group">
                 <label class="labelStatus">Col Goods</label>
@@ -408,6 +420,12 @@ $(function () {
       defaultDate: new Date
   });
 
+  $('#bookingDate').datetimepicker({
+    icons: { time: 'far fa-clock' },
+    format: 'DD/MM/YYYY HH:mm:ss A',
+    defaultDate: new Date
+  });
+
   $.validator.setDefaults({
     submitHandler: function () {
       if($('#extendModal').hasClass('show')){
@@ -485,7 +503,10 @@ $(function () {
   });
 
   $('#newBooking').on('click', function(){
+    var date = new Date();
+
     $('#extendModal').find('#id').val("");
+    $('#extendModal').find('#booking_date').val(date.toLocaleString('en-AU', { hour12: false }));
     $('#extendModal').find('#pickup_method').val("");
     $('#extendModal').find('#customerNo').val("");
     $('#extendModal').find('#branch').val("");
@@ -746,6 +767,7 @@ function edit(id) {
     
     if(obj.status === 'success'){
       $('#extendModal').find('#id').val(obj.message.id);
+      $('#extendModal').find('#booking_date').val(obj.message.booking_date.toLocaleString('en-AU', { hour12: false }));
       $('#extendModal').find('#pickup_method').val(obj.message.pickup_method);
       $('#extendModal').find('#customerNo').val(obj.message.customer);
       $('#extendModal').find('#branch').val(obj.message.branch);

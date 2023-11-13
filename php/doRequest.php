@@ -73,7 +73,7 @@ if(isset($_POST['bookingDate'], $_POST['deliveryDate'], $_POST['cancellationDate
             echo json_encode(
                 array(
                     "status"=> "failed", 
-                    "message"=> "gg bro"
+                    "message"=> "Failed to prepare statements"
                 )
             );
         }
@@ -125,9 +125,9 @@ if(isset($_POST['bookingDate'], $_POST['deliveryDate'], $_POST['cancellationDate
         }
     }
     else{
-        $booking_date = DateTime::createFromFormat('d/m/Y', str_replace(',', '', explode(" ", $booking_date)[0]))->format('Y-m-d 00:00:00');
-        $delivery_date = DateTime::createFromFormat('d/m/Y', str_replace(',', '', explode(" ", $delivery_date)[0]))->format('Y-m-d 00:00:00');
-	    $cancellation_date = DateTime::createFromFormat('d/m/Y', str_replace(',', '', explode(" ", $cancellation_date)[0]))->format('Y-m-d 00:00:00');
+        $booking_date = DateTime::createFromFormat('d/m/Y', str_replace(',', '', explode(" ", $booking_date)[0]))->format('Y-m-d H:i:s');
+        $delivery_date = DateTime::createFromFormat('d/m/Y', str_replace(',', '', explode(" ", $delivery_date)[0]))->format('Y-m-d H:i:s');
+	    $cancellation_date = DateTime::createFromFormat('d/m/Y', str_replace(',', '', explode(" ", $cancellation_date)[0]))->format('Y-m-d H:i:s');
 
         if ($insert_stmt = $db->prepare("INSERT INTO do_request (booking_date, delivery_date, cancellation_date, customer
         , hypermarket, states, zone, outlet, do_type, do_number, po_number, note, actual_carton, need_grn, loading_time, direct_store) 

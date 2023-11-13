@@ -73,7 +73,7 @@ if(isset($_POST['bookingDate'], $_POST['deliveryDate'], $_POST['cancellationDate
             echo json_encode(
                 array(
                     "status"=> "failed", 
-                    "message"=> "gg bro"
+                    "message"=> "Failed to prepare statements"
                 )
             );
         }

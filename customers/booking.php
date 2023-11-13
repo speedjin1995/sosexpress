@@ -134,6 +134,17 @@ else{
           <div class="row">
             <div class="col-4">
               <div class="form-group">
+                <label>Booking Date *</label>
+                  <div class='input-group date' id="bookingDate" data-target-input="nearest">
+                    <input type='text' class="form-control datetimepicker-input" data-target="#bookingDate" id="booking_date" name="bookingDate" required/>
+                    <div class="input-group-append" data-target="#bookingDate" data-toggle="datetimepicker">
+                      <div class="input-group-text"><i class="fa fa-calendar"></i></div>
+                    </div>
+                  </div>
+              </div>
+            </div>
+            <div class="col-4">
+              <div class="form-group">
                 <label class="labelStatus">Branch *</label>
                 <select class="form-control" id="branch" name="branch">
                   <option value="" selected disabled hidden>Please Select</option>
@@ -149,15 +160,15 @@ else{
                 <textarea class="form-control" id="address" name="address" placeholder="Enter your address"></textarea>
               </div>
             </div>
+          </div>
+          <div class="row">
             <div class="col-4">
               <div class="form-group">
                 <label>Description</label>
                 <textarea class="form-control" id="description" name="description" placeholder="Enter your description"></textarea>
               </div>
             </div>
-          </div>
-          <div class="row">
-            <div class="form-group col-2">
+            <div class="form-group col-4">
               <label>Extimated Ctn *</label>
               <input class="form-control" type="number" placeholder="Extimated Carton" id="extimated_ctn" name="extimated_ctn" min="0" required/>                        
             </div>
@@ -309,7 +320,11 @@ $(function () {
   });
 
   $('#newBooking').on('click', function(){
+    var date = new Date();
+
     $('#extendModal').find('#id').val("");
+    $('#extendModal').find('#booking_date').val(date.toLocaleString('en-AU', { hour12: false }));
+    $('#extendModal').find('#branch').val("");
     $('#extendModal').find('#address').val("");
     $('#extendModal').find('#description').val("");
     $('#extendModal').find('#extimated_ctn').val("");
@@ -509,6 +524,7 @@ function edit(id) {
     
     if(obj.status === 'success'){
       $('#extendModal').find('#id').val(obj.message.id);
+      $('#extendModal').find('#booking_date').val(obj.message.booking_date.toLocaleString('en-AU', { hour12: false }));
       $('#extendModal').find('#branch').val(obj.message.branch);
       $('#extendModal').find('#address').val(obj.message.pickup_location);
       $('#extendModal').find('#description').val(obj.message.description);
