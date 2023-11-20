@@ -223,6 +223,8 @@ else{
 var size = $("#TableId").find(".details").length
 
 $(function () {
+    $('#zoneHidden').hide();
+
     $('#bookingDate').datetimepicker({
         icons: { time: 'far fa-clock' },
         format: 'DD/MM/YYYY HH:mm:ss A',
