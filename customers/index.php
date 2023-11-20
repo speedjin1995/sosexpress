@@ -335,12 +335,12 @@ to get the desired effect
               <p>Dashboard</p>
             </a>
           </li-->
-          <!--li class="nav-item">
+          <li class="nav-item">
             <a href="#request" data-file="request.php" class="nav-link link">
               <i class="nav-icon fas fa-chart-bar"></i>
               <p>Requests</p>
             </a>
-          </li-->
+          </li>
           <li class="nav-item has-treeview menu-open">
             <a href="#" class="nav-link">
               <i class="nav-icon fas fa-users"></i>
@@ -500,7 +500,7 @@ $(function () {
       });
   });
   
-  $("a[href='#booking']").click();
+  $("a[href='#request']").click();
 });
 </script>
 </body>

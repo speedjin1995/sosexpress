@@ -243,6 +243,12 @@ $(function () {
       defaultDate: new Date
   });
 
+  $('#bookingDate').datetimepicker({
+    icons: { time: 'far fa-clock' },
+    format: 'DD/MM/YYYY HH:mm:ss A',
+    defaultDate: new Date
+  });
+
   $.validator.setDefaults({
     submitHandler: function () {
       if($('#extendModal').hasClass('show')){

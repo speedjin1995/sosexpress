@@ -52,7 +52,7 @@ if(isset($_POST['bookingDate'], $_POST['branch'], $_POST['address'], $_POST['ext
 	else{
 		$booking_date = DateTime::createFromFormat('d/m/Y H:i:s A', $booking_date)->format('Y-m-d H:i:s');
 
-		if ($insert_stmt = $db->prepare("INSERT INTO booking (booking_date, customer, branch, pickup_location, description, estimated_ctn) VALUES (?, ?, ?, ?, ?)")){
+		if ($insert_stmt = $db->prepare("INSERT INTO booking (booking_date, customer, branch, pickup_location, description, estimated_ctn) VALUES (?, ?, ?, ?, ?, ?)")){
 			$insert_stmt->bind_param('ssssss', $booking_date, $userId, $branch, $address, $description, $extimated_ctn);
 			
 			// Execute the prepared query.
