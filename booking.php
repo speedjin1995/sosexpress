@@ -211,26 +211,20 @@ else{
                 <select class="form-control" id="customerNo" name="customerNo" required>
                   <option value="" selected disabled hidden>Please Select</option>
                   <?php while($rowCustomer=mysqli_fetch_assoc($customers)){ ?>
-                    <option value="<?=$rowCustomer['id'] ?>"><?=$rowCustomer['customer_name'] ?></option>
+                    <option value="<?=$rowCustomer['id'] ?>" data-address="<?=$rowCustomer['customer_address'] ?>"><?=$rowCustomer['customer_name'] ?></option>
                   <?php } ?>
                 </select>
               </div>
             </div>
           </div>
           <div class="row">
-            <div class="col-4">
-              <div class="form-group">
-                <label class="labelStatus">Branch </label>
-                <select class="form-control" id="branch" name="branch"></select>
-              </div>
-            </div>
-            <div class="col-4">
+            <div class="col-6">
               <div class="form-group">
                 <label>Pickup Address </label>
                 <textarea class="form-control" id="address" name="address" placeholder="Enter your address"></textarea>
               </div>
             </div>
-            <div class="col-4">
+            <div class="col-6">
               <div class="form-group">
                 <label>Description</label>
                 <textarea class="form-control" id="description" name="description" placeholder="Enter your description"></textarea>
@@ -506,7 +500,7 @@ $(function () {
     var date = new Date();
 
     $('#extendModal').find('#id').val("");
-    $('#extendModal').find('#booking_date').val(date.toLocaleString('en-AU', { hour12: false }));
+    $('#extendModal').find('#booking_date').val(formatDate(date));
     $('#extendModal').find('#pickup_method').val("");
     $('#extendModal').find('#customerNo').val("");
     $('#extendModal').find('#branch').val("");
@@ -539,34 +533,13 @@ $(function () {
   });
   
   $('#customerNo').on('change', function(){
-    $('#branch').empty();
-    var dataIndexToMatch = $(this).val();
-    $('#branch').append('<option value="0" data-index="0">Others</option>');
+    var dataIndex = $(this).find(":selected").attr('data-address');
 
-    $('#zoneHidden option').each(function() {
-      var dataIndex = $(this).data('index');
-
-      if (dataIndex == dataIndexToMatch) {
-        $('#branch').append($(this).clone());
-      }
-    });
-  });
-
-  $('#branch').on('change', function(){
-    if($(this).val() != '0'){
-      var selectedBranchValue = $(this).val();
-      var hiddenDropdownOption = $('#branchHidden').find('option[value="' + selectedBranchValue + '"]');
-
-      if (hiddenDropdownOption.length > 0) {
-        var selectedBranchText = hiddenDropdownOption.text(); // Get the corresponding branch's text (address)
-        $('#address').val(selectedBranchText); // Set the selected branch's text (address) into the textarea
-      } 
-      else {
-        $('#address').val(''); // Clear the textarea or provide a default value
-      }
-    }
-    else{
-      $('#address').val('');
+    if (dataIndex) {
+      $('#address').val(dataIndex); // Set the selected branch's text (address) into the textarea
+    } 
+    else {
+      $('#address').val(''); // Clear the textarea or provide a default value
     }
   });
 
@@ -767,7 +740,7 @@ function edit(id) {
     
     if(obj.status === 'success'){
       $('#extendModal').find('#id').val(obj.message.id);
-      $('#extendModal').find('#booking_date').val(obj.message.booking_date.toLocaleString('en-AU', { hour12: false }));
+      $('#extendModal').find('#booking_date').val(formatDate(new Date(obj.message.booking_date)));
       $('#extendModal').find('#pickup_method').val(obj.message.pickup_method);
       $('#extendModal').find('#customerNo').val(obj.message.customer);
       $('#extendModal').find('#branch').val(obj.message.branch);

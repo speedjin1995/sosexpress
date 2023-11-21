@@ -26,7 +26,6 @@ if(isset($_POST['userID'])){
                 $message["booking_date"]=$row['booking_date'];
                 $message["pickup_method"]=$row['pickup_method'];
                 $message["customer"]=$row['customer'];
-                $message["branch"]=$row['branch'];
                 $message["pickup_location"]=$row['pickup_location'];
                 $message["description"]=$row['description'];
                 $message["internal_notes"]=$row['internal_notes'];

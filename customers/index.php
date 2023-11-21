@@ -382,12 +382,12 @@ to get the desired effect
             </a>
         
             <ul class="nav nav-treeview" style="display: none;">
-              <li class="nav-item">
+              <!--li class="nav-item">
                 <a href="#branch" data-file="branch.php" class="nav-link link">
                   <i class="nav-icon fas fa-home"></i>
                   <p>Branches</p>
                 </a>
-              </li>
+              </li-->
               <li class="nav-item">
                 <a href="#company" data-file="company.php" class="nav-link link">
                   <i class="nav-icon fas fa-building"></i>

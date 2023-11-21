@@ -33,19 +33,6 @@ $empRecords = mysqli_query($db, $empQuery);
 $data = array();
 
 while($row = mysqli_fetch_assoc($empRecords)) {
-  $empQuery2 = "select * from branch WHERE deleted = '0' AND customer_id = ".$row['id'];
-  $empRecords2 = mysqli_query($db, $empQuery2);
-  $data2 = array();
-
-  while($row2 = mysqli_fetch_assoc($empRecords2)) {
-    $data2[] = array( 
-      "id"=>$row2['id'],
-      "customer_id"=>$row2['customer_id'],
-      "name"=>$row2['name'],
-      "address"=>$row2['address']
-    );
-  }
-
   $data[] = array( 
     "id"=>$row['id'],
     "customer_code"=>$row['customer_code'],
@@ -58,9 +45,8 @@ while($row = mysqli_fetch_assoc($empRecords)) {
     "pic"=>$row['pic'],
     "payment_term"=>$row['payment_term'],
     "payment_details"=>$row['payment_details'],
-    "rate"=>$row['rate'],
+    "notes"=>$row['notes'],
     "pricing"=>json_decode($row['pricing'], true),
-    "branches"=>$data2
   );
 }
 

@@ -43,7 +43,7 @@ else{
                         <div class="row">
                             <div class="col-9"></div>
                             <div class="col-3">
-                                <button type="button" class="btn btn-block bg-gradient-warning btn-sm" id="addUnits">Add Currency</button>
+                                <button type="button" class="btn btn-block bg-gradient-warning btn-sm" id="addUnits">Add Outlet</button>
                             </div>
                         </div>
                     </div>
@@ -159,11 +159,8 @@ $(function () {
                 if(obj.status === 'success'){
                     $('#unitModal').modal('hide');
                     toastr["success"](obj.message, "Success:");
-                    
-                    $.get('outlet.php', function(data) {
-                        $('#mainContents').html(data);
-                        $('#spinnerLoading').hide();
-                    });
+                    $('#unitTable').DataTable().ajax.reload();
+                    $('#spinnerLoading').hide();
                 }
                 else if(obj.status === 'failed'){
                     toastr["error"](obj.message, "Failed:");
@@ -252,25 +249,25 @@ function edit(id){
 }
 
 function deactivate(id){
-    $('#spinnerLoading').show();
-    $.post('php/deleteOutlet.php', {userID: id}, function(data){
-        var obj = JSON.parse(data);
-        
-        if(obj.status === 'success'){
-            toastr["success"](obj.message, "Success:");
-            $.get('outlet.php', function(data) {
-                $('#mainContents').html(data);
+    if (confirm('Are you sure you want to delete this outlet?')) {
+        $('#spinnerLoading').show();
+        $.post('php/deleteOutlet.php', {userID: id}, function(data){
+            var obj = JSON.parse(data);
+            
+            if(obj.status === 'success'){
+                toastr["success"](obj.message, "Success:");
+                $('#unitTable').DataTable().ajax.reload();
                 $('#spinnerLoading').hide();
-            });
-        }
-        else if(obj.status === 'failed'){
-            toastr["error"](obj.message, "Failed:");
-            $('#spinnerLoading').hide();
-        }
-        else{
-            toastr["error"]("Something wrong when activate", "Failed:");
-            $('#spinnerLoading').hide();
-        }
-    });
+            }
+            else if(obj.status === 'failed'){
+                toastr["error"](obj.message, "Failed:");
+                $('#spinnerLoading').hide();
+            }
+            else{
+                toastr["error"]("Something wrong when activate", "Failed:");
+                $('#spinnerLoading').hide();
+            }
+        });
+    }
 }
 </script>

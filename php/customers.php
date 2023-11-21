@@ -12,7 +12,7 @@ else{
 }
 
 if(isset($_POST['username'], $_POST['code'], $_POST['name'], $_POST['reg_no'], $_POST['address'], $_POST['phone'], 
-$_POST['email'], $_POST['payment_term'], $_POST['rate'])){
+$_POST['email'], $_POST['payment_term'])){
     $username = filter_input(INPUT_POST, 'username', FILTER_SANITIZE_STRING);
     $code = filter_input(INPUT_POST, 'code', FILTER_SANITIZE_STRING);
     $name = filter_input(INPUT_POST, 'name', FILTER_SANITIZE_STRING);
@@ -21,19 +21,16 @@ $_POST['email'], $_POST['payment_term'], $_POST['rate'])){
     $phone = filter_input(INPUT_POST, 'phone', FILTER_SANITIZE_STRING);
     $email = filter_input(INPUT_POST, 'email', FILTER_SANITIZE_STRING);
     $payment_term = filter_input(INPUT_POST, 'payment_term', FILTER_SANITIZE_STRING);
-    $rate = filter_input(INPUT_POST, 'rate', FILTER_SANITIZE_STRING);
 
     $shortname = null;
     $pic = null;
     $term = null;
-
-    // Branch
-    $branch_name = $_POST['branch_name'];
-    $branch_Address = $_POST['branch_Address'];
+    $note = null;
 
     // Pricing
     $type = $_POST['type'];
     $size = $_POST['size'];
+    $description = $_POST['description'];
     $price = $_POST['price'];
 
     if(isset($_POST['shortname']) && $_POST['shortname'] != null && $_POST['shortname'] != ''){
@@ -48,10 +45,34 @@ $_POST['email'], $_POST['payment_term'], $_POST['rate'])){
         $term = filter_input(INPUT_POST, 'term', FILTER_SANITIZE_STRING);
     }
 
+    if(isset($_POST['note']) && $_POST['note'] != null && $_POST['note'] != ''){
+        $note = filter_input(INPUT_POST, 'note', FILTER_SANITIZE_STRING);
+    }
+
     if(filter_var($email, FILTER_VALIDATE_EMAIL)){
         if(isset($_POST['id']) && $_POST['id'] != null && $_POST['id'] != ''){
-            if ($update_stmt = $db->prepare("UPDATE customers SET customer_code=?, customer_name=?, customer_address=?, customer_phone=?, customer_email=? WHERE id=?")) {
-                $update_stmt->bind_param('ssssss', $code, $name, $address, $phone, $email, $_POST['id']);
+            $pricing = array();
+
+            if($type != null && count($type) > 0){
+                for($i=0; $i<count($type); $i++){
+                    $notes = null;
+
+                    if(isset($description[$i]) && $description[$i] != null){
+                        $notes = $description[$i];
+                    }
+
+                    $pricing[] = array( 
+                        'type' => $type[$i],
+                        'size' => $size[$i],
+                        'price' => $price[$i],
+                        'notes' => $notes
+                    );
+                }
+            }
+
+            if ($update_stmt = $db->prepare("UPDATE customers SET username=?, customer_code=?, customer_name=?, short_name=?, reg_no=?, pic=?, customer_address=?, customer_phone=?, customer_email=?, payment_term=?, payment_details=?, pricing=?, notes=? WHERE id=?")) {
+                $data = json_encode($pricing);
+                $update_stmt->bind_param('ssssssssssssss', $username, $code, $name, $shortname, $reg_no, $pic, $address, $phone, $email, $payment_term, $term, $data, $note, $_POST['id']);
                 
                 // Execute the prepared query.
                 if (! $update_stmt->execute()) {
@@ -83,17 +104,24 @@ $_POST['email'], $_POST['payment_term'], $_POST['rate'])){
 
             if($type != null && count($type) > 0){
                 for($i=0; $i<count($type); $i++){
+                    $notes = null;
+
+                    if(isset($description[$i]) && $description[$i] != null){
+                        $notes = $description[$i];
+                    }
+
                     $pricing[] = array( 
                         'type' => $type[$i],
                         'size' => $size[$i],
-                        'price' => $price[$i]
+                        'price' => $price[$i],
+                        'notes' => $notes
                     );
                 }
             }
 
-            if ($insert_stmt = $db->prepare("INSERT INTO customers (username, password, salt, customer_code, customer_name, short_name, reg_no, pic, customer_address, customer_phone, customer_email, payment_term, payment_details, rate, pricing) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")) {
+            if ($insert_stmt = $db->prepare("INSERT INTO customers (username, password, salt, customer_code, customer_name, short_name, reg_no, pic, customer_address, customer_phone, customer_email, payment_term, payment_details, pricing, notes) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")) {
                 $data = json_encode($pricing);
-                $insert_stmt->bind_param('sssssssssssssss', $username, $password, $random_salt, $code, $name, $shortname, $reg_no, $pic, $address, $phone, $email, $payment_term, $term, $rate, $data);
+                $insert_stmt->bind_param('sssssssssssssss', $username, $password, $random_salt, $code, $name, $shortname, $reg_no, $pic, $address, $phone, $email, $payment_term, $term, $data, $note);
                 
                 // Execute the prepared query.
                 if (! $insert_stmt->execute()) {
@@ -105,43 +133,12 @@ $_POST['email'], $_POST['payment_term'], $_POST['rate'])){
                     );
                 }
                 else{
-                    $id = $insert_stmt->insert_id;;
-                    $insert_stmt->close();
-                    $success = true;
-
-                    for($j=0; $j<sizeof($branch_name); $j++){
-                        if ($insert_stmt2 = $db->prepare("INSERT INTO branch (customer_id, name, address) VALUES (?, ?, ?)")) {
-                            $insert_stmt2->bind_param('sss', $id, $branch_name[$j], $branch_Address[$j]);
-                            
-                            // Execute the prepared query.
-                            if (! $insert_stmt2->execute()) {
-                                $success = false;
-                            }
-                        }
-                    }
-
-                    if($success){
-                        $insert_stmt2->close();
-                        $db->close();
-
-                        echo json_encode(
-                            array(
-                                "status"=> "success", 
-                                "message"=> "Added Successfully!!"
-                            )
-                        );
-                    }
-                    else{
-                        $insert_stmt2->close();
-                        $db->close();
-
-                        echo json_encode(
-                            array(
-                                "status"=> "failed", 
-                                "message"=> "Failed to created branch records due to ".$insert_stmt2->error 
-                            )
-                        );
-                    }
+                    echo json_encode(
+                        array(
+                            "status"=> "success", 
+                            "message"=> "Added Successfully!!"
+                        )
+                    );
                 }
             }
         }

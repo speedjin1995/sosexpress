@@ -430,12 +430,6 @@ to get the desired effect
                     </a>
                   </li>
                   <li class="nav-item">
-                    <a href="#outlet" data-file="outlet.php" class="nav-link link">
-                      <i class="nav-icon fas fa-store"></i>
-                      <p>Outlet</p>
-                    </a>
-                  </li>
-                  <li class="nav-item">
                     <a href="#states" data-file="states.php" class="nav-link link">
                       <i class="nav-icon fas fa-city"></i>
                       <p>States</p>
@@ -588,6 +582,18 @@ $(function () {
   
   $("a[href='#booking']").click();
 });
+
+function formatDate(date) {
+  const day = ('0' + date.getDate()).slice(-2);
+  const month = ('0' + (date.getMonth() + 1)).slice(-2);
+  const year = date.getFullYear();
+  const hours = ('0' + date.getHours()).slice(-2);
+  const minutes = ('0' + date.getMinutes()).slice(-2);
+  const seconds = ('0' + date.getSeconds()).slice(-2);
+  const ampm = date.getHours() >= 12 ? 'PM' : 'AM';
+
+  return `${day}/${month}/${year} ${hours}:${minutes}:${seconds} ${ampm}`;
+}
 </script>
 </body>
 </html>

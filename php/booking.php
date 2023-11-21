@@ -97,9 +97,9 @@ if(isset($_POST['bookingDate'], $_POST['pickup_method'], $_POST['customerNo'], $
 	else{
 		$booking_date = DateTime::createFromFormat('d/m/Y H:i:s A', $booking_date)->format('Y-m-d H:i:s');
 
-		if ($insert_stmt = $db->prepare("INSERT INTO booking (booking_date, pickup_method, customer, branch, pickup_location, description, estimated_ctn, actual_ctn, vehicle_no, 
-		col_goods, col_chq, form_no, gate, checker, internal_notes) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")){
-			$insert_stmt->bind_param('sssssssssssssss', $booking_date, $pickup_method, $customerNo, $branch, $address, $description, $extimated_ctn, $actual_ctn,
+		if ($insert_stmt = $db->prepare("INSERT INTO booking (booking_date, pickup_method, customer, pickup_location, description, estimated_ctn, actual_ctn, vehicle_no, 
+		col_goods, col_chq, form_no, gate, checker, internal_notes) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")){
+			$insert_stmt->bind_param('ssssssssssssss', $booking_date, $pickup_method, $customerNo, $address, $description, $extimated_ctn, $actual_ctn,
 			$vehicleNoTxt, $col_goods, $col_chk, $form_no, $gate, $checker, $internal_notes);
 			
 			// Execute the prepared query.
