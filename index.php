@@ -447,6 +447,12 @@ to get the desired effect
                       <p>Pricing Type</p>
                     </a>
                   </li>
+                  <li class="nav-item">
+                    <a href="#dotype" data-file="dotype.php" class="nav-link link">
+                      <i class="nav-icon fas fa-newspaper"></i>
+                      <p>DO Type</p>
+                    </a>
+                  </li>
                 </ul>
               </li>';
               }

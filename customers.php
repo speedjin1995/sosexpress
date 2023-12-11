@@ -352,8 +352,16 @@ function format (row) {
   '</p></div></div><div class="row"><div class="col-md-3"><p>Payment Terms: '+row.payment_term+
   '</p></div><div class="col-md-3"><p>Terms: '+row.payment_details+
   '</p></div><div class="col-md-3">'+row.notes+'</div><div class="col-md-3"><div class="row"><div class="col-3"><button type="button" class="btn btn-warning btn-sm" onclick="edit('+row.id+
-  ')"><i class="fas fa-pen"></i></button></div><div class="col-3"><button type="button" class="btn btn-danger btn-sm" onclick="deactivate('+row.id+
+  ')"><i class="fas fa-pen"></i></button></div>';
+
+  if(row.deleted == '0'){
+    returnString += '<div class="col-3"><button type="button" class="btn btn-danger btn-sm" onclick="deactivate('+row.id+
   ')"><i class="fas fa-trash"></i></button></div></div></div><br><hr>';
+  }
+  else{
+    returnString += '<div class="col-3"><button type="button" class="btn btn-success btn-sm" onclick="reactivate('+row.id+
+  ')"><i class="fas fa-redo"></i></button></div></div></div><br><hr>';
+  }
 
   if(row.pricing != null){
     returnString += '<h4>Pricing</h4><table style="width: 100%;"><thead><tr><th>Type</th><th>Size</th><th>Description</th><th>Price</th></tr></thead><tbody>'
@@ -435,9 +443,32 @@ function edit(id){
 }
 
 function deactivate(id){
-    if (confirm('Are you sure you want to delete this customer?')) {
+    if (confirm('Are you sure you want to deactivate this customer?')) {
         $('#spinnerLoading').show();
         $.post('php/deleteCustomer.php', {userID: id}, function(data){
+            var obj = JSON.parse(data);
+            
+            if(obj.status === 'success'){
+                toastr["success"](obj.message, "Success:");
+                $('#customerTable').DataTable().ajax.reload();
+                $('#spinnerLoading').hide();
+            }
+            else if(obj.status === 'failed'){
+                toastr["error"](obj.message, "Failed:");
+                $('#spinnerLoading').hide();
+            }
+            else{
+                toastr["error"]("Something wrong when activate", "Failed:");
+                $('#spinnerLoading').hide();
+            }
+        });
+    }
+}
+
+function reactivate(id){
+    if (confirm('Are you sure you want to reactivate this customer?')) {
+        $('#spinnerLoading').show();
+        $.post('php/reactivateCustomer.php', {userID: id}, function(data){
             var obj = JSON.parse(data);
             
             if(obj.status === 'success'){

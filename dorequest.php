@@ -28,6 +28,7 @@ else{
   $zones = $db->query("SELECT * FROM zones WHERE deleted = '0'");
   $zones2 = $db->query("SELECT * FROM zones WHERE deleted = '0'");
   $outlet = $db->query("SELECT * FROM outlet WHERE deleted = '0'");
+  $do_type = $db->query("SELECT * FROM do_type WHERE deleted = '0'");
 }
 ?>
 
@@ -292,9 +293,9 @@ else{
                 <label for="rate">DO Type *</label>
                 <select class="form-control" id="do_type" name="do_type" required>
                   <option value="" selected disabled hidden>Please Select</option>
-                  <option value="DO">DO</option>
-                  <option value="Consignment">Consignment</option>
-                  <option value="Non-trade">Non-trade</option>
+                  <?php while($rowdo_type=mysqli_fetch_assoc($do_type)){ ?>
+                    <option value="<?=$rowdo_type['type'] ?>"><?=$rowdo_type['type'] ?></option>
+                  <?php } ?>
                 </select>
               </div>
             </div>
@@ -469,33 +470,78 @@ $(function () {
 
   //Date picker
   $('#fromDatePicker').datetimepicker({
-      icons: { time: 'far fa-clock' },
-      format: 'DD/MM/YYYY HH:mm:ss A',
-      defaultDate: new Date
-  });
-
-  $('#toDatePicker').datetimepicker({
-      icons: { time: 'far fa-clock' },
-      format: 'DD/MM/YYYY HH:mm:ss A',
-      defaultDate: new Date
-  });
-
-  $('#bookingDate').datetimepicker({
     icons: { time: 'far fa-clock' },
     format: 'DD/MM/YYYY HH:mm:ss A',
     defaultDate: new Date
   });
+
+  $('#toDatePicker').datetimepicker({
+    icons: { time: 'far fa-clock' },
+    format: 'DD/MM/YYYY HH:mm:ss A',
+    defaultDate: new Date
+  });
+  
+  $('#bookingDate').datetimepicker({
+    icons: { time: 'far fa-clock' },
+    format: 'DD/MM/YYYY HH:mm:ss A',
+    defaultDate: new Date,
+    minDate: moment()
+});
 
   $('#deliveryDate').datetimepicker({
     icons: { time: 'far fa-clock' },
     format: 'DD/MM/YYYY HH:mm:ss A',
-    defaultDate: new Date
+    defaultDate: new Date,
+    minDate: moment()
   });
 
   $('#cancellationDate').datetimepicker({
     icons: { time: 'far fa-clock' },
     format: 'DD/MM/YYYY HH:mm:ss A',
-    defaultDate: new Date
+    defaultDate: new Date,
+    minDate: moment()
+  });
+
+  //$('#extendModal').find('#booking_date').val(formattedDate);
+
+  $('#bookingDate').on('dp.change', function (e) {
+    if($('#booking_date').val() && $('#customerNo').val()){
+      $.post('php/checkBooking.php', {bookingDate: $(booking_date).val(), customerNo: $('#customerNo').val()}, function(data){
+        var obj = JSON.parse(data);
+        
+        if(obj.status === 'success'){
+          $('#saveButton').prop('disabled', false);
+        }
+        else if(obj.status === 'failed'){
+          toastr["error"](obj.message, "Failed:");
+          $('#saveButton').prop('disabled', true);
+        }
+        else{
+          toastr["error"]("Something wrong when pull data", "Failed:");
+        }
+        $('#spinnerLoading').hide();
+      });
+    }
+  });
+
+  $('#customerNo').on('change', function(){
+    if($('#booking_date').val() && $('#customerNo').val()){
+      $.post('php/checkBooking.php', {bookingDate: $(booking_date).val(), customerNo: $('#customerNo').val()}, function(data){
+        var obj = JSON.parse(data);
+        
+        if(obj.status === 'success'){
+          $('#saveButton').prop('disabled', false);
+        }
+        else if(obj.status === 'failed'){
+          toastr["error"](obj.message, "Failed:");
+          $('#saveButton').prop('disabled', true);
+        }
+        else{
+          toastr["error"]("Something wrong when pull data", "Failed:");
+        }
+        $('#spinnerLoading').hide();
+      });
+    }
   });
 
   $('#stateFilter').on('change', function(){
@@ -908,6 +954,15 @@ $(function () {
       $('#extendModal').find("#direct_store").attr('required', true);
       //$('#extendModal').find('.select2-container').show();
       $('#extendModal').find("#direct_store").val('');
+    }
+  });
+
+  $('#do_type').on('change', function(){
+    if($(this).val() != 'DO'){
+      $('#po_no').val($(this).val());
+    }
+    else{
+      $('#po_no').val('');
     }
   });
 

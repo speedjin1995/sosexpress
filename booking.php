@@ -342,10 +342,50 @@ else{
   </div>
 </div>
 
+<div class="modal fade" id="updateModal">
+  <div class="modal-dialog modal-xl" style="max-width: 50%;">
+    <div class="modal-content">
+
+      <form role="form" id="updateForm">
+        <div class="modal-header bg-gray-dark color-palette">
+          <h4 class="modal-title">Update Status</h4>
+          <button type="button" class="close bg-gray-dark color-palette" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+
+        <div class="modal-body">
+          <input type="hidden" class="form-control" id="id" name="id">
+          <div class="row">
+            <div class="col-6">
+              <div class="form-group">
+                <label>Status *</label>
+                <select class="form-control" id="status" name="status">
+                  <option value="" selected disabled hidden>Please Select</option>
+                  <option value="Picked">Picked</option>
+                  <option value="Invoiced">Invoiced</option>
+                </select>
+              </div>
+            </div>
+          </div>  
+        </div>
+
+        <div class="modal-footer justify-content-between bg-gray-dark color-palette">
+          <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+          <button type="submit" class="btn btn-primary" id="saveButton">Save changes</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
 <script>
 $(function () {
   $("#zoneHidden").hide();
   $("#branchHidden").hide();
+  const today = new Date()
+  const tomorrow = new Date(today)
+  tomorrow.setDate(tomorrow.getDate() + 1)
 
   var table = $("#weightTable").DataTable({
     "responsive": true,
@@ -417,7 +457,8 @@ $(function () {
   $('#bookingDate').datetimepicker({
     icons: { time: 'far fa-clock' },
     format: 'DD/MM/YYYY HH:mm:ss A',
-    defaultDate: new Date
+    defaultDate: tomorrow,
+    minDate: tomorrow
   });
 
   $.validator.setDefaults({
@@ -803,21 +844,34 @@ function deactivate(id) {
 }
 
 function picked(id) {
-  $('#spinnerLoading').show();
-  $.post('php/pickedBooking.php', {userID: id}, function(data){
+  $.post('php/checkingFormNo.php', {userID: id}, function(data){
     var obj = JSON.parse(data);
 
     if(obj.status === 'success'){
-      toastr["success"](obj.message, "Success:");
-      $('#weightTable').DataTable().ajax.reload();
+      $('#spinnerLoading').show();
+      $.post('php/pickedBooking.php', {userID: id}, function(data){
+        var obj = JSON.parse(data);
+
+        if(obj.status === 'success'){
+          toastr["success"](obj.message, "Success:");
+          $('#weightTable').DataTable().ajax.reload();
+        }
+        else if(obj.status === 'failed'){
+          toastr["error"](obj.message, "Failed:");
+        }
+        else{
+          toastr["error"]("Something wrong when activate", "Failed:");
+        }
+        $('#spinnerLoading').hide();
+      });
     }
     else if(obj.status === 'failed'){
       toastr["error"](obj.message, "Failed:");
+      edit(id);
     }
     else{
       toastr["error"]("Something wrong when activate", "Failed:");
     }
-    $('#spinnerLoading').hide();
   });
 }
 
