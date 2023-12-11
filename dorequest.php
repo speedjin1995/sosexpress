@@ -401,6 +401,9 @@ $(function () {
   $("#branchHidden").hide();
   $('#direct_store').hide();
   //$('.select2-container').hide();
+  const today = new Date();
+  const tomorrow = new Date(today);
+  tomorrow.setDate(tomorrow.getDate() + 1);
 
   var table = $("#weightTable").DataTable({
     "responsive": true,
@@ -484,25 +487,23 @@ $(function () {
   $('#bookingDate').datetimepicker({
     icons: { time: 'far fa-clock' },
     format: 'DD/MM/YYYY HH:mm:ss A',
-    defaultDate: new Date,
-    minDate: moment()
-});
+    defaultDate: tomorrow,
+    minDate: tomorrow
+  });
 
   $('#deliveryDate').datetimepicker({
     icons: { time: 'far fa-clock' },
     format: 'DD/MM/YYYY HH:mm:ss A',
-    defaultDate: new Date,
-    minDate: moment()
+    defaultDate: tomorrow,
+    minDate: tomorrow
   });
 
   $('#cancellationDate').datetimepicker({
     icons: { time: 'far fa-clock' },
     format: 'DD/MM/YYYY HH:mm:ss A',
-    defaultDate: new Date,
-    minDate: moment()
+    defaultDate: tomorrow,
+    minDate: tomorrow
   });
-
-  //$('#extendModal').find('#booking_date').val(formattedDate);
 
   $('#bookingDate').on('dp.change', function (e) {
     if($('#booking_date').val() && $('#customerNo').val()){

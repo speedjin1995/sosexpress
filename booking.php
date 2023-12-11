@@ -383,9 +383,9 @@ else{
 $(function () {
   $("#zoneHidden").hide();
   $("#branchHidden").hide();
-  const today = new Date()
-  const tomorrow = new Date(today)
-  tomorrow.setDate(tomorrow.getDate() + 1)
+  const today = new Date();
+  const tomorrow = new Date(today);
+  tomorrow.setDate(tomorrow.getDate() + 1);
 
   var table = $("#weightTable").DataTable({
     "responsive": true,
