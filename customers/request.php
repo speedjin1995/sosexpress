@@ -18,6 +18,14 @@ else{
 }
 ?>
 
+<style>
+  .large-wording {
+    font-size: 24px; /* Adjust the font size as needed */
+    font-weight: bold; /* Make the text bold */
+    color: #333; /* Set the text color as needed */
+  }
+</style>
+
 <select class="form-control" style="width: 100%;" id="zoneHidden" style="display: none;">
   <option value="" selected disabled hidden>Please Select</option>
   <?php while($row3=mysqli_fetch_assoc($zones)){ ?>
@@ -38,65 +46,70 @@ else{
 <section class="content" style="min-height:700px;">
     <form role="form" id="profileForm" novalidate="novalidate">
 	    <div class="card">
-            <div class="card-header">
-                <h4 class="m-0 text-dark">Booking</h4>
-            </div>
-			<div class="card-body">
-                <div class="row">
-                    <div class="col-4">
-                        <div class="form-group">
-                            <label>Booking Date *</label>
-                            <div class='input-group date' id="bookingDate" data-target-input="nearest">
-                                <input type='text' class="form-control datetimepicker-input" data-target="#bookingDate" id="booking_date" name="bookingDate" required/>
-                                <div class="input-group-append" data-target="#bookingDate" data-toggle="datetimepicker">
-                                    <div class="input-group-text"><i class="fa fa-calendar"></i></div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-4">
-                        <div class="form-group">
-                            <label class="labelStatus">Branch *</label>
-                            <select class="form-control" id="branch" name="branch">
-                                <option value="" selected disabled hidden>Please Select</option>
-                                <?php while($rowCustomer2=mysqli_fetch_assoc($branch)){ ?>
-                                    <option value="<?=$rowCustomer2['id'] ?>" data-index="<?=$rowCustomer2['address'] ?>"><?=$rowCustomer2['name'] ?></option>
-                                <?php } ?>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="col-4">
-                        <div class="form-group">
-                            <label>Pickup Address *</label>
-                            <textarea class="form-control" id="address" name="address" placeholder="Enter your address"></textarea>
-                        </div>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-4">
-                        <div class="form-group">
-                            <label>Description</label>
-                            <textarea class="form-control" id="description" name="description" placeholder="Enter your description"></textarea>
-                        </div>
-                    </div>
-                    <div class="form-group col-4">
-                        <label>Extimated Ctn *</label>
-                        <input class="form-control" type="number" placeholder="Extimated Carton" id="extimated_ctn" name="extimated_ctn" min="0" required/>                        
-                    </div>
-                </div>
-			</div>
-	    </div>
-        <div class="card">
-            <div class="card-header">
-                <div class="row">
-                    <h4>DO Requests</h4>
-                    <button style="margin-left:auto;margin-right: 25px;" type="button" class="btn btn-primary add-row">Add DO</button>
-                </div>
-            </div>
-			<div class="card-body" id="TableId"></div>
-	    </div>
+        <div class="card-header">
+          <h4 class="m-0 text-dark">Booking</h4>
+        </div>
+        <div class="card-body">
+                  <div class="row">
+                      <div class="col-4">
+                          <div class="form-group">
+                              <label>Booking Date *</label>
+                              <div class='input-group date' id="bookingDate" data-target-input="nearest">
+                                  <input type='text' class="form-control datetimepicker-input" data-target="#bookingDate" id="booking_date" name="bookingDate" required/>
+                                  <div class="input-group-append" data-target="#bookingDate" data-toggle="datetimepicker">
+                                      <div class="input-group-text"><i class="fa fa-calendar"></i></div>
+                                  </div>
+                              </div>
+                          </div>
+                      </div>
+                      <div class="col-4">
+                          <div class="form-group">
+                              <label class="labelStatus">Branch *</label>
+                              <select class="form-control" id="branch" name="branch">
+                                  <option value="" selected disabled hidden>Please Select</option>
+                                  <?php while($rowCustomer2=mysqli_fetch_assoc($branch)){ ?>
+                                      <option value="<?=$rowCustomer2['id'] ?>" data-index="<?=$rowCustomer2['address'] ?>"><?=$rowCustomer2['name'] ?></option>
+                                  <?php } ?>
+                              </select>
+                          </div>
+                      </div>
+                      <div class="col-4">
+                          <div class="form-group">
+                              <label>Pickup Address *</label>
+                              <textarea class="form-control" id="address" name="address" placeholder="Enter your address"></textarea>
+                          </div>
+                      </div>
+                  </div>
+                  <div class="row">
+                      <div class="col-4">
+                          <div class="form-group">
+                              <label>Description</label>
+                              <textarea class="form-control" id="description" name="description" placeholder="Enter your description"></textarea>
+                          </div>
+                      </div>
+                      <div class="form-group col-4">
+                          <label>Extimated Ctn *</label>
+                          <input class="form-control" type="number" placeholder="Extimated Carton" id="extimated_ctn" name="extimated_ctn" min="0" required/>                        
+                      </div>
+                  </div>
+        </div>
+        </div>
+          <div class="card">
+              <div class="card-header">
+                  <div class="row">
+                      <h4>DO Requests</h4>
+                      <button style="margin-left:auto;margin-right: 25px;" type="button" class="btn btn-primary add-row">Add DO</button>
+                  </div>
+              </div>
+        <div class="card-body" id="TableId"></div>
+        </div>
         <button class="btn btn-success" id="saveProfile"><i class="fas fa-save"></i> Save</button>
     </form>
+    <div class="card" id="errorCard" style="width: 300px; margin: auto; margin-top: 50px; text-align: center; padding: 20px;">
+      <div class="large-wording">
+        You are not allow to make any booking after 3pm. Please contact our admin to make booking.
+      </div>
+    </div>
 </section>
 
 <script type="text/html" id="addContents">
@@ -224,6 +237,19 @@ var size = $("#TableId").find(".details").length
 
 $(function () {
     $('#zoneHidden').hide();
+
+    var currentTime = moment();
+    var threePm = moment().set({ hour: 15, minute: 0, second: 0, millisecond: 0 });
+
+    if (currentTime.isBefore(threePm)) {
+      // Show the form
+      $('#profileForm').show();
+      $('#errorCard').hide();
+    } else {
+      // Show the error card
+      $('#profileForm').hide();
+      $('#errorCard').show();
+    }
 
     $('#bookingDate').datetimepicker({
         icons: { time: 'far fa-clock' },

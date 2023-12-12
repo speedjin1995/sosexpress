@@ -33,6 +33,7 @@ if(isset($_POST['userID'])){
                 $message["outlet"] = $row['outlet'];
                 $message["do_type"] = $row['do_type'];
                 $message["do_number"] = $row['do_number'];
+                $message["do_details"] = json_decode($row['do_details'], true);
                 $message["po_number"] = $row['po_number'];
                 $message["note"] = $row['note'];
                 $message["actual_carton"] = $row['actual_carton'];

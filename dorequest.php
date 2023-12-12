@@ -176,7 +176,7 @@ else{
                   <th>Customer</th>
                   <th>Hypermarket</th>
                   <th>Outlet</th>
-                  <th>Delevery Date</th>
+                  <th>Delivery Date</th>
                   <th>Number of Carton</th>
                   <th></th>
                 </tr>
@@ -203,6 +203,8 @@ else{
 
         <div class="modal-body">
           <input type="hidden" class="form-control" id="id" name="id">
+          <input type="hidden" class="form-control" id="jsonDataField" name="jsonDataField">
+
           <div class="row">
             <div class="col-4">
               <div class="form-group">
@@ -304,7 +306,14 @@ else{
             <div class="col-4">
               <div class="form-group">
                 <label>DO No.</label>
-                <input class="form-control" type="text" placeholder="DO No." id="do_no" name="do_no">
+                <div class="input-group">
+                  <input class="form-control" type="text" placeholder="DO No." id="do_no" name="do_no">
+                  <div class="input-group-append">
+                      <button class="btn btn-outline-secondary" type="button" id="openModalBtn">
+                        <i class="fas fa-plus"></i>
+                      </button>
+                  </div>
+                </div>
               </div>
             </div>
             <div class="col-4">
@@ -315,16 +324,19 @@ else{
             </div>
             <div class="col-4">
               <div class="form-group">
-                <label class="labelStatus">Notes</label>
-                <textarea class="form-control" id="description" name="description" placeholder="Enter your description"></textarea>
+                <label>Actual Carton *</label>
+                <input class="form-control" type="number" placeholder="Actual Carton" id="actual_ctn" name="actual_ctn" required>
               </div>
             </div>
           </div>
           <div class="row">
             <div class="col-4">
               <div class="form-group">
-                <label>Actual Carton *</label>
-                <input class="form-control" type="number" placeholder="Actual Carton" id="actual_ctn" name="actual_ctn" required>
+                <label>On-Hold *</label>
+                <select class="form-control" id="on_hold" name="on_hold" required>
+                  <option value="Yes">Yes</option>
+                  <option value="No">No</option>
+                </select>
               </div>
             </div>
             <div class="col-4">
@@ -347,6 +359,14 @@ else{
               </div>
             </div>
           </div>  
+          <div class="row">
+            <div class="col-12">
+              <div class="form-group">
+                <label class="labelStatus">Notes</label>
+                <textarea class="form-control" id="description" name="description" placeholder="Enter your description"></textarea>
+              </div>
+            </div>
+          </div>
         </div>
 
         <div class="modal-footer justify-content-between bg-gray-dark color-palette">
@@ -395,7 +415,40 @@ else{
   </div>
 </div>
 
+<div class="modal fade" id="doModal" tabindex="-1" role="dialog" aria-labelledby="doModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="doModalLabel">Enter DO and PO Numbers</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+              <button type="button" class="btn btn-success" id="addRowBtn">Add Row</button>
+              <table class="table" id="doPoTable">
+                  <thead>
+                      <tr>
+                          <th scope="col">DO Number</th>
+                          <th scope="col">PO Number</th>
+                          <th scope="col">Action</th>
+                      </tr>
+                  </thead>
+                  <tbody>
+                      <!-- Rows will be dynamically added here -->
+                  </tbody>
+              </table>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-primary" id="saveRowsBtn">Save</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script>
+var rowCounter = 0;
+
 $(function () {
   $("#zoneHidden").hide();
   $("#branchHidden").hide();
@@ -814,12 +867,14 @@ $(function () {
     $('#extendModal').find('#po_no').val("");
     $('#extendModal').find('#description').val("");
     $('#extendModal').find('#actual_ctn').val("");
+    $('#extendModal').find('#on_hold').val("No");
     $('#extendModal').find('#need_grn').val("No");
     $('#extendModal').find('#loadingTime').val("M");
     $('#extendModal').find('#direct_store').val("");
     $('#extendModal').find('#outlets').attr('required', true);
     $('#extendModal').find('#outlets').show();
     $('#extendModal').find("#direct_store").hide();
+    $('#doPoTable tbody').empty();
     //$('#extendModal').find('.select2-container').hide();
     $('#extendModal').modal('show');
     
@@ -985,7 +1040,48 @@ $(function () {
       }
     }
   });*/
+
+  $('#openModalBtn').on('click', function () {
+    $('#doModal').modal('show');
+  });
+
+  $('#addRowBtn').on('click', function () {
+    addRow();
+  });
+
+  $('#doPoTable').on('click', '.removeRowBtn', function () {
+    $(this).closest('tr').remove();
+  });
+
+  $('#saveRowsBtn').on('click', function () {
+    var rowsData = [];
+
+    // Iterate through each row in the table
+    $('#doPoTable tbody tr').each(function () {
+      var doNumber = $(this).find('td:nth-child(1) input').val();
+      var poNumber = $(this).find('td:nth-child(2) input').val();
+
+      // Add row data to the array
+      rowsData.push({ doNumber: doNumber, poNumber: poNumber });
+    });
+
+    // Convert the array to JSON
+    var jsonData = JSON.stringify(rowsData);
+    $('#jsonDataField').val(jsonData);
+    $('#doModal').modal('hide');
+  });
 });
+
+function addRow() {
+  var newRow = '<tr>' +
+      '<td><input type="text" class="form-control" placeholder="Enter DO Number"></td>' +
+      '<td><input type="text" class="form-control" placeholder="Enter PO Number"></td>' +
+      '<td><button type="button" class="btn btn-danger removeRowBtn">Remove</button></td>' +
+      '</tr>';
+  
+  // Append the new row to the table
+  $('#doPoTable tbody').append(newRow);
+}
 
 function format (row) {
   var returnString = '<div class="row"><div class="col-md-3"><p>Booking Date: '+row.booking_date+
@@ -1093,6 +1189,20 @@ function edit(id) {
         $('#extendModal').find('#direct_store').val('');
         $('#extendModal').find("#direct_store").hide();
         //$('#extendModal').find('.select2-container').hide();
+      }
+
+      var doDetails = obj.message.do_details || []; // Assuming do_details is an array of objects
+      $('#jsonDataField').val(JSON.stringify(doDetails));
+      $('#doPoTable tbody').empty();
+
+      // Populate doPoTable with data from doDetails
+      for (var i = 0; i < doDetails.length; i++) {
+        var newRow = '<tr>' +
+          '<td><input type="text" class="form-control" value="' + doDetails[i].doNumber + '"></td>' +
+          '<td><input type="text" class="form-control" value="' + doDetails[i].poNumber + '"></td>' +
+          '<td><button type="button" class="btn btn-danger removeRowBtn">Remove</button></td>' +
+          '</tr>';
+        $('#doPoTable tbody').append(newRow);
       }
       
       $('#extendModal').modal('show');

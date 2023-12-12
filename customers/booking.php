@@ -186,6 +186,16 @@ else{
 
 <script>
 $(function () {
+  var currentTime = moment();
+  var threePm = moment().set({ hour: 15, minute: 0, second: 0, millisecond: 0 });
+
+  if (currentTime.isBefore(threePm)) {
+    $('#newBooking').show();
+  } 
+  else {
+    $('#newBooking').hide();
+  }
+
   var table = $("#weightTable").DataTable({
     "responsive": true,
     "autoWidth": false,

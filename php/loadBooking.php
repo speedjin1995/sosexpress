@@ -28,7 +28,7 @@ $records = mysqli_fetch_assoc($sel);
 $totalRecordwithFilter = $records['allcount'];
 
 ## Fetch records
-$empQuery = "SELECT booking.id, booking.booking_date, booking.pickup_method, customers.customer_name, booking.pickup_location, booking.description, 
+$empQuery = "SELECT booking.id, booking.booking_date, booking.pickup_method, customers.id AS custId, customers.customer_name, booking.pickup_location, booking.description, 
 booking.estimated_ctn, booking.actual_ctn, booking.vehicle_no, booking.col_goods, booking.col_chq, booking.form_no, 
 booking.gate, booking.checker, booking.status FROM booking, customers WHERE booking.customer = customers.id AND booking.deleted = '0'".$searchQuery." 
 order by ".$columnName." ".$columnSortOrder." limit ".$row.",".$rowperpage;
@@ -61,6 +61,7 @@ while($row = mysqli_fetch_assoc($empRecords)) {
     "id"=>$row['id'],
     "booking_date"=>$row['booking_date'],
     "pickup_method"=>$row['pickup_method'],
+    "customer_id"=>$row['custId'],
     "customer_name"=>$row['customer_name'],
     "pickup_location"=>$row['pickup_location'],
     "description"=>$row['description'],

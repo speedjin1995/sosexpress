@@ -39,14 +39,14 @@ if(isset($_POST['bookingDate'], $_POST['customerNo'])){
             if ($row = $result->fetch_assoc()) {
                 echo json_encode(
                     array(
-                        "status" => "success",
-                        "message" => "Found booking"
+                        "status" => "failed",
+                        "message" => "Found dulicated booking. Please edit the existing booking!!"
                     ));  
             }
             else{
                 echo json_encode(
                     array(
-                        "status" => "failed",
+                        "status" => "success",
                         "message" => "Customer Booking Not Found!! Please make a booking first."
                         )); 
             }

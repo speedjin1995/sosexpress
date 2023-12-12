@@ -6,8 +6,9 @@ session_start();
 
 if(isset($_POST['bookingDate'], $_POST['deliveryDate'], $_POST['cancellationDate'], $_POST['customerNo']
 , $_POST['hypermarket'], $_POST['states'], $_POST['zones'], $_POST['do_type']
-, $_POST['actual_ctn'], $_POST['need_grn'])){
+, $_POST['actual_ctn'], $_POST['need_grn'], $_POST['on_hold'])){
 	$booking_date = filter_input(INPUT_POST, 'bookingDate', FILTER_SANITIZE_STRING);
+    $booking_date2 = $booking_date;
 	$delivery_date = filter_input(INPUT_POST, 'deliveryDate', FILTER_SANITIZE_STRING);
 	$cancellation_date = filter_input(INPUT_POST, 'cancellationDate', FILTER_SANITIZE_STRING);
 	$customer = filter_input(INPUT_POST, 'customerNo', FILTER_SANITIZE_STRING);
@@ -18,12 +19,19 @@ if(isset($_POST['bookingDate'], $_POST['deliveryDate'], $_POST['cancellationDate
 	$do_type = filter_input(INPUT_POST, 'do_type', FILTER_SANITIZE_STRING);
 	$actual_carton = filter_input(INPUT_POST, 'actual_ctn', FILTER_SANITIZE_STRING);
     $need_grn = filter_input(INPUT_POST, 'need_grn', FILTER_SANITIZE_STRING);
+    $on_hold = filter_input(INPUT_POST, 'on_hold', FILTER_SANITIZE_STRING);
 
 	$do_number = null;
+    $do_details = null;
     $direct_store = null;
 	$po_number = null;
 	$note = null;
 	$loading_time = null;
+
+    if(isset($_POST['jsonDataField']) && $_POST['jsonDataField'] != null && $_POST['jsonDataField'] != ''){
+        $do_details = filter_input(INPUT_POST, 'jsonDataField', FILTER_SANITIZE_STRING);
+        $do_details = html_entity_decode($do_details);
+    }
 
     if(isset($_POST['do_number']) && $_POST['do_number'] != null && $_POST['do_number'] != ''){
         $do_number = filter_input(INPUT_POST, 'do_number', FILTER_SANITIZE_STRING);
@@ -84,10 +92,11 @@ if(isset($_POST['bookingDate'], $_POST['deliveryDate'], $_POST['cancellationDate
 
     if(isset($_POST['id']) && $_POST['id'] != null && $_POST['id'] != ''){
         if ($update_stmt = $db->prepare("UPDATE do_request SET booking_date=?, delivery_date=?, cancellation_date=?, customer=?, hypermarket=?, states=?, zone=?
-        , outlet=?, do_type=?, do_number=?, po_number=?, note=?, actual_carton=?, need_grn=?, loading_time=?, direct_store=? WHERE id=?")){
+        , outlet=?, do_type=?, do_number=?, po_number=?, note=?, actual_carton=?, need_grn=?, loading_time=?, direct_store=?, hold=?, do_details=? WHERE id=?")){
             $id = $_POST['id'];
-            $update_stmt->bind_param('sssssssssssssssss', $booking_date, $delivery_date, $cancellation_date, $customer, $hypermarket
-            , $states, $zone, $outlet, $do_type, $do_number, $po_number, $note, $actual_carton, $need_grn, $loading_time, $direct_store, $id);
+            $update_stmt->bind_param('sssssssssssssssssss', $booking_date, $delivery_date, $cancellation_date, $customer, $hypermarket
+            , $states, $zone, $outlet, $do_type, $do_number, $po_number, $note, $actual_carton, $need_grn, $loading_time, $direct_store
+            , $on_hold, $do_details, $id);
             
             // Execute the prepared query.
             if (! $update_stmt->execute()){
@@ -101,17 +110,38 @@ if(isset($_POST['bookingDate'], $_POST['deliveryDate'], $_POST['cancellationDate
 
             } 
             else{
-
                 $update_stmt->close();
-                $db->close();
-                
+
                 echo json_encode(
                     array(
                         "status"=> "success", 
-                        "message"=> "Added Successfully!!" 
+                        "message"=> "Added Successfully!!"
                     )
                 );
 
+                if ($update_stmt3 = $db->prepare("SELECT * FROM booking WHERE customer=? AND booking_date >= ?")) {
+                    $booking_date2 = DateTime::createFromFormat('d/m/Y', str_replace(',', '', explode(" ", $booking_date2)[0]));
+                    $booking_date2 = $booking_date2->format('Y-m-d 00:00:00');
+                    $update_stmt3->bind_param('ss', $customer, $booking_date2);
+                    
+                    // Execute the prepared query.
+                    if ($update_stmt3->execute()) {
+                        $result = $update_stmt3->get_result();
+                        
+                        if ($row = $result->fetch_assoc()) {
+                            $id = $row['id'];
+                            $update_stmt3->close();
+
+                            if ($update_stmt2 = $db->prepare("UPDATE booking SET actual_ctn=? WHERE id=?")){
+			                    $update_stmt2->bind_param('ss', $actual_carton, $id);
+                                $update_stmt2->execute();
+                                $update_stmt2->close();
+                            }
+                        }
+                    }
+                }
+
+                $db->close();
             }
         } 
         else{
@@ -130,10 +160,11 @@ if(isset($_POST['bookingDate'], $_POST['deliveryDate'], $_POST['cancellationDate
 	    $cancellation_date = DateTime::createFromFormat('d/m/Y', str_replace(',', '', explode(" ", $cancellation_date)[0]))->format('Y-m-d H:i:s');
 
         if ($insert_stmt = $db->prepare("INSERT INTO do_request (booking_date, delivery_date, cancellation_date, customer
-        , hypermarket, states, zone, outlet, do_type, do_number, po_number, note, actual_carton, need_grn, loading_time, direct_store) 
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")){
-            $insert_stmt->bind_param('ssssssssssssssss', $booking_date, $delivery_date, $cancellation_date, $customer, $hypermarket
-            , $states, $zone, $outlet, $do_type, $do_number, $po_number, $note, $actual_carton, $need_grn, $loading_time, $direct_store);
+        , hypermarket, states, zone, outlet, do_type, do_number, po_number, note, actual_carton, need_grn, loading_time, direct_store, hold, do_details) 
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")){
+            $insert_stmt->bind_param('ssssssssssssssssss', $booking_date, $delivery_date, $cancellation_date, $customer, $hypermarket
+            , $states, $zone, $outlet, $do_type, $do_number, $po_number, $note, $actual_carton, $need_grn, $loading_time, $direct_store
+            , $on_hold, $do_details);
             
             // Execute the prepared query.
             if (! $insert_stmt->execute()){
@@ -146,15 +177,37 @@ if(isset($_POST['bookingDate'], $_POST['deliveryDate'], $_POST['cancellationDate
             } 
             else{
                 $insert_stmt->close();
-                $db->close();
-                
+
                 echo json_encode(
                     array(
                         "status"=> "success", 
-                        "message"=> "Added Successfully!!" 
+                        "message"=> "Added Successfully!!"
                     )
                 );
+                
+                if ($update_stmt = $db->prepare("SELECT * FROM booking WHERE customer=? AND booking_date >= ?")) {
+                    $booking_date2 = DateTime::createFromFormat('d/m/Y', str_replace(',', '', explode(" ", $booking_date2)[0]));
+                    $booking_date2 = $booking_date2->format('Y-m-d 00:00:00');
+                    $update_stmt->bind_param('ss', $customer, $booking_date2);
+                    
+                    // Execute the prepared query.
+                    if ($update_stmt->execute()) {
+                        $result = $update_stmt->get_result();
+                        
+                        if ($row = $result->fetch_assoc()) {
+                            $id = $row['id'];
+                            $update_stmt->close();
 
+                            if ($update_stmt2 = $db->prepare("UPDATE booking SET actual_ctn=? WHERE id=?")){
+			                    $update_stmt2->bind_param('ss', $actual_carton, $id);
+                                $update_stmt2->execute();
+                                $update_stmt2->close();
+                            }
+                        }
+                    }
+                }
+                
+                $db->close();
             }
         }
     }

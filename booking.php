@@ -132,13 +132,19 @@ else{
           <div class="card-header">
             <div class="row">
               <div class="col-6">Booking</div>
-              <div class="col-3">
+              <div class="col-2">
+                <button type="button" class="btn btn-block bg-gradient-warning btn-sm" id="print">
+                  <i class="fas fa-print"></i>
+                  Print
+                </button>
+              </div>
+              <div class="col-2">
                 <button type="button" class="btn btn-block bg-gradient-info btn-sm" id="updateStatus">
                   <i class="fas fa-pen"></i>
                   Update Status
                 </button>
               </div>
-              <div class="col-3">
+              <div class="col-2">
                 <button type="button" class="btn btn-block bg-gradient-success btn-sm" id="newBooking">
                   <i class="fas fa-plus"></i>
                   New Booking
@@ -379,6 +385,61 @@ else{
   </div>
 </div>
 
+<div class="modal fade" id="printModal">
+  <div class="modal-dialog modal-xl" style="max-width: 50%;">
+    <div class="modal-content">
+
+      <form role="form" id="printForm">
+        <div class="modal-header bg-gray-dark color-palette">
+          <h4 class="modal-title">Assigned Driver</h4>
+          <button type="button" class="close bg-gray-dark color-palette" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+
+        <div class="modal-body">
+          <input type="hidden" class="form-control" id="id" name="id">
+          <div class="row">
+            <div class="col-6">
+              <div class="form-group">
+                <label>Driver Name *</label>
+                <input class="form-control" type="text" placeholder="Driver Name" id="driver" name="driver" />
+              </div>
+              <div class="form-group">
+                <label>Lorry No *</label>
+                <input class="form-control" type="text" placeholder="Lorry Number" id="lorry" name="lorry" />
+              </div>
+            </div>
+          </div>  
+        </div>
+
+        <div class="modal-footer justify-content-between bg-gray-dark color-palette">
+          <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+          <button type="submit" class="btn btn-primary" id="saveButton">Save changes</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalLabel">DO Listing</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body" id="modalContent"></div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+                <!-- Add additional buttons if needed -->
+            </div>
+        </div>
+    </div>
+</div>
+
 <script>
 $(function () {
   $("#zoneHidden").hide();
@@ -411,7 +472,12 @@ $(function () {
       { data: 'customer_name' },
       { data: 'description' },
       { data: 'estimated_ctn' },
-      { data: 'actual_ctn' },
+      {
+        data: 'actual_ctn',
+        render: function (data, type, row) {
+          return '<a href="#" class="actualCtnLink" data-id="' + row.id + '" data-booking-date="' + row.booking_date + '" data-customer-id="' + row.customer_id + '">' + data + '</a>';
+        }
+      },
       { data: 'pickup_method' },
       { 
         className: 'dt-control',
@@ -439,6 +505,50 @@ $(function () {
     else {
       row.child( format(row.data()) ).show();tr.addClass("shown");
     }
+  });
+
+  $('#weightTable tbody').on('click', 'a.actualCtnLink', function (e) {
+    var rowId = $(this).data('id');
+    var bookingDate = $(this).data('booking-date');
+    var customerId = $(this).data('customer-id');
+
+    $.ajax({
+      url: 'php/getActualCtnData.php',
+      type: 'POST',
+      data: { id: rowId, bookingDate: bookingDate, customerId: customerId },
+      success: function (data) {
+        var response = JSON.parse(data);
+        
+        if (response.status == 'success') {
+          var tableContent = '<table class="table">';
+          tableContent += '<thead><tr><th>Hypermarket</th><th>Outlet</th><th>Delivery Date</th><th>Number of Carton</th></tr></thead><tbody>';
+          
+          // Loop through each item in the 'message' array
+          for (var i = 0; i < response.message.length; i++) {
+            var data = response.message[i];
+
+            tableContent += '<tr>';
+            tableContent += '<td>' + data.hypermarket + '</td>';
+            tableContent += '<td>' + data.outlet + '</td>';
+            tableContent += '<td>' + data.delivery_date + '</td>';
+            tableContent += '<td>' + data.actual_carton + '</td>';
+            tableContent += '</tr>';
+          }
+
+          tableContent += '</tbody></table>';
+
+          // You can replace the following line with your logic to display the data
+          $('#modalContent').html(tableContent);
+          $('#myModal').modal('show');
+        } 
+        else {
+          console.error('Failed to retrieve valid data.');
+        }
+      },
+      error: function (xhr, status, error) {
+        console.error('Error retrieving actual_ctn data:', error);
+      }
+    });
   });
 
   //Date picker
@@ -499,6 +609,29 @@ $(function () {
           }
 
           $('#spinnerLoading').hide();
+        });
+      }
+      else if($('#printModal').hasClass('show')){
+        $.post('php/print_picking.php', $('#printForm').serialize(), function(data){
+          var obj = JSON.parse(data);
+      
+          if(obj.status === 'success'){
+            $('#printModal').modal('hide');
+            $('#weightTable').DataTable().ajax.reload();
+            var printWindow = window.open('', '', 'height=400,width=800');
+            printWindow.document.write(obj.message);
+            printWindow.document.close();
+            setTimeout(function(){
+              printWindow.print();
+              printWindow.close();
+            }, 1000);
+          }
+          else if(obj.status === 'failed'){
+            toastr["error"](obj.message, "Failed:");
+          }
+          else{
+            toastr["error"]("Something wrong when pull data", "Failed:");
+          }
         });
       }
     }
@@ -582,6 +715,24 @@ $(function () {
     else {
       $('#address').val(''); // Clear the textarea or provide a default value
     }
+
+    if($('#booking_date').val() && $('#customerNo').val()){
+      $.post('php/existBooking.php', {bookingDate: $(booking_date).val(), customerNo: $('#customerNo').val()}, function(data){
+        var obj = JSON.parse(data);
+        
+        if(obj.status === 'success'){
+          $('#saveButton').prop('disabled', false);
+        }
+        else if(obj.status === 'failed'){
+          toastr["error"](obj.message, "Failed:");
+          $('#saveButton').prop('disabled', true);
+        }
+        else{
+          toastr["error"]("Something wrong when pull data", "Failed:");
+        }
+        $('#spinnerLoading').hide();
+      });
+    }
   });
 
   $('#filterSearch').on('click', function(){
@@ -657,7 +808,12 @@ $(function () {
         { data: 'customer_name' },
         { data: 'description' },
         { data: 'estimated_ctn' },
-        { data: 'actual_ctn' },
+        {
+          data: 'actual_ctn',
+          render: function (data, type, row) {
+            return '<a href="#" class="actualCtnLink" data-id="' + row.id + '" data-booking-date="' + row.booking_date + '" data-customer-id="' + row.customer_id + '">' + data + '</a>';
+          }
+        },
         { data: 'pickup_method' },
         { 
           className: 'dt-control',
@@ -708,6 +864,40 @@ $(function () {
       //   $(api.column(9).footer()).html('RM'+pageTotal7 +' ( RM'+ total7 +' total)');
       // }
     });
+  });
+
+  $('#print').on('click', function () {
+    var selectedIds = []; // An array to store the selected 'id' values
+
+    $("#weightTable tbody input[type='checkbox']").each(function () {
+      if (this.checked) {
+        selectedIds.push($(this).val());
+      }
+    });
+
+    if (selectedIds.length > 0) {
+      $("#printModal").find('#id').val(selectedIds);
+      $("#printModal").find('#driver').val('');
+      $("#printModal").find('#lorry').val('');
+      $("#printModal").modal("show");
+
+      $('#printForm').validate({
+        errorElement: 'span',
+        errorPlacement: function (error, element) {
+          error.addClass('invalid-feedback');
+          element.closest('.form-group').append(error);
+        },
+        highlight: function (element, errorClass, validClass) {
+          $(element).addClass('is-invalid');
+        },
+        unhighlight: function (element, errorClass, validClass) {
+          $(element).removeClass('is-invalid');
+        }
+      });
+    } else {
+      // Optionally, you can display a message or take another action if no IDs are selected
+      alert("Please select at least one Booking to Pickup.");
+    }
   });
 });
 
