@@ -94,13 +94,13 @@ else{
                   </div>
         </div>
         </div>
-          <div class="card">
-              <div class="card-header">
-                  <div class="row">
-                      <h4>DO Requests</h4>
-                      <button style="margin-left:auto;margin-right: 25px;" type="button" class="btn btn-primary add-row">Add DO</button>
-                  </div>
-              </div>
+        <div class="card">
+            <div class="card-header">
+                <div class="row">
+                    <h4>DO Requests</h4>
+                    <button style="margin-left:auto;margin-right: 25px;" type="button" class="btn btn-primary add-row">Add DO</button>
+                </div>
+            </div>
         <div class="card-body" id="TableId"></div>
         </div>
         <button class="btn btn-success" id="saveProfile"><i class="fas fa-save"></i> Save</button>

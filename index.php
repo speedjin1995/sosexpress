@@ -363,6 +363,12 @@ to get the desired effect
               </li>
             </ul>
           </li>
+          <li class="nav-item">
+            <a href="#return" data-file="return.php" class="nav-link link">
+              <i class="nav-icon fas fa-undo"></i>
+              <p>Good Return</p>
+            </a>
+          </li>
           <li class="nav-item has-treeview">
             <a href="#" class="nav-link">
               <i class="nav-icon fas fa-book"></i>
@@ -451,6 +457,12 @@ to get the desired effect
                     <a href="#dotype" data-file="dotype.php" class="nav-link link">
                       <i class="nav-icon fas fa-newspaper"></i>
                       <p>DO Type</p>
+                    </a>
+                  </li>
+                  <li class="nav-item">
+                    <a href="#reason" data-file="reason.php" class="nav-link link">
+                      <i class="nav-icon fas fa-comments"></i>
+                      <p>Reason</p>
                     </a>
                   </li>
                 </ul>
