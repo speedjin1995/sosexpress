@@ -28,6 +28,7 @@ else{
   $zones = $db->query("SELECT * FROM zones WHERE deleted = '0'");
   $zones2 = $db->query("SELECT * FROM zones WHERE deleted = '0'");
   $outlet = $db->query("SELECT * FROM outlet WHERE deleted = '0'");
+  $reasons = $db->query("SELECT * FROM reasons WHERE deleted = '0'");
 }
 ?>
 
@@ -177,7 +178,7 @@ else{
                   <th>Outlet</th>
                   <th>Delevery Date</th>
                   <th>Number of Carton</th>
-                  <!--th></th-->
+                  <th></th>
                 </tr>
               </thead>
             </table>
@@ -207,7 +208,7 @@ else{
               <div class="form-group">
                 <label>Booking Date *</label>
                   <div class='input-group date' id="bookingDate" data-target-input="nearest">
-                    <input type='text' class="form-control datetimepicker-input" data-target="#bookingDate" id="booking_date" name="bookingDate" required/>
+                    <input type='text' class="form-control datetimepicker-input" data-target="#bookingDate" id="booking_date" name="bookingDate" readonly/>
                     <div class="input-group-append" data-target="#bookingDate" data-toggle="datetimepicker">
                       <div class="input-group-text"><i class="fa fa-calendar"></i></div>
                     </div>
@@ -218,7 +219,7 @@ else{
               <div class="form-group">
                 <label>Delivery Date *</label>
                   <div class='input-group date' id="deliveryDate" data-target-input="nearest">
-                    <input type='text' class="form-control datetimepicker-input" data-target="#deliveryDate" id="delivery_date" name="deliveryDate" required/>
+                    <input type='text' class="form-control datetimepicker-input" data-target="#deliveryDate" id="delivery_date" name="deliveryDate" readonly/>
                     <div class="input-group-append" data-target="#deliveryDate" data-toggle="datetimepicker">
                       <div class="input-group-text"><i class="fa fa-calendar"></i></div>
                     </div>
@@ -229,7 +230,7 @@ else{
               <div class="form-group">
                 <label>Cancellation Date *</label>
                   <div class='input-group date' id="cancellationDate" data-target-input="nearest">
-                    <input type='text' class="form-control datetimepicker-input" data-target="#cancellationDate" id="cancellation_date" name="cancellationDate" required/>
+                    <input type='text' class="form-control datetimepicker-input" data-target="#cancellationDate" id="cancellation_date" name="cancellationDate" readonly/>
                     <div class="input-group-append" data-target="#cancellationDate" data-toggle="datetimepicker">
                       <div class="input-group-text"><i class="fa fa-calendar"></i></div>
                     </div>
@@ -241,7 +242,7 @@ else{
             <div class="col-4">
               <div class="form-group">
                 <label class="labelStatus">Customer *</label>
-                <select class="form-control" id="customerNo" name="customerNo" required>
+                <select class="form-control" id="customerNo" name="customerNo" readonly>
                   <option value="" selected disabled hidden>Please Select</option>
                   <?php while($rowCustomer=mysqli_fetch_assoc($customers)){ ?>
                     <option value="<?=$rowCustomer['id'] ?>"><?=$rowCustomer['customer_name'] ?></option>
@@ -252,7 +253,7 @@ else{
             <div class="col-4">
               <div class="form-group">
                 <label class="labelStatus">Hypermarket *</label>
-                <select class="form-control" id="hypermarket" name="hypermarket" required>
+                <select class="form-control" id="hypermarket" name="hypermarket" readonly>
                   <option value="" selected disabled hidden>Please Select</option>
                   <?php while($rowhypermarket=mysqli_fetch_assoc($hypermarket)){ ?>
                     <option value="<?=$rowhypermarket['id'] ?>"><?=$rowhypermarket['name'] ?></option>
@@ -263,7 +264,7 @@ else{
             <div class="col-4">
               <div class="form-group">
                 <label class="labelStatus">States *</label>
-                <select class="form-control" id="states" name="states" required>
+                <select class="form-control" id="states" name="states" readonly>
                   <option value="" selected disabled hidden>Please Select</option>
                   <?php while($rowCustomer=mysqli_fetch_assoc($states)){ ?>
                     <option value="<?=$rowCustomer['id'] ?>"><?=$rowCustomer['states'] ?></option>
@@ -276,20 +277,20 @@ else{
             <div class="col-4">
               <div class="form-group">
                 <label for="rate">Zones *</label>
-                <select class="form-control" style="width: 100%;" id="zones" name="zones" required></select>
+                <select class="form-control" style="width: 100%;" id="zones" name="zones" readonly></select>
               </div>
             </div>
             <div class="col-4">
               <div class="form-group">
                 <label for="rate">Outlet *</label>
-                <select class="form-control" style="width: 100%;" id="outlets" name="outlets"></select>
-                <input class="form-control" type="text" placeholder="DO No." id="direct_store" name="direct_store">
+                <select class="form-control" style="width: 100%;" id="outlets" name="outlets" readonly></select>
+                <input class="form-control" type="text" placeholder="DO No." id="direct_store" name="direct_store" >
               </div>
             </div>
             <div class="col-4">
               <div class="form-group">
                 <label for="rate">DO Type *</label>
-                <select class="form-control" id="do_type" name="do_type" required>
+                <select class="form-control" id="do_type" name="do_type" readonly>
                   <option value="" selected disabled hidden>Please Select</option>
                   <option value="DO">DO</option>
                   <option value="Consignment">Consignment</option>
@@ -302,33 +303,27 @@ else{
             <div class="col-4">
               <div class="form-group">
                 <label>DO No.</label>
-                <input class="form-control" type="text" placeholder="DO No." id="do_no" name="do_no">
+                <input class="form-control" type="text" placeholder="DO No." id="do_no" name="do_no" readonly>
               </div>
             </div>
             <div class="col-4">
               <div class="form-group">
                 <label>PO No.</label>
-                <input class="form-control" type="text" placeholder="PO Number" id="po_no" name="po_no">
+                <input class="form-control" type="text" placeholder="PO Number" id="po_no" name="po_no" readonly>
               </div>
             </div>
             <div class="col-4">
               <div class="form-group">
-                <label class="labelStatus">Notes</label>
-                <textarea class="form-control" id="description" name="description" placeholder="Enter your description"></textarea>
+                <label>Actual Carton *</label>
+                <input class="form-control" type="number" placeholder="Actual Carton" id="actual_ctn" name="actual_ctn" readonly>
               </div>
             </div>
           </div>
           <div class="row">
             <div class="col-4">
               <div class="form-group">
-                <label>Actual Carton *</label>
-                <input class="form-control" type="number" placeholder="Actual Carton" id="actual_ctn" name="actual_ctn" required>
-              </div>
-            </div>
-            <div class="col-4">
-              <div class="form-group">
                 <label>Need GRN *</label>
-                <select class="form-control" id="need_grn" name="need_grn" required>
+                <select class="form-control" id="need_grn" name="need_grn" readonly>
                   <option value="Yes">Yes</option>
                   <option value="No">No</option>
                 </select>
@@ -337,7 +332,7 @@ else{
             <div class="col-4">
               <div class="form-group">
                 <label>Loading </label>
-                <select class="form-control" id="loadingTime" name="loadingTime">
+                <select class="form-control" id="loadingTime" name="loadingTime" readonly>
                   <option value="" selected disabled hidden>Please Select</option>
                   <option value="M">Morning</option>
                   <option value="N">Night</option>
@@ -345,6 +340,89 @@ else{
               </div>
             </div>
           </div>  
+          <div class="row">
+            <div class="col-4">
+              <div class="form-group">
+                <label>Sent on Date *</label>
+                  <div class='input-group date' id="sentOnDate" data-target-input="nearest">
+                    <input type='text' class="form-control datetimepicker-input" data-target="#sentOnDate" id="sent_on_date" name="sentOnDate"/>
+                    <div class="input-group-append" data-target="#sentOnDate" data-toggle="datetimepicker">
+                      <div class="input-group-text"><i class="fa fa-calendar"></i></div>
+                    </div>
+                  </div>
+              </div>
+            </div>
+            <div class="col-4">
+              <div class="form-group">
+                <label>Back On Date *</label>
+                  <div class='input-group date' id="backOnDate" data-target-input="nearest">
+                    <input type='text' class="form-control datetimepicker-input" data-target="#backOnDate" id="back_on_date" name="backOnDate"/>
+                    <div class="input-group-append" data-target="#backOnDate" data-toggle="datetimepicker">
+                      <div class="input-group-text"><i class="fa fa-calendar"></i></div>
+                    </div>
+                  </div>
+              </div>
+            </div>
+            <div class="col-4">
+              <div class="form-group">
+                <label>GRN Received *</label>
+                <input class="form-control" type="text" placeholder="GRN No." id="grn_received" name="grn_received">
+              </div>
+            </div>
+          </div>
+
+          <div class="row">
+            <h4>Particular</h4>
+            <button style="margin-left:auto;margin-right: 25px;" type="button" class="btn btn-primary add-price">Add Items</button>
+          </div>
+          <table style="width: 100%;">
+            <thead>
+              <tr>
+                <th>Particular</th>
+                <th>Quantity</th>
+                <th>Quantity <br>Delivered</th>
+                <th>Price/Size</th>
+                <th>Unit Price</th>
+                <th>Amount</th>
+                <th>Delete</th>
+              </tr>
+            </thead>
+            <tbody id="pricingTable"></tbody>
+            <tfoot id="pricingFoot">
+              <tr>
+                <th colspan="5" style="text-align:right;">Total Amount</th>
+                <th><input type="number" class="form-control" id="totalAmount" name="totalAmount" value="0.00" readonly></th>
+                <th></th>
+              </tr>
+            </tfoot>
+          </table>
+
+          <div class="row">
+            <h4>Reject Item</h4>
+            <button style="margin-left:auto;margin-right: 25px;" type="button" class="btn btn-primary add-reject">Add Items</button>
+          </div>
+          <table style="width: 100%;">
+            <thead>
+              <tr>
+                <th>Carton</th>
+                <th>Reason</th>
+                <th>Warehouse</th>
+                <th>Amount</th>
+                <th>Driver</th>
+                <th>Delete</th>
+              </tr>
+            </thead>
+            <tbody id="pricingTable2"></tbody>
+            <tfoot id="pricingFoot2">
+              <tr>
+                <th><input type="number" class="form-control" id="totalCarton" name="totalCarton" value="0.00" readonly></th>
+                <th colspan="2" style="text-align:right;">Total Amount</th>
+                <th><input type="number" class="form-control" id="totalAmount2" name="totalAmount2" value="0.00" readonly></th>
+                <th></th>
+                <th></th>
+              </tr>
+            </tfoot>
+          </table>
         </div>
 
         <div class="modal-footer justify-content-between bg-gray-dark color-palette">
@@ -393,6 +471,56 @@ else{
   </div>
 </div>
 
+<script type="text/html" id="pricingDetails">
+  <tr class="details">
+    <td>
+      <input type="text" class="form-control" id="particular" placeholder="Enter Particular" required>
+    </td>
+    <td>
+      <input type="number" class="form-control" id="quantity_in"  placeholder="Enter ..." required>
+    </td>
+    <td>
+      <input type="number" class="form-control" id="quantity_delivered"  placeholder="Enter ..." required>
+    </td>
+    <td>
+      <input type="text" class="form-control" id="size"  placeholder="Enter ..." required>
+    </td>
+    <td>
+      <input class="form-control" type="number" placeholder="Unit Price" id="unit_price" required>
+    </td>
+    <td>
+      <input type="number" class="form-control" id="price" placeholder="Enter ..." required>
+    </td>
+    <td><button class="btn btn-danger btn-sm" id="remove"><i class="fa fa-times"></i></button></td>
+  </tr>
+</script>
+
+<script type="text/html" id="pricingDetails2">
+  <tr class="details">
+    <td>
+      <input type="number" class="form-control" id="carton"  placeholder="Enter ..." required>
+    </td>
+    <td>
+      <select class="form-control" style="width: 100%;" id="reason" required>
+        <?php while($row3=mysqli_fetch_assoc($reasons)){ ?>
+          <option value="<?=$row3['type'] ?>"><?=$row3['type'] ?></option>
+        <?php } ?>
+      </select>
+      <input class="form-control" type="text" placeholder="Other Reasons" id="other_reason">
+    </td>
+    <td>
+      <input type="text" class="form-control" id="warehouse"  placeholder="Enter ..." required>
+    </td>
+    <td>
+      <input type="number" class="form-control" id="price" placeholder="Enter ..." required>
+    </td>
+    <td>
+      <input type="text" class="form-control" id="driver"  placeholder="Enter ..." required>
+    </td>
+    <td><button class="btn btn-danger btn-sm" id="remove"><i class="fa fa-times"></i></button></td>
+  </tr>
+</script>
+
 <script>
 $(function () {
   $("#zoneHidden").hide();
@@ -425,15 +553,15 @@ $(function () {
       { data: 'hypermarket' },
       { data: 'outlet' },
       { data: 'delivery_date' },
-      { data: 'actual_carton' }
-      /*{ 
+      { data: 'actual_carton' },
+      { 
         className: 'dt-control',
         orderable: false,
         data: null,
         render: function ( data, type, row ) {
           return '<td class="table-elipse" data-toggle="collapse" data-target="#demo'+row.serialNo+'"><i class="fas fa-angle-down"></i></td>';
         }
-      }*/
+      }
     ],
     "initComplete": function () {
       // Calculate the total carton value
@@ -468,32 +596,39 @@ $(function () {
   //Date picker
   $('#fromDatePicker').datetimepicker({
       icons: { time: 'far fa-clock' },
-      format: 'DD/MM/YYYY HH:mm:ss A',
       defaultDate: new Date
   });
 
   $('#toDatePicker').datetimepicker({
       icons: { time: 'far fa-clock' },
-      format: 'DD/MM/YYYY HH:mm:ss A',
       defaultDate: new Date
   });
 
   $('#bookingDate').datetimepicker({
     icons: { time: 'far fa-clock' },
-    format: 'DD/MM/YYYY HH:mm:ss A',
     defaultDate: new Date
   });
 
   $('#deliveryDate').datetimepicker({
     icons: { time: 'far fa-clock' },
-    format: 'DD/MM/YYYY HH:mm:ss A',
     defaultDate: new Date
   });
 
   $('#cancellationDate').datetimepicker({
     icons: { time: 'far fa-clock' },
-    format: 'DD/MM/YYYY HH:mm:ss A',
     defaultDate: new Date
+  });
+
+  $('#sentOnDate').datetimepicker({
+    icons: { time: 'far fa-clock' },
+    format: 'YYYY-MM-DD',
+    defaultDate: new Date
+  });
+
+  $('#backOnDate').datetimepicker({
+    icons: { time: 'far fa-clock' },
+    format: 'YYYY-MM-DD',
+    defaultDate: new Date,
   });
 
   $('#stateFilter').on('change', function(){
@@ -657,7 +792,7 @@ $(function () {
         { data: 'hypermarket' },
         { data: 'outlet' },
         { data: 'delivery_date' },
-        { data: 'actual_carton' }/*,
+        { data: 'actual_carton' },
         { 
           className: 'dt-control',
           orderable: false,
@@ -665,7 +800,7 @@ $(function () {
           render: function ( data, type, row ) {
             return '<td class="table-elipse" data-toggle="collapse" data-target="#demo'+row.serialNo+'"><i class="fas fa-angle-down"></i></td>';
           }
-        }*/
+        }
       ],
       "rowCallback": function( row, data, index ) {
         //$('td', row).css('background-color', '#E6E6FA');
@@ -901,6 +1036,83 @@ $(function () {
       $('#extendModal').find("#direct_store").val('');
     }
   });
+
+  $(".add-price").click(function(){
+    var $addContents = $("#pricingDetails").clone();
+    $("#pricingTable").append($addContents.html());
+
+    $("#pricingTable").find('.details:last').attr("id", "detail" + pricingCount);
+    $("#pricingTable").find('.details:last').attr("data-index", pricingCount);
+    $("#pricingTable").find('#remove:last').attr("id", "remove" + pricingCount);
+
+    $("#pricingTable").find('#particular:last').attr('name', 'particular['+pricingCount+']').attr("id", "particular" + pricingCount);
+    $("#pricingTable").find('#quantity_in:last').attr('name', 'quantity_in['+pricingCount+']').attr("id", "quantity_in" + pricingCount);
+    $("#pricingTable").find('#quantity_delivered:last').attr('name', 'quantity_delivered['+pricingCount+']').attr("id", "quantity_delivered" + pricingCount);
+    $("#pricingTable").find('#size:last').attr('name', 'size['+pricingCount+']').attr("id", "size" + pricingCount);
+    $("#pricingTable").find('#unit_price:last').attr('name', 'unit_price['+pricingCount+']').attr("id", "unit_price" + pricingCount);
+    $("#pricingTable").find('#price').attr('name', 'price['+pricingCount+']').attr("id", "price" + pricingCount);
+
+    $("#other_reason" + pricingCount).hide();
+    pricingCount++;
+  });
+
+  $("#pricingTable").on('click', 'button[id^="remove"]', function () {
+    var index = $(this).parents('.details').attr('data-index');
+    $("#pricingTable").append('<input type="hidden" name="deletedShip[]" value="'+index+'"/>');
+    pricingCount--;
+    $(this).parents('.details').remove();
+
+    var totalAmount = 0;
+
+    $('#pricingTable tr.details').each(function () {
+      // Get the values of itemPrice and itemWeight for the current row
+      var itemPrice = parseFloat($(this).find('input[name="price"]').val()) || 0;
+      totalAmount += itemPrice;
+      $('#totalAmount').val(parseFloat(totalAmount).toFixed(2));
+    });
+  });
+
+  $(".add-reject").click(function(){
+    var $addContents = $("#pricingDetails2").clone();
+    $("#pricingTable2").append($addContents.html());
+
+    $("#pricingTable2").find('.details:last').attr("id", "detail" + pricingCount);
+    $("#pricingTable2").find('.details:last').attr("data-index", pricingCount);
+    $("#pricingTable2").find('#remove:last').attr("id", "remove" + pricingCount);
+
+    $("#pricingTable2").find('#carton:last').attr('name', 'carton['+pricingCount+']').attr("id", "carton" + pricingCount);
+    $("#pricingTable2").find('#reason:last').attr('name', 'reason['+pricingCount+']').attr("id", "reason" + pricingCount).val("1");
+    $("#pricingTable2").find('#other_reason').attr('name', 'other_reason['+pricingCount+']').attr("id", "other_reason" + pricingCount);
+    $("#pricingTable2").find('#warehouse:last').attr('name', 'warehouse['+pricingCount+']').attr("id", "warehouse" + pricingCount);
+    $("#pricingTable2").find('#price:last').attr('name', 'price['+pricingCount+']').attr("id", "price" + pricingCount);
+    $("#pricingTable2").find('#driver:last').attr('name', 'driver['+pricingCount+']').attr("id", "driver" + pricingCount);
+
+    $("#other_reason" + pricingCount).hide();
+    pricingCount++;
+  });
+
+  $("#pricingTable2").on('click', 'button[id^="remove"]', function () {
+    var index = $(this).parents('.details').attr('data-index');
+    $("#pricingTable2").append('<input type="hidden" name="deletedreject[]" value="'+index+'"/>');
+    pricingCount--;
+    $(this).parents('.details').remove();
+
+    var totalAmount = 0;
+
+    $('#pricingTable tr.details').each(function () {
+      // Get the values of itemPrice and itemWeight for the current row
+      var itemPrice = parseFloat($(this).find('input[name="price"]').val()) || 0;
+      totalAmount += itemPrice;
+      $('#totalAmount').val(parseFloat(totalAmount).toFixed(2));
+    });
+
+    $('#pricingTable tr.details').each(function () {
+      // Get the values of itemPrice and itemWeight for the current row
+      var itemPrice = parseFloat($(this).find('input[id^="carton"]').val()) || 0;
+      totalAmount += itemPrice;
+      $('#totalCarton').val(totalAmount);
+    });
+  });
 });
 
 function format (row) {
@@ -928,7 +1140,8 @@ function format (row) {
   ')"><i class="fas fa-pallet"></i></button></div></div></div></div>';
   }
   else if(row.status == 'Loaded'){
-    returnString +='<div class="row"><div class="col-3"><button type="button" class="btn btn-info btn-sm" onclick="delivered('+row.id+
+    returnString +='<div class="row"><div class="col-3"><button type="button" class="btn btn-warning btn-sm" onclick="edit('+row.id+
+  ')"><i class="fas fa-pen"></i></button></div><div class="col-3"><button type="button" class="btn btn-info btn-sm" onclick="delivered('+row.id+
   ')"><i class="fas fa-truck"></i></button></div></div></div></div>';
   }
   else if(row.status == 'Delivered'){

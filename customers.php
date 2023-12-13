@@ -134,6 +134,7 @@ else{
                     <tr>
                         <th>Type</th>
                         <th>Size</th>
+                        <th>Description</th>
                         <th>Price</th>
                         <th>Delete</th>
                     </tr>

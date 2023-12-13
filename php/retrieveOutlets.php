@@ -7,7 +7,7 @@ if(isset($_POST['hypermarket'])){
 	$hypermarket = filter_input(INPUT_POST, 'hypermarket', FILTER_SANITIZE_STRING);
 
     if ($update_stmt = $db->prepare("SELECT * FROM outlet WHERE hypermarket=?")) {
-        $update_stmt->bind_param('sss', $hypermarket, $states, $zones);
+        $update_stmt->bind_param('s', $hypermarket);
         
         // Execute the prepared query.
         if (! $update_stmt->execute()) {

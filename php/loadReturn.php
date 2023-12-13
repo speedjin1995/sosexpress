@@ -28,9 +28,9 @@ $records = mysqli_fetch_assoc($sel);
 $totalRecordwithFilter = $records['allcount'];
 
 ## Fetch records
-$empQuery = "SELECT goods_return.id, goods_return.return_date, goods_return.driver, customers.id AS custId, 
-customers.customer_name, goods_return.return_details, goods_return.collection_date FROM goods_return, customers 
-WHERE goods_return.customer = customers.id AND goods_return.deleted = '0'".$searchQuery." 
+$empQuery = "SELECT goods_return.id, goods_return.GR_No, goods_return.return_date, goods_return.driver, customers.id AS custId, 
+customers.customer_name, goods_return.return_details, goods_return.collection_date, goods_return.collection_type, 
+goods_return.total_carton, goods_return.return_type FROM goods_return, customers WHERE goods_return.customer = customers.id AND goods_return.deleted = '0'".$searchQuery." 
 order by ".$columnName." ".$columnSortOrder." limit ".$row.",".$rowperpage;
 $empRecords = mysqli_query($db, $empQuery);
 $data = array();
@@ -40,12 +40,16 @@ while($row = mysqli_fetch_assoc($empRecords)) {
   $data[] = array( 
     "no"=>$counter,
     "id"=>$row['id'],
+    "GR_No"=>$row['GR_No'],
     "return_date"=>$row['return_date'],
     "driver"=>$row['driver'],
     "customer_id"=>$row['custId'],
     "customer_name"=>$row['customer_name'],
     "return_details"=>json_decode($row['return_details'], true),
-    "collection_date"=>$row['collection_date']
+    "collection_date"=>$row['collection_date'],
+    "collection_type"=>$row['collection_type'],
+    "return_type"=>$row['return_type'],
+    "total_carton"=>$row['total_carton']
   );
 
   $counter++;

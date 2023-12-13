@@ -128,10 +128,14 @@ else{
             <table id="weightTable" class="table table-bordered table-striped display">
               <thead>
                 <tr>
+                  <th>GR No.</th>
                   <th>Date</th>
                   <th>Customer</th>
                   <th>Driver</th>
-                  <th>Collection Date</th>
+                  <th>Collection <br>Date</th>
+                  <th>Collection <br>Type</th>
+                  <th>Total <br>Carton</th>
+                  <th>Type</th>
                   <th></th>
                   <th></th>
                 </tr>
@@ -189,13 +193,23 @@ else{
           <div class="row">
             <div class="col-4">
               <div class="form-group">
-                <label>Collection Date *</label>
+                <label>Collection Date </label>
                   <div class='input-group date' id="collectionDate" data-target-input="nearest">
-                    <input type='text' class="form-control datetimepicker-input" data-target="#collectionDate" id="collection_date" name="collectionDate" required/>
+                    <input type='text' class="form-control datetimepicker-input" data-target="#collectionDate" id="collection_date" name="collectionDate"/>
                     <div class="input-group-append" data-target="#collectionDate" data-toggle="datetimepicker">
                       <div class="input-group-text"><i class="fa fa-calendar"></i></div>
                     </div>
                   </div>
+              </div>
+            </div>
+            <div class="col-4">
+              <div class="form-group">
+                <label class="labelStatus">Collection Type *</label>
+                <select class="form-control" id="collectionType" name="collectionType" required>
+                  <option value="" selected disabled hidden>Please Select</option>
+                  <option value="Self Collect">Self Collect</option>
+                  <option value="SOS Delivery">SOS Delivery</option>
+                </select>
               </div>
             </div>
           </div>
@@ -217,6 +231,15 @@ else{
               </tr>
             </thead>
             <tbody id="pricingTable"></tbody>
+            <tfoot id="pricingFoot">
+              <tr>
+                <th colspan="3" style="text-align:right;">Total Cartons</th>
+                <th><input type="number" class="form-control" id="totalCarton" name="totalCarton" readonly></th>
+                <th colspan="2" style="text-align:right;">Total Amount</th>
+                <th><input type="number" class="form-control" id="totalAmount" name="totalAmount" readonly></th>
+                <th></th>
+              </tr>
+            </tfoot>
           </table>
         </div>
 
@@ -242,7 +265,7 @@ else{
       </select>
     </td>
     <td>
-      <input type="text" class="form-control" id="location"  placeholder="Enter " required>
+      <select class="form-control" style="width: 100%;" id="location" required></select>
     </td>
     <td>
       <input type="number" class="form-control" id="carton"  placeholder="Enter ..." required>
@@ -253,6 +276,7 @@ else{
           <option value="<?=$row3['type'] ?>"><?=$row3['type'] ?></option>
         <?php } ?>
       </select>
+      <input class="form-control" type="text" placeholder="Other Reasons" id="other_reason">
     </td>
     <td>
       <input type="text" class="form-control" id="warehouse"  placeholder="Enter ..." required>
@@ -284,11 +308,14 @@ $(function () {
       'url':'php/loadReturn.php'
     },
     'columns': [
+      { data: 'GR_No' },
       { data: 'return_date' },
       { data: 'customer_name' },
       { data: 'driver' },
-      { data: 'driver' },
       { data: 'collection_date' },
+      { data: 'collection_type' },
+      { data: 'total_carton' },
+      { data: 'return_type' },
       { 
         data: 'id',
         render: function ( data, type, row ) {
@@ -325,28 +352,23 @@ $(function () {
 
   //Date picker
   $('#fromDatePicker').datetimepicker({
-      icons: { time: 'far fa-clock' },
-      format: 'DD/MM/YYYY HH:mm:ss A',
+      icons: { time: 'far fa-calendar' },
       defaultDate: new Date
   });
 
   $('#toDatePicker').datetimepicker({
-      icons: { time: 'far fa-clock' },
-      format: 'DD/MM/YYYY HH:mm:ss A',
+      icons: { time: 'far fa-calendar' },
       defaultDate: new Date
   });
 
   $('#returnDate').datetimepicker({
-    icons: { time: 'far fa-clock' },
-    format: 'DD/MM/YYYY HH:mm:ss A',
+    icons: { time: 'far fa-calendar' },
     defaultDate: tomorrow,
     minDate: tomorrow
   });
 
   $('#collectionDate').datetimepicker({
-    icons: { time: 'far fa-clock' },
-    format: 'DD/MM/YYYY HH:mm:ss A',
-    defaultDate: tomorrow,
+    icons: { time: 'far fa-calendar' },
     minDate: tomorrow
   });
 
@@ -381,8 +403,12 @@ $(function () {
     $('#extendModal').find('#return_date').val(formatDate(date));
     $('#extendModal').find('#customerNo').val("");
     $('#extendModal').find('#driver').val("");
-    $('#extendModal').find('#collection_date').val(formatDate(date));
+    $('#extendModal').find('#collection_date').val("");
+    $('#extendModal').find('#collectionType').val("");
+    pricingCount = 0;
     $('#pricingTable').html('');
+    $('#totalCarton').val("0");
+    $('#totalAmount').val("0.00");
     $('#extendModal').modal('show');
     
     $('#extendForm').validate({
@@ -412,10 +438,12 @@ $(function () {
     $("#pricingTable").find('#hypermarket:last').attr('name', 'hypermarket['+pricingCount+']').attr("id", "hypermarket" + pricingCount);
     $("#pricingTable").find('#location:last').attr('name', 'location['+pricingCount+']').attr("id", "location" + pricingCount);
     $("#pricingTable").find('#carton:last').attr('name', 'carton['+pricingCount+']').attr("id", "carton" + pricingCount);
-    $("#pricingTable").find('#reason:last').attr('name', 'reason['+pricingCount+']').attr("id", "reason" + pricingCount);
+    $("#pricingTable").find('#reason:last').attr('name', 'reason['+pricingCount+']').attr("id", "reason" + pricingCount).val("1");
+    $("#pricingTable").find('#other_reason').attr('name', 'other_reason['+pricingCount+']').attr("id", "other_reason" + pricingCount);
     $("#pricingTable").find('#warehouse:last').attr('name', 'warehouse['+pricingCount+']').attr("id", "warehouse" + pricingCount);
     $("#pricingTable").find('#price:last').attr('name', 'price['+pricingCount+']').attr("id", "price" + pricingCount);
 
+    $("#other_reason" + pricingCount).hide();
     pricingCount++;
   });
 
@@ -424,15 +452,32 @@ $(function () {
     $("#pricingTable").append('<input type="hidden" name="deletedShip[]" value="'+index+'"/>');
     pricingCount--;
     $(this).parents('.details').remove();
+
+    var totalAmount = 0;
+
+    $('#pricingTable tr.details').each(function () {
+      // Get the values of itemPrice and itemWeight for the current row
+      var itemPrice = parseFloat($(this).find('input[name="price"]').val()) || 0;
+      totalAmount += itemPrice;
+      $('#totalAmount').val(parseFloat(totalAmount).toFixed(2));
+    });
+
+    $('#pricingTable tr.details').each(function () {
+      // Get the values of itemPrice and itemWeight for the current row
+      var itemPrice = parseFloat($(this).find('input[id^="carton"]').val()) || 0;
+      totalAmount += itemPrice;
+      $('#totalCarton').val(totalAmount);
+    });
   });
 
   $("#pricingTable").on('change', 'select[id^="hypermarket"]', function(){
+    var element = $(this).parents('.details').find('select[id^="location"]');
     $.post('php/retrieveOutlets.php', {hypermarket: $(this).val()}, function(data){
       var obj = JSON.parse(data);
       
       if(obj.status === 'success'){
         for(var i=0; i<obj.message.length; i++){
-          $('#pricingTable').find('#outlets').append('<option value="'+obj.message[i].id+'">'+obj.message[i].name+'</option>')
+          element.append('<option value="'+obj.message[i].id+'">'+obj.message[i].name+'</option>')
         }
       }
       else if(obj.status === 'failed'){
@@ -442,6 +487,28 @@ $(function () {
         toastr["error"]("Something wrong when pull data", "Failed:");
       }
       $('#spinnerLoading').hide();
+    });
+  });
+
+  $("#pricingTable").on('change', 'input[id^="price"]', function(){
+    var totalAmount = 0;
+
+    $('#pricingTable tr.details').each(function () {
+      // Get the values of itemPrice and itemWeight for the current row
+      var itemPrice = parseFloat($(this).find('input[id^="price"]').val()) || 0;
+      totalAmount += itemPrice;
+      $('#totalAmount').val(parseFloat(totalAmount).toFixed(2));
+    });
+  });
+
+  $("#pricingTable").on('change', 'input[id^="carton"]', function(){
+    var totalAmount = 0;
+
+    $('#pricingTable tr.details').each(function () {
+      // Get the values of itemPrice and itemWeight for the current row
+      var itemPrice = parseFloat($(this).find('input[id^="carton"]').val()) || 0;
+      totalAmount += itemPrice;
+      $('#totalCarton').val(totalAmount);
     });
   });
 
@@ -577,37 +644,27 @@ $(function () {
   });
 });
 
-function format (row) {
-  var returnString = '<div class="row"><div class="col-md-3"><p>Pickup Methode: '+row.pickup_method+
-  '</p></div><div class="col-md-3"><p>Customer Name: '+row.customer_name+
-  '</p></div><div class="col-md-3"><p>Pickup Location: '+row.pickup_location+
-  '</p></div><div class="col-md-3"><p>Description: '+row.description+
-  '</p></div></div><div class="row"><div class="col-md-3"><p>Estimated Ctn: '+row.estimated_ctn+
-  '</p></div><div class="col-md-3"><p>Actual Ctn: '+row.actual_ctn+
-  '</p></div><div class="col-md-3"><p>Vehicle No: '+row.vehicle_no+
-  '</p></div><div class="col-md-3"><p>Col Goods: '+row.col_goods+
-  '</p></div></div><div class="row"><div class="col-md-3">'+
-  '</div><div class="col-md-3"><p>Col Chq: '+row.col_chq+
-  '</p></div><div class="col-md-3"><p>Form No: '+row.form_no+
-  '</p></div><div class="col-md-3"><p>Gate: '+row.gate+
-  '</p></div></div><div class="row"><div class="col-md-3">'+
-  '</div><div class="col-md-3"><p>Checker: '+row.name+
-  '</p></div><div class="col-md-3"><p>Status: '+row.status+
-  '</p></div><div class="col-md-3">';
-  
-  if(row.status == 'Created'){
-    returnString += '<div class="row"><div class="col-3"><button type="button" class="btn btn-warning btn-sm" onclick="edit('+row.id+
-  ')"><i class="fas fa-pen"></i></button></div><div class="col-3"><button type="button" class="btn btn-danger btn-sm" onclick="deactivate('+row.id+
-  ')"><i class="fas fa-trash"></i></button></div><div class="col-3"><button type="button" class="btn btn-info btn-sm" onclick="picked('+row.id+
-  ')"><i class="fas fa-truck"></i></button></div></div></div></div>';
-  }
-  else if(row.status == 'Picked'){
-    returnString +='<div class="row"><div class="col-3"><button type="button" class="btn btn-info btn-sm" onclick="invoice('+row.id+
-  ')"><i class="fas fa-receipt"></i></button></div></div></div></div>';
-  }
-  
-  
-  return returnString;
+function format(row) {
+    var returnString = '<table class="table table-bordered">';
+    returnString += '<thead><tr><th>GRN No</th><th>Hypermarket</th><th>Location</th><th>Carton</th><th>Warehouse</th><th>Price</th><th>Reason</th><th>Other Reason</th></tr></thead>';
+    returnString += '<tbody>';
+
+    for (var i = 0; i < row.return_details.length; i++) {
+        returnString += '<tr>';
+        returnString += '<td>' + row.return_details[i].grn_no + '</td>';
+        returnString += '<td>' + row.return_details[i].hypermarket + '</td>';
+        returnString += '<td>' + row.return_details[i].location + '</td>';
+        returnString += '<td>' + row.return_details[i].carton + '</td>';
+        returnString += '<td>' + row.return_details[i].warehouse + '</td>';
+        returnString += '<td>' + row.return_details[i].price + '</td>';
+        returnString += '<td>' + row.return_details[i].reason + '</td>';
+        returnString += '<td>' + row.return_details[i].other_reason + '</td>';
+        returnString += '</tr>';
+    }
+
+    returnString += '</tbody></table>';
+
+    return returnString;
 }
 
 function formatNormal (row) {
@@ -642,26 +699,42 @@ function formatNormal (row) {
 
 function edit(id) {
   $('#spinnerLoading').show();
-  $.post('php/getBooking.php', {userID: id}, function(data){
+  $.post('php/getReturn.php', {userID: id}, function(data){
     var obj = JSON.parse(data);
     
     if(obj.status === 'success'){
       $('#extendModal').find('#id').val(obj.message.id);
-      $('#extendModal').find('#booking_date').val(formatDate(new Date(obj.message.booking_date)));
-      $('#extendModal').find('#pickup_method').val(obj.message.pickup_method);
+      $('#extendModal').find('#return_date').val(obj.message.return_date);
       $('#extendModal').find('#customerNo').val(obj.message.customer);
-      $('#extendModal').find('#branch').val(obj.message.branch);
-      $('#extendModal').find('#address').val(obj.message.pickup_location);
-      $('#extendModal').find('#description').val(obj.message.description);
-      $('#extendModal').find('#extimated_ctn').val(obj.message.estimated_ctn);
-      $('#extendModal').find('#actual_ctn').val(obj.message.actual_ctn);
-      $('#extendModal').find('#gate').val(obj.message.gate);
-      $('#extendModal').find('#checker').val(obj.message.checker);
-      $('#extendModal').find('#vehicleNoTxt').val(obj.message.vehicle_no);
-      $('#extendModal').find('#form_no').val(obj.message.form_no);
-      $('#extendModal').find('#col_goods').val(obj.message.col_goods);
-      $('#extendModal').find('#col_chk').val(obj.message.col_chq);
-      $('#extendModal').find('#internal_notes').val(obj.message.internal_notes);
+      $('#extendModal').find('#driver').val(obj.message.driver);
+      $('#extendModal').find('#collection_date').val(obj.message.collection_date);
+      $('#extendModal').find('#collectionType').val(obj.message.collection_type);
+      $('#pricingTable').html('');
+      pricingCount = 0;
+      $('#totalCarton').val(obj.message.total_carton);
+      $('#totalAmount').val(obj.message.total_amount);
+
+      var details = obj.message.return_details;
+      for(var i=0; i<details.length; i++){
+        var $addContents = $("#pricingDetails").clone();
+        $("#pricingTable").append($addContents.html());
+
+        $("#pricingTable").find('.details:last').attr("id", "detail" + pricingCount);
+        $("#pricingTable").find('.details:last').attr("data-index", pricingCount);
+        $("#pricingTable").find('#remove:last').attr("id", "remove" + pricingCount);
+
+        $("#pricingTable").find('#grn_no:last').attr('name', 'grn_no['+pricingCount+']').attr("id", "grn_no" + pricingCount).val(details[i].grn_no);
+        $("#pricingTable").find('#hypermarket:last').attr('name', 'hypermarket['+pricingCount+']').attr("id", "hypermarket" + pricingCount).val(details[i].hypermarket);
+        $("#pricingTable").find('#location:last').attr('name', 'location['+pricingCount+']').attr("id", "location" + pricingCount).val(details[i].location);
+        $("#pricingTable").find('#carton:last').attr('name', 'carton['+pricingCount+']').attr("id", "carton" + pricingCount).val(details[i].carton);
+        $("#pricingTable").find('#reason:last').attr('name', 'reason['+pricingCount+']').attr("id", "reason" + pricingCount).val(details[i].reason);
+        $("#pricingTable").find('#other_reason').attr('name', 'other_reason['+pricingCount+']').attr("id", "other_reason" + pricingCount).val(details[i].other_reason);
+        $("#pricingTable").find('#warehouse:last').attr('name', 'warehouse['+pricingCount+']').attr("id", "warehouse" + pricingCount).val(details[i].warehouse);
+        $("#pricingTable").find('#price:last').attr('name', 'price['+pricingCount+']').attr("id", "price" + pricingCount).val(details[i].price);
+
+        $("#other_reason" + pricingCount).hide();
+        pricingCount++;
+      }
 
       $('#extendModal').modal('show');
       $('#extendForm').validate({

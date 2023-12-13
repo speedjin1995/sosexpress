@@ -610,7 +610,8 @@ function formatDate(date) {
   const seconds = ('0' + date.getSeconds()).slice(-2);
   const ampm = date.getHours() >= 12 ? 'PM' : 'AM';
 
-  return `${day}/${month}/${year} ${hours}:${minutes}:${seconds} ${ampm}`;
+  //return `${day}/${month}/${year} ${hours}:${minutes}:${seconds} ${ampm}`;
+  return `${year}-${month}-${day}`;
 }
 </script>
 </body>

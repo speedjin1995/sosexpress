@@ -527,34 +527,26 @@ $(function () {
   //Date picker
   $('#fromDatePicker').datetimepicker({
     icons: { time: 'far fa-clock' },
-    format: 'DD/MM/YYYY HH:mm:ss A',
     defaultDate: new Date
   });
 
   $('#toDatePicker').datetimepicker({
     icons: { time: 'far fa-clock' },
-    format: 'DD/MM/YYYY HH:mm:ss A',
     defaultDate: new Date
   });
   
   $('#bookingDate').datetimepicker({
     icons: { time: 'far fa-clock' },
-    format: 'DD/MM/YYYY HH:mm:ss A',
-    defaultDate: tomorrow,
     minDate: tomorrow
   });
 
   $('#deliveryDate').datetimepicker({
     icons: { time: 'far fa-clock' },
-    format: 'DD/MM/YYYY HH:mm:ss A',
-    defaultDate: tomorrow,
     minDate: tomorrow
   });
 
   $('#cancellationDate').datetimepicker({
     icons: { time: 'far fa-clock' },
-    format: 'DD/MM/YYYY HH:mm:ss A',
-    defaultDate: tomorrow,
     minDate: tomorrow
   });
 
@@ -854,9 +846,9 @@ $(function () {
   $('#newBooking').on('click', function(){
     var date = new Date();
     $('#extendModal').find('#id').val("");
-    $('#extendModal').find('#booking_date').val(date.toLocaleString('en-AU', { hour12: false }));
-    $('#extendModal').find('#delivery_date').val(date.toLocaleString('en-AU', { hour12: false }));
-    $('#extendModal').find('#cancellation_date').val(date.toLocaleString('en-AU', { hour12: false }));
+    $('#extendModal').find('#booking_date').val(formatDate(tomorrow));
+    $('#extendModal').find('#delivery_date').val(formatDate(tomorrow));
+    $('#extendModal').find('#cancellation_date').val(formatDate(tomorrow));
     $('#extendModal').find('#customerNo').val("");
     $('#extendModal').find('#hypermarket').val("");
     $('#extendModal').find('#states').val("");
