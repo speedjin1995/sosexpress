@@ -794,6 +794,12 @@ $(function () {
         {
           data: 'actual_ctn',
           render: function (data, type, row) {
+            // Check if data is null
+            if (data === null) {
+              return ''; // Return empty string
+            }
+
+            // Generate HTML with a link
             return '<a href="#" class="actualCtnLink" data-id="' + row.id + '" data-booking-date="' + row.booking_date + '" data-customer-id="' + row.customer_id + '">' + data + '</a>';
           }
         },
