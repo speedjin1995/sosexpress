@@ -16,7 +16,7 @@ else{
     <div class="container-fluid">
         <div class="row mb-2">
 			<div class="col-sm-6">
-				<h1 class="m-0 text-dark">Vehicles</h1>
+				<h1 class="m-0 text-dark">Drivers</h1>
 			</div><!-- /.col -->
         </div><!-- /.row -->
     </div><!-- /.container-fluid -->
@@ -33,16 +33,17 @@ else{
                         <div class="row">
                             <div class="col-9"></div>
                             <div class="col-3">
-                                <button type="button" class="btn btn-block bg-gradient-warning btn-sm" id="addVehicles">Add Vehicles</button>
+                                <button type="button" class="btn btn-block bg-gradient-warning btn-sm" id="addTransporter">Add Drivers</button>
                             </div>
                         </div>
                     </div>
 					<div class="card-body">
-						<table id="vehicleTable" class="table table-bordered table-striped">
+						<table id="transporterTable" class="table table-bordered table-striped">
 							<thead>
 								<tr>
-									<th>No.</th>
-									<th>Vehicle No</th>
+                                    <th>Name</th>
+									<th>Phone</th>
+                                    <th>Commisions (%)</th>
 									<th>Actions</th>
 								</tr>
 							</thead>
@@ -54,30 +55,43 @@ else{
 	</div><!-- /.container-fluid -->
 </section><!-- /.content -->
 
-<div class="modal fade" id="vehicleModal">
+<div class="modal fade" id="addModal">
     <div class="modal-dialog modal-xl">
       <div class="modal-content">
-        <form role="form" id="vehicleForm">
+        <form role="form" id="transporterForm">
             <div class="modal-header">
-              <h4 class="modal-title">Add Vehicles</h4>
+              <h4 class="modal-title">Add Driver</h4>
               <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                 <span aria-hidden="true">&times;</span>
               </button>
             </div>
             <div class="modal-body">
-                <div class="card-body">
-                    <div class="form-group">
-    					<input type="hidden" class="form-control" id="id" name="id">
-    				</div>
-    				<div class="form-group">
-    					<label for="vehicleNumber">Vehicles No. *</label>
-    					<input type="type" class="form-control" name="vehicleNumber" id="vehicleNumber" placeholder="Enter Vehicle Number" required>
-    				</div>
-    			</div>
+              <div class="card-body">
+                <div class="form-group">
+                  <input type="hidden" class="form-control" id="id" name="id">
+                </div>
+                
+                <div class="form-group">
+                  <label for="transporter">Driver Name *</label>
+                  <input type="text" class="form-control" name="transporter" id="transporter" placeholder="Enter Driver Name" required>
+                </div>
+                <div class="form-group"> 
+                  <label for="price">Driver IC</label>
+                  <input type="text"  class="form-control" id="ic" name="ic" placeholder="Enter Driver IC" >
+                </div>
+                <div class="form-group"> 
+                  <label for="price">Driver Phone</label>
+                  <input type="text"  class="form-control" id="phone" name="phone" placeholder="Enter Driver Phone" >
+                </div>
+                <div class="form-group">
+                  <label for="code">Driver Commisions (%) *</label>
+                  <input type="number" class="form-control" name="price" id="price" placeholder="Enter Driver Commisions" required>
+                </div>
+              </div>
             </div>
             <div class="modal-footer justify-content-between">
               <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
-              <button type="submit" class="btn btn-primary" name="submit" id="submitVehicle">Submit</button>
+              <button type="submit" class="btn btn-primary" name="submit" id="submitMember">Submit</button>
             </div>
         </form>
       </div>
@@ -88,20 +102,19 @@ else{
 
 <script>
 $(function () {
-    $("#vehicleTable").DataTable({
+    $("#transporterTable").DataTable({
         "responsive": true,
         "autoWidth": false,
         'processing': true,
         'serverSide': true,
         'serverMethod': 'post',
-        'order': [[ 1, 'asc' ]],
-        'columnDefs': [ { orderable: false, targets: [0] }],
         'ajax': {
-            'url':'php/loadVehicles.php'
+            'url':'php/loadTransporter.php'
         },
         'columns': [
-            { data: 'counter' },
-            { data: 'veh_number' },
+            { data: 'name' },
+            { data: 'contact_no' },
+            { data: 'commisions' },
             { 
                 data: 'id',
                 render: function ( data, type, row ) {
@@ -112,19 +125,19 @@ $(function () {
         "rowCallback": function( row, data, index ) {
 
             $('td', row).css('background-color', '#E6E6FA');
-        },
+        },        
     });
     
     $.validator.setDefaults({
         submitHandler: function () {
             $('#spinnerLoading').show();
-            $.post('php/vehicles.php', $('#vehicleForm').serialize(), function(data){
+            $.post('php/transporter.php', $('#transporterForm').serialize(), function(data){
                 var obj = JSON.parse(data); 
                 
                 if(obj.status === 'success'){
-                    $('#vehicleModal').modal('hide');
+                    $('#addModal').modal('hide');
                     toastr["success"](obj.message, "Success:");
-                    $('#vehicleTable').DataTable().ajax.reload();
+                    $('#transporterTable').DataTable().ajax.reload();
                     $('#spinnerLoading').hide();
                 }
                 else if(obj.status === 'failed'){
@@ -139,12 +152,15 @@ $(function () {
         }
     });
 
-    $('#addVehicles').on('click', function(){
-        $('#vehicleModal').find('#id').val("");
-        $('#vehicleModal').find('#vehicleNumber').val("");
-        $('#vehicleModal').modal('show');
+    $('#addTransporter').on('click', function(){
+        $('#addModal').find('#id').val("");
+        $('#addModal').find('#transporter').val("");
+        $('#addModal').find('#ic').val("");
+        $('#addModal').find('#phone').val("");
+        $('#addModal').find('#price').val("0");
+        $('#addModal').modal('show');
         
-        $('#vehicleForm').validate({
+        $('#transporterForm').validate({
             errorElement: 'span',
             errorPlacement: function (error, element) {
                 error.addClass('invalid-feedback');
@@ -162,15 +178,18 @@ $(function () {
 
 function edit(id){
     $('#spinnerLoading').show();
-    $.post('php/getVehicles.php', {userID: id}, function(data){
+    $.post('php/getTransporter.php', {userID: id}, function(data){
         var obj = JSON.parse(data);
         
         if(obj.status === 'success'){
-            $('#vehicleModal').find('#id').val(obj.message.id);
-            $('#vehicleModal').find('#vehicleNumber').val(obj.message.veh_number);
-            $('#vehicleModal').modal('show');
+            $('#addModal').find('#id').val(obj.message.id);
+            $('#addModal').find('#transporter').val(obj.message.name);
+            $('#addModal').find('#ic').val(obj.message.ic_number);
+            $('#addModal').find('#phone').val(obj.message.contact_no);
+            $('#addModal').find('#price').val(obj.message.commisions);
+            $('#addModal').modal('show');
             
-            $('#vehicleForm').validate({
+            $('#transporterForm').validate({
                 errorElement: 'span',
                 errorPlacement: function (error, element) {
                     error.addClass('invalid-feedback');
@@ -195,14 +214,14 @@ function edit(id){
 }
 
 function deactivate(id){
-    if (confirm('Are you sure you want to delete this vehicle?')) {
+    if (confirm('Are you sure you want to delete this Driver?')) {
         $('#spinnerLoading').show();
-        $.post('php/deleteVehicle.php', {userID: id}, function(data){
+        $.post('php/deleteTransporter.php', {userID: id}, function(data){
             var obj = JSON.parse(data);
             
             if(obj.status === 'success'){
                 toastr["success"](obj.message, "Success:");
-                $('#vehicleTable').DataTable().ajax.reload();
+                $('#transporterTable').DataTable().ajax.reload();
                 $('#spinnerLoading').hide();
             }
             else if(obj.status === 'failed'){

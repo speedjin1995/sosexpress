@@ -6,7 +6,7 @@ session_start();
 if(isset($_POST['userID'])){
 	$id = filter_input(INPUT_POST, 'userID', FILTER_SANITIZE_STRING);
 
-    if ($update_stmt = $db->prepare("SELECT * FROM drivers WHERE id=?")) {
+    if ($update_stmt = $db->prepare("SELECT * FROM documents WHERE id=?")) {
         $update_stmt->bind_param('s', $id);
         
         // Execute the prepared query.
@@ -23,10 +23,8 @@ if(isset($_POST['userID'])){
             
             while ($row = $result->fetch_assoc()) {
                 $message['id'] = $row['id'];
-                $message['name'] = $row['name'];
-                $message['ic_number'] = $row['ic_number'];
-                $message['contact_no'] = $row['contact_no'];
-                $message['commisions'] = $row['commisions'];
+                $message['status'] = $row['status'];
+                $message['prefix'] = $row['prefix'];
             }
             
             echo json_encode(

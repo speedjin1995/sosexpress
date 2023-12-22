@@ -527,26 +527,31 @@ $(function () {
   //Date picker
   $('#fromDatePicker').datetimepicker({
     icons: { time: 'far fa-clock' },
+    format: 'DD/MM/YYYY',
     defaultDate: new Date
   });
 
   $('#toDatePicker').datetimepicker({
     icons: { time: 'far fa-clock' },
+    format: 'DD/MM/YYYY',
     defaultDate: new Date
   });
   
   $('#bookingDate').datetimepicker({
     icons: { time: 'far fa-clock' },
+    format: 'DD/MM/YYYY',
     minDate: tomorrow
   });
 
   $('#deliveryDate').datetimepicker({
     icons: { time: 'far fa-clock' },
+    format: 'DD/MM/YYYY',
     minDate: tomorrow
   });
 
   $('#cancellationDate').datetimepicker({
     icons: { time: 'far fa-clock' },
+    format: 'DD/MM/YYYY',
     minDate: tomorrow
   });
 
@@ -673,37 +678,8 @@ $(function () {
 
   $('#filterSearch').on('click', function(){
     //$('#spinnerLoading').show();
-    var fromDateValue = '';
-    var toDateValue = '';
-
-    if($('#fromDate').val()){
-      var convert1 = $('#fromDate').val().replace(", ", " ");
-      convert1 = convert1.replace(":", "/");
-      convert1 = convert1.replace(":", "/");
-      convert1 = convert1.replace(" ", "/");
-      convert1 = convert1.replace(" pm", "");
-      convert1 = convert1.replace(" am", "");
-      convert1 = convert1.replace(" PM", "");
-      convert1 = convert1.replace(" AM", "");
-      var convert2 = convert1.split("/");
-      var date  = new Date(convert2[2], convert2[1] - 1, convert2[0], convert2[3], convert2[4], convert2[5]);
-      fromDateValue = date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate() + " " + date.getHours() + ":" + date.getMinutes() + ":" + date.getSeconds();
-    }
-    
-    if($('#toDate').val()){
-      var convert3 = $('#toDate').val().replace(", ", " ");
-      convert3 = convert3.replace(":", "/");
-      convert3 = convert3.replace(":", "/");
-      convert3 = convert3.replace(" ", "/");
-      convert3 = convert3.replace(" pm", "");
-      convert3 = convert3.replace(" am", "");
-      convert3 = convert3.replace(" PM", "");
-      convert3 = convert3.replace(" AM", "");
-      var convert4 = convert3.split("/");
-      var date2  = new Date(convert4[2], convert4[1] - 1, convert4[0], convert4[3], convert4[4], convert4[5]);
-      toDateValue = date2.getFullYear() + "-" + (date2.getMonth() + 1) + "-" + date2.getDate() + " " + date2.getHours() + ":" + date2.getMinutes() + ":" + date2.getSeconds();
-    }
-
+    var fromDateValue = $('#fromDate').val();
+    var toDateValue = $('#toDate').val();
     var stateFilter = $('#stateFilter').val() ? $('#stateFilter').val() : '';
     var customerNoFilter = $('#customerNoFilter').val() ? $('#customerNoFilter').val() : '';
     var zonesFilter = $('#zonesFilter').val() ? $('#zonesFilter').val() : '';
@@ -846,9 +822,9 @@ $(function () {
   $('#newBooking').on('click', function(){
     var date = new Date();
     $('#extendModal').find('#id').val("");
-    $('#extendModal').find('#booking_date').val(formatDate(tomorrow));
-    $('#extendModal').find('#delivery_date').val(formatDate(tomorrow));
-    $('#extendModal').find('#cancellation_date').val(formatDate(tomorrow));
+    $('#extendModal').find('#booking_date').val(formatDate2(tomorrow));
+    $('#extendModal').find('#delivery_date').val(formatDate2(tomorrow));
+    $('#extendModal').find('#cancellation_date').val(formatDate2(tomorrow));
     $('#extendModal').find('#customerNo').val("");
     $('#extendModal').find('#hypermarket').val("");
     $('#extendModal').find('#states').val("");
@@ -1034,6 +1010,8 @@ $(function () {
   });*/
 
   $('#openModalBtn').on('click', function () {
+    $('#doPoTable tbody').empty();
+    addRow2($('#do_no').val(), $('#po_no').val()); // Pass default values to the addRow function
     $('#doModal').modal('show');
   });
 
@@ -1073,6 +1051,17 @@ function addRow() {
   
   // Append the new row to the table
   $('#doPoTable tbody').append(newRow);
+}
+
+function addRow2(defaultDONumber, defaultPONumber) {
+    var newRow = '<tr>' +
+        '<td><input type="text" class="form-control" placeholder="Enter DO Number" value="' + defaultDONumber + '"></td>' +
+        '<td><input type="text" class="form-control" placeholder="Enter PO Number" value="' + defaultPONumber + '"></td>' +
+        '<td><button type="button" class="btn btn-danger removeRowBtn">Remove</button></td>' +
+        '</tr>';
+  
+    // Append the new row to the table
+    $('#doPoTable tbody').append(newRow);
 }
 
 function format (row) {
@@ -1148,14 +1137,26 @@ function edit(id) {
     
     if(obj.status === 'success'){
       $('#extendModal').find('#id').val(obj.message.id);
-      $('#extendModal').find('#booking_date').val(obj.message.booking_date.toLocaleString('en-AU', { hour12: false }));
-      $('#extendModal').find('#delivery_date').val(obj.message.delivery_date.toLocaleString('en-AU', { hour12: false }));
-      $('#extendModal').find('#cancellation_date').val(obj.message.cancellation_date.toLocaleString('en-AU', { hour12: false }));
+      $('#extendModal').find('#booking_date').val(formatDate2(new Date(obj.message.booking_date)));
+      $('#extendModal').find('#delivery_date').val(formatDate2(new Date(obj.message.delivery_date)));
+      $('#extendModal').find('#cancellation_date').val(formatDate2(new Date(obj.message.cancellation_date)));
       $('#extendModal').find('#customerNo').val(obj.message.customer);
       $('#extendModal').find('#hypermarket').val(obj.message.hypermarket);
       $('#extendModal').find('#states').val(obj.message.states);
-      $('#extendModal').find('#states').trigger('change');
-      $('#extendModal').find('#zones').val(obj.message.zone);
+      
+      $('#zones').empty();
+      var dataIndexToMatch = obj.message.states;
+
+      $('#zoneHidden option').each(function() {
+        var dataIndex = $(this).data('index');
+
+        if (dataIndex == dataIndexToMatch) {
+          $('#extendModal').find('#zones').append($(this).clone());
+          $('#extendModal').find('#zones').val(obj.message.zone);
+          $('#extendModal').find('#zones').trigger('change');
+        }
+      });
+      
       $('#extendModal').find('#hypermarket').trigger('change');
       $('#extendModal').find('#do_type').val(obj.message.do_type);
       $('#extendModal').find('#do_no').val(obj.message.do_number);
@@ -1166,6 +1167,7 @@ function edit(id) {
       $('#extendModal').find('#loadingTime').val(obj.message.loading_time);
 
       if(obj.message.hypermarket == '0'){
+        $('#extendModal').find('#hypermarket').trigger('change');
         $('#extendModal').find('#outlets').empty().val(obj.message.outlet);
         $('#extendModal').find('#outlets').attr('required', false);
         $('#extendModal').find('#direct_store').attr('required', true);
@@ -1175,7 +1177,8 @@ function edit(id) {
         //$('#extendModal').find('.select2-container').show();
       }
       else{
-        $('#extendModal').find('#zones').empty().val(obj.message.zone);
+        $('#extendModal').find('#hypermarket').trigger('change');
+        //$('#extendModal').find('#zones').empty().val(obj.message.zone);
         $('#extendModal').find('#outlets').attr('required', true);
         $('#extendModal').find('#outlets').show();
         $('#extendModal').find('#direct_store').val('');

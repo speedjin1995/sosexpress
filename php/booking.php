@@ -50,7 +50,7 @@ if(isset($_POST['bookingDate'], $_POST['pickup_method'], $_POST['customerNo'], $
 		$checker = filter_input(INPUT_POST, 'checker', FILTER_SANITIZE_STRING);
 	}
 
-	if($_POST['vehicleNoTxt'] != null && $_POST['vehicleNoTxt'] != ''){
+	if(isset($_POST['vehicleNoTxt']) && $_POST['vehicleNoTxt'] != null && $_POST['vehicleNoTxt'] != ''){
 		$vehicleNoTxt = filter_input(INPUT_POST, 'vehicleNoTxt', FILTER_SANITIZE_STRING);
 	}
 
@@ -59,7 +59,7 @@ if(isset($_POST['bookingDate'], $_POST['pickup_method'], $_POST['customerNo'], $
 	}
 
 	if(isset($_POST['id']) && $_POST['id'] != null && $_POST['id'] != ''){
-		$booking_date = DateTime::createFromFormat('d/m/Y H:i:s A', $booking_date)->format('Y-m-d H:i:s');
+		$booking_date = DateTime::createFromFormat('d/m/Y', $booking_date)->format('Y-m-d H:i:s');
 
 		if ($update_stmt = $db->prepare("UPDATE booking SET booking_date=?, pickup_method=?, customer=?, pickup_location=?, description=?, estimated_ctn=?, actual_ctn=?, vehicle_no=?, col_goods=?
 		, col_chq=?, form_no=?, gate=?, checker=?, internal_notes=? WHERE id=?")){
@@ -97,7 +97,7 @@ if(isset($_POST['bookingDate'], $_POST['pickup_method'], $_POST['customerNo'], $
 		}
 	}
 	else{
-		$booking_date = DateTime::createFromFormat('d/m/Y H:i:s A', $booking_date)->format('Y-m-d H:i:s');
+		$booking_date = DateTime::createFromFormat('d/m/Y', $booking_date)->format('Y-m-d H:i:s');
 
 		if ($insert_stmt = $db->prepare("INSERT INTO booking (booking_date, pickup_method, customer, pickup_location, description, estimated_ctn, actual_ctn, vehicle_no, 
 		col_goods, col_chq, form_no, gate, checker, internal_notes) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")){

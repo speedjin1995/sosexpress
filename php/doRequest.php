@@ -33,12 +33,12 @@ if(isset($_POST['bookingDate'], $_POST['deliveryDate'], $_POST['cancellationDate
         $do_details = html_entity_decode($do_details);
     }
 
-    if(isset($_POST['do_number']) && $_POST['do_number'] != null && $_POST['do_number'] != ''){
-        $do_number = filter_input(INPUT_POST, 'do_number', FILTER_SANITIZE_STRING);
+    if(isset($_POST['do_no']) && $_POST['do_no'] != null && $_POST['do_no'] != ''){
+        $do_number = filter_input(INPUT_POST, 'do_no', FILTER_SANITIZE_STRING);
     }
 
-    if(isset($_POST['po_number']) && $_POST['po_number'] != null && $_POST['po_number'] != ''){
-        $po_number = filter_input(INPUT_POST, 'po_number', FILTER_SANITIZE_STRING);
+    if(isset($_POST['po_no']) && $_POST['po_no'] != null && $_POST['po_no'] != ''){
+        $po_number = filter_input(INPUT_POST, 'po_no', FILTER_SANITIZE_STRING);
     }
 
     if(isset($_POST['note']) && $_POST['note'] != null && $_POST['note'] != ''){
@@ -91,6 +91,10 @@ if(isset($_POST['bookingDate'], $_POST['deliveryDate'], $_POST['cancellationDate
     }
 
     if(isset($_POST['id']) && $_POST['id'] != null && $_POST['id'] != ''){
+        $booking_date = DateTime::createFromFormat('d/m/Y', str_replace(',', '', explode(" ", $booking_date)[0]))->format('Y-m-d H:i:s');
+        $delivery_date = DateTime::createFromFormat('d/m/Y', str_replace(',', '', explode(" ", $delivery_date)[0]))->format('Y-m-d H:i:s');
+	    $cancellation_date = DateTime::createFromFormat('d/m/Y', str_replace(',', '', explode(" ", $cancellation_date)[0]))->format('Y-m-d H:i:s');
+
         if ($update_stmt = $db->prepare("UPDATE do_request SET booking_date=?, delivery_date=?, cancellation_date=?, customer=?, hypermarket=?, states=?, zone=?
         , outlet=?, do_type=?, do_number=?, po_number=?, note=?, actual_carton=?, need_grn=?, loading_time=?, direct_store=?, hold=?, do_details=? WHERE id=?")){
             $id = $_POST['id'];
@@ -130,16 +134,27 @@ if(isset($_POST['bookingDate'], $_POST['deliveryDate'], $_POST['cancellationDate
                         
                         if ($row = $result->fetch_assoc()) {
                             $id = $row['id'];
+                            $existing_actual_ctn = $row['actual_ctn'];
                             $update_stmt3->close();
-
-                            if ($update_stmt2 = $db->prepare("UPDATE booking SET actual_ctn=? WHERE id=?")){
-			                    $update_stmt2->bind_param('ss', $actual_carton, $id);
-                                $update_stmt2->execute();
-                                $update_stmt2->close();
+                
+                            // Check if $actual_carton is not empty
+                            if (!empty($actual_carton)) {
+                                // If existing_actual_ctn is not empty, sum it with $actual_carton
+                                if (!empty($existing_actual_ctn)) {
+                                    $actual_carton = $existing_actual_ctn + $actual_carton;
+                                }
+                
+                                // Update actual_ctn
+                                if ($update_stmt2 = $db->prepare("UPDATE booking SET actual_ctn=? WHERE id=?")) {
+                                    $update_stmt2->bind_param('ss', $actual_carton, $id);
+                                    $update_stmt2->execute();
+                                    $update_stmt2->close();
+                                }
                             }
                         }
                     }
                 }
+                
 
                 $db->close();
             }
@@ -196,16 +211,26 @@ if(isset($_POST['bookingDate'], $_POST['deliveryDate'], $_POST['cancellationDate
                         
                         if ($row = $result->fetch_assoc()) {
                             $id = $row['id'];
+                            $existing_actual_ctn = $row['actual_ctn'];
                             $update_stmt->close();
-
-                            if ($update_stmt2 = $db->prepare("UPDATE booking SET actual_ctn=? WHERE id=?")){
-			                    $update_stmt2->bind_param('ss', $actual_carton, $id);
-                                $update_stmt2->execute();
-                                $update_stmt2->close();
+                
+                            // Check if $actual_carton is not empty
+                            if (!empty($actual_carton)) {
+                                // If existing_actual_ctn is not empty, sum it with $actual_carton
+                                if (!empty($existing_actual_ctn)) {
+                                    $actual_carton = $existing_actual_ctn + $actual_carton;
+                                }
+                
+                                // Update actual_ctn
+                                if ($update_stmt2 = $db->prepare("UPDATE booking SET actual_ctn=? WHERE id=?")) {
+                                    $update_stmt2->bind_param('ss', $actual_carton, $id);
+                                    $update_stmt2->execute();
+                                    $update_stmt2->close();
+                                }
                             }
                         }
                     }
-                }
+                }                
                 
                 $db->close();
             }

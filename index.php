@@ -465,6 +465,24 @@ to get the desired effect
                       <p>Reason</p>
                     </a>
                   </li>
+                  <li class="nav-item">
+                    <a href="#vehicles" data-file="vehicles.php" class="nav-link link">
+                      <i class="nav-icon fas fa-car"></i>
+                      <p>Vehicles</p>
+                    </a>
+                  </li>
+                  <li class="nav-item">
+                    <a href="#drivers" data-file="drivers.php" class="nav-link link">
+                      <i class="nav-icon fas fa-user"></i>
+                      <p>Drivers</p>
+                    </a>
+                  </li>
+                  <li class="nav-item">
+                    <a href="#documents" data-file="documents.php" class="nav-link link">
+                      <i class="nav-icon fas fa-file"></i>
+                      <p>Documents</p>
+                    </a>
+                  </li>
                 </ul>
               </li>';
               }
@@ -612,6 +630,19 @@ function formatDate(date) {
 
   //return `${day}/${month}/${year} ${hours}:${minutes}:${seconds} ${ampm}`;
   return `${year}-${month}-${day}`;
+}
+
+function formatDate2(date) {
+  const day = ('0' + date.getDate()).slice(-2);
+  const month = ('0' + (date.getMonth() + 1)).slice(-2);
+  const year = date.getFullYear();
+  const hours = ('0' + date.getHours()).slice(-2);
+  const minutes = ('0' + date.getMinutes()).slice(-2);
+  const seconds = ('0' + date.getSeconds()).slice(-2);
+  const ampm = date.getHours() >= 12 ? 'PM' : 'AM';
+
+  //return `${day}/${month}/${year} ${hours}:${minutes}:${seconds} ${ampm}`;
+  return `${day}/${month}/${year}`;
 }
 </script>
 </body>
