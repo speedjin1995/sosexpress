@@ -9,7 +9,7 @@ if(!isset($_SESSION['userID'])){
 
 if(isset($_POST['userID'])){
 	$id = filter_input(INPUT_POST, 'userID', FILTER_SANITIZE_STRING);
-	$del = "Loaded";
+	$del = "Posted";
 
 	if ($stmt2 = $db->prepare("UPDATE do_request SET status=? WHERE id=?")) {
 		$stmt2->bind_param('ss', $del, $id);
@@ -21,7 +21,7 @@ if(isset($_POST['userID'])){
 			echo json_encode(
     	        array(
     	            "status"=> "success", 
-    	            "message"=> "Loaded"
+    	            "message"=> "Posted"
     	        )
     	    );
 		} else{

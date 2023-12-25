@@ -160,6 +160,7 @@ else{
                 <tr>
                   <th></th>
                   <th>Customer</th>
+                  <th>Booking Datetime</th>
                   <th>Description</th>
                   <th>Estimated Ctn</th>
                   <th>Actual Ctn</th>
@@ -429,21 +430,23 @@ else{
 </div>
 
 <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="modalLabel">DO Listing</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body" id="modalContent"></div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
-                <!-- Add additional buttons if needed -->
-            </div>
-        </div>
-    </div>
+  <div class="modal-dialog" role="document">
+      <div class="modal-content">
+          <div class="modal-header">
+              <h5 class="modal-title" id="modalLabel">DO Listing</h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+              </button>
+          </div>
+          <div class="modal-body" id="modalContent"></div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-success" id="printButton">Print</button>
+            <button type="button" class="btn btn-primary" id="confirmButton">Confirm</button>
+            <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+            <!-- Add additional buttons if needed -->
+          </div>
+      </div>
+  </div>
 </div>
 
 <script>
@@ -476,6 +479,7 @@ $(function () {
         }
       },
       { data: 'customer_name' },
+      { data: 'booking_date' },
       { data: 'description' },
       { data: 'estimated_ctn' },
       {
@@ -525,43 +529,65 @@ $(function () {
     var customerId = $(this).data('customer-id');
 
     $.ajax({
-      url: 'php/getActualCtnData.php',
-      type: 'POST',
-      data: { id: rowId, bookingDate: bookingDate, customerId: customerId },
-      success: function (data) {
-        var response = JSON.parse(data);
-        
-        if (response.status == 'success') {
-          var tableContent = '<table class="table">';
-          tableContent += '<thead><tr><th>Hypermarket</th><th>Outlet</th><th>Delivery Date</th><th>Number of Carton</th></tr></thead><tbody>';
-          
-          // Loop through each item in the 'message' array
-          for (var i = 0; i < response.message.length; i++) {
-            var data = response.message[i];
+        url: 'php/getActualCtnData.php',
+        type: 'POST',
+        data: { id: rowId, bookingDate: bookingDate, customerId: customerId },
+        success: function (data) {
+            var response = JSON.parse(data);
 
-            tableContent += '<tr>';
-            tableContent += '<td>' + data.hypermarket + '</td>';
-            tableContent += '<td>' + data.outlet + '</td>';
-            tableContent += '<td>' + data.delivery_date + '</td>';
-            tableContent += '<td>' + data.actual_carton + '</td>';
-            tableContent += '</tr>';
-          }
+            if (response.status == 'success') {
+                var tableContent = '<table class="table">';
+                tableContent += '<thead><tr><th></th><th>Outlet</th><th>Booking Date</th><th>Number of Carton</th><th>DO No.</th><th>PO No.</th><th>Notes</th></tr></thead><tbody>';
 
-          tableContent += '</tbody></table>';
+                // Loop through each item in the 'message' array
+                for (var i = 0; i < response.message.length; i++) {
+                    var rowData = response.message[i];
 
-          // You can replace the following line with your logic to display the data
-          $('#modalContent').html(tableContent);
-          $('#myModal').modal('show');
-        } 
-        else {
-          console.error('Failed to retrieve valid data.');
+                    tableContent += '<tr>';
+
+                    // Conditionally add checkbox only when status is 'Posted'
+                    if (rowData.status === 'Posted') {
+                        var checkboxHtml = '<td><input type="checkbox" class="postedCheckbox" id="checkbox_' + rowData.id + '" checked></td>';
+                        tableContent += checkboxHtml;
+                    } else {
+                        // If status is not 'Posted', leave the cell empty
+                        tableContent += '<td></td>';
+                    }
+
+                    tableContent += '<td>' + rowData.outlet + '</td>';
+                    tableContent += '<td>' + rowData.booking_date + '</td>';
+                    tableContent += '<td>' + rowData.actual_carton + '</td>';
+                    tableContent += '<td>' + rowData.do_number + '</td>';
+                    tableContent += '<td>' + rowData.po_number + '</td>';
+                    tableContent += '<td>' + rowData.note + '</td>';
+                    tableContent += '</tr>';
+                }
+
+                tableContent += '</tbody></table>';
+
+                // You can replace the following line with your logic to display the data
+                $('#modalContent').html(tableContent);
+
+                // Attach click event to Confirm buttons (now the Confirm button is inside the loop)
+                $('#confirmButton').on('click', function () {
+                  confirmSelectedRows();
+                });
+
+                $('#printButton').on('click', function () {
+                  printTable();
+                });
+
+                $('#myModal').modal('show');
+            } else {
+                console.error('Failed to retrieve valid data.');
+            }
+        },
+        error: function (xhr, status, error) {
+            console.error('Error retrieving actual_ctn data:', error);
         }
-      },
-      error: function (xhr, status, error) {
-        console.error('Error retrieving actual_ctn data:', error);
-      }
     });
   });
+
 
   //Date picker
   $('#fromDatePicker').datetimepicker({
@@ -789,6 +815,7 @@ $(function () {
           }
         },
         { data: 'customer_name' },
+        { data: 'booking_date' },
         { data: 'description' },
         { data: 'estimated_ctn' },
         {
@@ -951,6 +978,58 @@ function formatNormal (row) {
   '</p></div><div class="col-md-3"><p>Transporter: '+row.transporter_name+
   '</p></div></div>';
   ;
+}
+
+function printTable() {
+  // Open a new window for printing
+  var printWindow = window.open('', '_blank');
+  
+  // Construct the print content (use the same content as displayed in the modal)
+  var printContent = '<html><head><title>Print</title></head><body>';
+  printContent += $('#modalContent').html(); // Use the modal content
+  printContent += '</body></html>';
+
+  // Write the content to the new window
+  printWindow.document.open();
+  printWindow.document.write(printContent);
+  printWindow.document.close();
+
+  // Print the content
+  printWindow.print();
+}
+
+function confirmSelectedRows() {
+  var selectedRowIds = [];
+
+  // Loop through the checkboxes to find selected rows
+  $('.postedCheckbox:checked').each(function () {
+    var rowId = $(this).attr('id').split('_')[1];
+    selectedRowIds.push(rowId);
+  });
+
+  // Call the function to confirm the status for the selected rows
+  confirmStatus(selectedRowIds);
+}
+
+
+function confirmStatus(rowIds) {
+  // Update the status to Confirmed for the specified rows
+  // You can make an AJAX request or perform any other action here
+
+  // Example: Call an AJAX function to update the status
+  $.ajax({
+    url: 'php/confirmStatus.php',
+    type: 'POST',
+    data: { ids: rowIds },
+    success: function (response) {
+      $('#myModal').modal('hide');
+      toastr["success"](obj.message, "Success:");
+    },
+    error: function (xhr, status, error) {
+      //$('#myModal').modal('hide');
+      toastr["error"](error, "Failed:");
+    }
+  });
 }
 
 function edit(id) {

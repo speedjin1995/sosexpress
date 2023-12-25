@@ -176,8 +176,8 @@ else{
             </div>
             <div class="col-4">
               <div class="form-group">
-                <label class="labelStatus">Customer *</label>
-                <select class="form-control" id="customerNo" name="customerNo" required>
+                <label class="labelStatus">Customer</label>
+                <select class="form-control" id="customerNo" name="customerNo" >
                   <option value="" selected disabled hidden>Please Select</option>
                   <?php while($rowCustomer=mysqli_fetch_assoc($customers)){ ?>
                     <option value="<?=$rowCustomer['id'] ?>" data-address="<?=$rowCustomer['customer_address'] ?>"><?=$rowCustomer['customer_name'] ?></option>
@@ -186,8 +186,8 @@ else{
               </div>
             </div>
             <div class="form-group col-4">
-              <label>Driver *</label>
-              <input class="form-control" type="text" placeholder="Driver" id="driver" name="driver" required/>                        
+              <label>Driver</label>
+              <input class="form-control" type="text" placeholder="Driver" id="driver" name="driver"/>                        
             </div>
           </div>
           <div class="row">
@@ -204,8 +204,8 @@ else{
             </div>
             <div class="col-4">
               <div class="form-group">
-                <label class="labelStatus">Collection Type *</label>
-                <select class="form-control" id="collectionType" name="collectionType" required>
+                <label class="labelStatus">Collection Type </label>
+                <select class="form-control" id="collectionType" name="collectionType">
                   <option value="" selected disabled hidden>Please Select</option>
                   <option value="Self Collect">Self Collect</option>
                   <option value="SOS Delivery">SOS Delivery</option>

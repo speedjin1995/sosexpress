@@ -109,7 +109,7 @@ if(isset($_POST['returnDate'], $_POST['customerNo'], $_POST['driver'], $_POST['c
 			else{
 				$result = $select_stmt->get_result();
 				$count = 1;
-				$firstChar = 'GR'.date("Ymd")."-";
+				$firstChar = 'GR-'.date("ym")."-";
 				
 				if ($row = $result->fetch_assoc()) {
 					$count = (int)$row['COUNT(*)'] + 1;
@@ -118,7 +118,7 @@ if(isset($_POST['returnDate'], $_POST['customerNo'], $_POST['driver'], $_POST['c
 
 				$charSize = strlen(strval($count));
 
-				for($i=0; $i<(4-(int)$charSize); $i++){
+				for($i=0; $i<(3-(int)$charSize); $i++){
 					$firstChar.='0';
 				}
 		

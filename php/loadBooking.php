@@ -29,7 +29,7 @@ $totalRecordwithFilter = $records['allcount'];
 
 ## Fetch records
 $empQuery = "SELECT booking.id, booking.booking_date, booking.pickup_method, customers.id AS custId, customers.customer_name, booking.pickup_location, booking.description, 
-booking.estimated_ctn, booking.actual_ctn, booking.vehicle_no, booking.col_goods, booking.col_chq, booking.form_no, 
+booking.estimated_ctn, booking.actual_ctn, booking.vehicle_no, booking.col_goods, booking.col_chq, booking.form_no, booking.booking_date, 
 booking.gate, booking.checker, booking.status FROM booking, customers WHERE booking.customer = customers.id AND booking.deleted = '0'".$searchQuery." 
 order by ".$columnName." ".$columnSortOrder." limit ".$row.",".$rowperpage;
 $empRecords = mysqli_query($db, $empQuery);
@@ -73,7 +73,8 @@ while($row = mysqli_fetch_assoc($empRecords)) {
     "form_no"=>$row['form_no'],
     "gate"=>$row['gate'],
     "name"=>$name,
-    "status"=>$row['status']
+    "status"=>$row['status'],
+    "booking_date"=>$row['booking_date']
   );
 
   $counter++;

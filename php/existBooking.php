@@ -6,20 +6,9 @@ session_start();
 if(isset($_POST['bookingDate'], $_POST['customerNo'])){
 	$customerNo = filter_input(INPUT_POST, 'customerNo', FILTER_SANITIZE_STRING);
     $booking_date = filter_input(INPUT_POST, 'bookingDate', FILTER_SANITIZE_STRING);
-    //$booking_date = DateTime::createFromFormat('d/m/Y H:i:s A', $booking_date)->format('Y-m-d 00:00:00');
 
-    $date_format_1 = DateTime::createFromFormat('d/m/Y H:i:s A', $booking_date);
-    if ($date_format_1 !== false) {
-        $date_format_1->sub(new DateInterval('P1D'));
-        $booking_date = $date_format_1->format('Y-m-d 00:00:00');
-    } 
-    else {
-        $date_format_2 = DateTime::createFromFormat('d/m/Y, H:i:s', $booking_date);
-        if ($date_format_2 !== false) {
-            $date_format_2->sub(new DateInterval('P1D'));
-            $booking_date = $date_format_2->format('Y-m-d 00:00:00');
-        }
-    }
+    $date_format_1 = DateTime::createFromFormat('d/m/Y', $booking_date);
+    $booking_date = $date_format_1->format('Y-m-d 00:00:00');
 
     if ($update_stmt = $db->prepare("SELECT * FROM booking WHERE customer=? AND booking_date >= ?")) {
         $update_stmt->bind_param('ss', $customerNo, $booking_date);

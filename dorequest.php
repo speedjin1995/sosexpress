@@ -540,7 +540,6 @@ $(function () {
   $('#bookingDate').datetimepicker({
     icons: { time: 'far fa-clock' },
     format: 'DD/MM/YYYY',
-    minDate: tomorrow
   });
 
   $('#deliveryDate').datetimepicker({
@@ -1088,7 +1087,11 @@ function format (row) {
   ')"><i class="fas fa-trash"></i></button></div><div class="col-3"><button type="button" class="btn btn-info btn-sm" onclick="picked('+row.id+
   ')"><i class="fas fa-pallet"></i></button></div></div></div></div>';
   }
-  else if(row.status == 'Loaded'){
+  else if(row.status == 'Posted'){
+    returnString +='<div class="row"><div class="col-3"><button type="button" class="btn btn-info btn-sm" onclick="delivered('+row.id+
+  ')"><i class="fas fa-truck"></i></button></div></div></div></div>';
+  }
+  else if(row.status == 'Confirmed'){
     returnString +='<div class="row"><div class="col-3"><button type="button" class="btn btn-info btn-sm" onclick="delivered('+row.id+
   ')"><i class="fas fa-truck"></i></button></div></div></div></div>';
   }
