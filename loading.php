@@ -150,21 +150,21 @@ else{
       <div class="col-lg-12">
         <div class="card card-primary">
           <div class="card-header">
-            <!--div class="row">
+            <div class="row">
               <div class="col-6">DO Request</div>
               <div class="col-3">
-                <button type="button" class="btn btn-block bg-gradient-info btn-sm" id="updateStatus">
-                  <i class="fas fa-pen"></i>
-                  Update Status
+                <button type="button" class="btn btn-block bg-gradient-info btn-sm" id="printBigDo">
+                  <i class="fas fa-file"></i>
+                  Print Big DO
                 </button>
               </div>
               <div class="col-3">
-                <button type="button" class="btn btn-block bg-gradient-success btn-sm" id="newBooking">
-                  <i class="fas fa-plus"></i>
-                  New DO REquest
+                <button type="button" class="btn btn-block bg-gradient-success btn-sm" id="printLoading">
+                  <i class="fas fa-newspaper"></i>
+                  Print Loading Report
                 </button>
               </div>
-            </div-->
+            </div>
           </div>
 
           <div class="card-body">
@@ -192,10 +192,9 @@ else{
 <div class="modal fade" id="extendModal">
   <div class="modal-dialog modal-xl" style="max-width: 90%;">
     <div class="modal-content">
-
       <form role="form" id="extendForm">
         <div class="modal-header bg-gray-dark color-palette">
-          <h4 class="modal-title">Add New DO Request</h4>
+          <h4 class="modal-title">Loading Details</h4>
           <button type="button" class="close bg-gray-dark color-palette" data-dismiss="modal" aria-label="Close">
             <span aria-hidden="true">&times;</span>
           </button>
@@ -396,6 +395,197 @@ else{
               </tr>
             </tfoot>
           </table>
+        </div>
+
+        <div class="modal-footer justify-content-between bg-gray-dark color-palette">
+          <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+          <button type="submit" class="btn btn-primary" id="saveButton">Save changes</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="updateModal">
+  <div class="modal-dialog modal-xl" style="max-width: 90%;">
+    <div class="modal-content">
+      <form role="form" id="updateForm">
+        <div class="modal-header bg-gray-dark color-palette">
+          <h4 class="modal-title">Reject Details</h4>
+          <button type="button" class="close bg-gray-dark color-palette" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+
+        <div class="modal-body">
+          <input type="hidden" class="form-control" id="id" name="id">
+          <div class="row">
+            <div class="col-4">
+              <div class="form-group">
+                <label>Booking Date *</label>
+                  <div class='input-group date' id="bookingDate" data-target-input="nearest">
+                    <input type='text' class="form-control datetimepicker-input" data-target="#bookingDate" id="booking_date" name="bookingDate" readonly/>
+                    <div class="input-group-append" data-target="#bookingDate" data-toggle="datetimepicker">
+                      <div class="input-group-text"><i class="fa fa-calendar"></i></div>
+                    </div>
+                  </div>
+              </div>
+            </div>
+            <div class="col-4">
+              <div class="form-group">
+                <label>Delivery Date *</label>
+                  <div class='input-group date' id="deliveryDate" data-target-input="nearest">
+                    <input type='text' class="form-control datetimepicker-input" data-target="#deliveryDate" id="delivery_date" name="deliveryDate" readonly/>
+                    <div class="input-group-append" data-target="#deliveryDate" data-toggle="datetimepicker">
+                      <div class="input-group-text"><i class="fa fa-calendar"></i></div>
+                    </div>
+                  </div>
+              </div>
+            </div>
+            <div class="col-4">
+              <div class="form-group">
+                <label>Cancellation Date *</label>
+                  <div class='input-group date' id="cancellationDate" data-target-input="nearest">
+                    <input type='text' class="form-control datetimepicker-input" data-target="#cancellationDate" id="cancellation_date" name="cancellationDate" readonly/>
+                    <div class="input-group-append" data-target="#cancellationDate" data-toggle="datetimepicker">
+                      <div class="input-group-text"><i class="fa fa-calendar"></i></div>
+                    </div>
+                  </div>
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-4">
+              <div class="form-group">
+                <label class="labelStatus">Customer *</label>
+                <select class="form-control" id="customerNo" name="customerNo" readonly>
+                  <option value="" selected disabled hidden>Please Select</option>
+                  <?php while($rowCustomer=mysqli_fetch_assoc($customers)){ ?>
+                    <option value="<?=$rowCustomer['id'] ?>"><?=$rowCustomer['customer_name'] ?></option>
+                  <?php } ?>
+                </select>
+              </div>
+            </div>
+            <div class="col-4">
+              <div class="form-group">
+                <label class="labelStatus">Hypermarket *</label>
+                <select class="form-control" id="hypermarket" name="hypermarket" readonly>
+                  <option value="" selected disabled hidden>Please Select</option>
+                  <?php while($rowhypermarket=mysqli_fetch_assoc($hypermarket)){ ?>
+                    <option value="<?=$rowhypermarket['id'] ?>"><?=$rowhypermarket['name'] ?></option>
+                  <?php } ?>
+                </select>
+              </div>
+            </div>
+            <div class="col-4">
+              <div class="form-group">
+                <label class="labelStatus">States *</label>
+                <select class="form-control" id="states" name="states" readonly>
+                  <option value="" selected disabled hidden>Please Select</option>
+                  <?php while($rowCustomer=mysqli_fetch_assoc($states)){ ?>
+                    <option value="<?=$rowCustomer['id'] ?>"><?=$rowCustomer['states'] ?></option>
+                  <?php } ?>
+                </select>
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-4">
+              <div class="form-group">
+                <label for="rate">Zones *</label>
+                <select class="form-control" style="width: 100%;" id="zones" name="zones" readonly></select>
+              </div>
+            </div>
+            <div class="col-4">
+              <div class="form-group">
+                <label for="rate">Outlet *</label>
+                <select class="form-control" style="width: 100%;" id="outlets" name="outlets" readonly></select>
+                <input class="form-control" type="text" placeholder="DO No." id="direct_store" name="direct_store" >
+              </div>
+            </div>
+            <div class="col-4">
+              <div class="form-group">
+                <label for="rate">DO Type *</label>
+                <select class="form-control" id="do_type" name="do_type" readonly>
+                  <option value="" selected disabled hidden>Please Select</option>
+                  <option value="DO">DO</option>
+                  <option value="Consignment">Consignment</option>
+                  <option value="Non-trade">Non-trade</option>
+                </select>
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-4">
+              <div class="form-group">
+                <label>DO No.</label>
+                <input class="form-control" type="text" placeholder="DO No." id="do_no" name="do_no" readonly>
+              </div>
+            </div>
+            <div class="col-4">
+              <div class="form-group">
+                <label>PO No.</label>
+                <input class="form-control" type="text" placeholder="PO Number" id="po_no" name="po_no" readonly>
+              </div>
+            </div>
+            <div class="col-4">
+              <div class="form-group">
+                <label>Actual Carton *</label>
+                <input class="form-control" type="number" placeholder="Actual Carton" id="actual_ctn" name="actual_ctn" readonly>
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-4">
+              <div class="form-group">
+                <label>Need GRN *</label>
+                <select class="form-control" id="need_grn" name="need_grn" readonly>
+                  <option value="Yes">Yes</option>
+                  <option value="No">No</option>
+                </select>
+              </div>
+            </div>
+            <div class="col-4">
+              <div class="form-group">
+                <label>Loading </label>
+                <select class="form-control" id="loadingTime" name="loadingTime" readonly>
+                  <option value="" selected disabled hidden>Please Select</option>
+                  <option value="M">Morning</option>
+                  <option value="N">Night</option>
+                </select>
+              </div>
+            </div>
+          </div>  
+          <div class="row">
+            <div class="col-4">
+              <div class="form-group">
+                <label>Sent on Date *</label>
+                  <div class='input-group date' id="sentOnDate" data-target-input="nearest">
+                    <input type='text' class="form-control datetimepicker-input" data-target="#sentOnDate" id="sent_on_date" name="sentOnDate"/>
+                    <div class="input-group-append" data-target="#sentOnDate" data-toggle="datetimepicker">
+                      <div class="input-group-text"><i class="fa fa-calendar"></i></div>
+                    </div>
+                  </div>
+              </div>
+            </div>
+            <div class="col-4">
+              <div class="form-group">
+                <label>Back On Date *</label>
+                  <div class='input-group date' id="backOnDate" data-target-input="nearest">
+                    <input type='text' class="form-control datetimepicker-input" data-target="#backOnDate" id="back_on_date" name="backOnDate"/>
+                    <div class="input-group-append" data-target="#backOnDate" data-toggle="datetimepicker">
+                      <div class="input-group-text"><i class="fa fa-calendar"></i></div>
+                    </div>
+                  </div>
+              </div>
+            </div>
+            <div class="col-4">
+              <div class="form-group">
+                <label>GRN Received *</label>
+                <input class="form-control" type="text" placeholder="GRN No." id="grn_received" name="grn_received">
+              </div>
+            </div>
+          </div>
 
           <div class="row">
             <h4>Reject Item</h4>
@@ -434,13 +624,13 @@ else{
   </div>
 </div>
 
-<div class="modal fade" id="updateModal">
+<div class="modal fade" id="printDOModal">
   <div class="modal-dialog modal-xl" style="max-width: 50%;">
     <div class="modal-content">
 
-      <form role="form" id="updateForm">
+      <form role="form" id="printDOForm">
         <div class="modal-header bg-gray-dark color-palette">
-          <h4 class="modal-title">Update Status</h4>
+          <h4 class="modal-title">Assigned Driver</h4>
           <button type="button" class="close bg-gray-dark color-palette" data-dismiss="modal" aria-label="Close">
             <span aria-hidden="true">&times;</span>
           </button>
@@ -451,12 +641,49 @@ else{
           <div class="row">
             <div class="col-6">
               <div class="form-group">
-                <label>Status *</label>
-                <select class="form-control" id="status" name="status">
-                  <option value="" selected disabled hidden>Please Select</option>
-                  <option value="Loaded">Post to Loading</option>
-                  <option value="Delivered">Delivered</option>
-                </select>
+                <label>Driver Name *</label>
+                <input class="form-control" type="text" placeholder="Driver Name" id="driver" name="driver" />
+              </div>
+              <div class="form-group">
+                <label>Lorry No *</label>
+                <input class="form-control" type="text" placeholder="Lorry Number" id="lorry" name="lorry" />
+              </div>
+            </div>
+          </div>  
+        </div>
+
+        <div class="modal-footer justify-content-between bg-gray-dark color-palette">
+          <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+          <button type="submit" class="btn btn-primary" id="saveButton">Save changes</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="printReportModal">
+  <div class="modal-dialog modal-xl" style="max-width: 50%;">
+    <div class="modal-content">
+
+      <form role="form" id="printReportForm">
+        <div class="modal-header bg-gray-dark color-palette">
+          <h4 class="modal-title">Assigned Driver</h4>
+          <button type="button" class="close bg-gray-dark color-palette" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+
+        <div class="modal-body">
+          <input type="hidden" class="form-control" id="id" name="id">
+          <div class="row">
+            <div class="col-6">
+              <div class="form-group">
+                <label>Driver Name *</label>
+                <input class="form-control" type="text" placeholder="Driver Name" id="driver" name="driver" />
+              </div>
+              <div class="form-group">
+                <label>Lorry No *</label>
+                <input class="form-control" type="text" placeholder="Lorry Number" id="lorry" name="lorry" />
               </div>
             </div>
           </div>  
@@ -596,11 +823,13 @@ $(function () {
   //Date picker
   $('#fromDatePicker').datetimepicker({
       icons: { time: 'far fa-clock' },
+      format: 'DD/MM/YYYY',
       defaultDate: new Date
   });
 
   $('#toDatePicker').datetimepicker({
       icons: { time: 'far fa-clock' },
+      format: 'DD/MM/YYYY',
       defaultDate: new Date
   });
 
@@ -714,37 +943,8 @@ $(function () {
 
   $('#filterSearch').on('click', function(){
     //$('#spinnerLoading').show();
-    var fromDateValue = '';
-    var toDateValue = '';
-
-    if($('#fromDate').val()){
-      var convert1 = $('#fromDate').val().replace(", ", " ");
-      convert1 = convert1.replace(":", "/");
-      convert1 = convert1.replace(":", "/");
-      convert1 = convert1.replace(" ", "/");
-      convert1 = convert1.replace(" pm", "");
-      convert1 = convert1.replace(" am", "");
-      convert1 = convert1.replace(" PM", "");
-      convert1 = convert1.replace(" AM", "");
-      var convert2 = convert1.split("/");
-      var date  = new Date(convert2[2], convert2[1] - 1, convert2[0], convert2[3], convert2[4], convert2[5]);
-      fromDateValue = date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate() + " " + date.getHours() + ":" + date.getMinutes() + ":" + date.getSeconds();
-    }
-    
-    if($('#toDate').val()){
-      var convert3 = $('#toDate').val().replace(", ", " ");
-      convert3 = convert3.replace(":", "/");
-      convert3 = convert3.replace(":", "/");
-      convert3 = convert3.replace(" ", "/");
-      convert3 = convert3.replace(" pm", "");
-      convert3 = convert3.replace(" am", "");
-      convert3 = convert3.replace(" PM", "");
-      convert3 = convert3.replace(" AM", "");
-      var convert4 = convert3.split("/");
-      var date2  = new Date(convert4[2], convert4[1] - 1, convert4[0], convert4[3], convert4[4], convert4[5]);
-      toDateValue = date2.getFullYear() + "-" + (date2.getMonth() + 1) + "-" + date2.getDate() + " " + date2.getHours() + ":" + date2.getMinutes() + ":" + date2.getSeconds();
-    }
-
+    var fromDateValue = $('#fromDate').val();
+    var toDateValue = $('#toDate').val();
     var stateFilter = $('#stateFilter').val() ? $('#stateFilter').val() : '';
     var customerNoFilter = $('#customerNoFilter').val() ? $('#customerNoFilter').val() : '';
     var zonesFilter = $('#zonesFilter').val() ? $('#zonesFilter').val() : '';
@@ -779,8 +979,7 @@ $(function () {
       },
       'columns': [
         {
-          // Add a checkbox with a unique ID for each row
-          data: 'id', // Assuming 'serialNo' is a unique identifier for each row
+          data: 'id',
           className: 'select-checkbox',
           orderable: false,
           render: function (data, type, row) {
@@ -846,6 +1045,52 @@ $(function () {
           }
 
           $('#spinnerLoading').hide();
+        });
+      }
+      else if($('#printDOModal').hasClass('show')){
+        $.post('php/print_big_do.php', $('#printDOForm').serialize(), function(data){
+          var obj = JSON.parse(data);
+      
+          if(obj.status === 'success'){
+            $('#printDOModal').modal('hide');
+            $('#weightTable').DataTable().ajax.reload();
+            var printWindow = window.open('', '', 'height=400,width=800');
+            printWindow.document.write(obj.message);
+            printWindow.document.close();
+            setTimeout(function(){
+              printWindow.print();
+              printWindow.close();
+            }, 1000);
+          }
+          else if(obj.status === 'failed'){
+            toastr["error"](obj.message, "Failed:");
+          }
+          else{
+            toastr["error"]("Something wrong when pull data", "Failed:");
+          }
+        });
+      }
+      else if($('#printReportModal').hasClass('show')){
+        $.post('php/print_loading_report.php', $('#printReportForm').serialize(), function(data){
+          var obj = JSON.parse(data);
+      
+          if(obj.status === 'success'){
+            $('#printReportModal').modal('hide');
+            $('#weightTable').DataTable().ajax.reload();
+            var printWindow = window.open('', '', 'height=400,width=800');
+            printWindow.document.write(obj.message);
+            printWindow.document.close();
+            setTimeout(function(){
+              printWindow.print();
+              printWindow.close();
+            }, 1000);
+          }
+          else if(obj.status === 'failed'){
+            toastr["error"](obj.message, "Failed:");
+          }
+          else{
+            toastr["error"]("Something wrong when pull data", "Failed:");
+          }
         });
       }
     }
@@ -1113,6 +1358,74 @@ $(function () {
       $('#totalCarton').val(totalAmount);
     });
   });
+
+  $('#printBigDo').on('click', function () {
+    var selectedIds = []; // An array to store the selected 'id' values
+
+    $("#weightTable tbody input[type='checkbox']").each(function () {
+      if (this.checked) {
+        selectedIds.push($(this).val());
+      }
+    });
+
+    if (selectedIds.length > 0) {
+      $("#printDOModal").find('#id').val(selectedIds);
+      $("#printDOModal").find('#driver').val('');
+      $("#printDOModal").find('#lorry').val('');
+      $("#printDOModal").modal("show");
+
+      $('#printDOForm').validate({
+        errorElement: 'span',
+        errorPlacement: function (error, element) {
+          error.addClass('invalid-feedback');
+          element.closest('.form-group').append(error);
+        },
+        highlight: function (element, errorClass, validClass) {
+          $(element).addClass('is-invalid');
+        },
+        unhighlight: function (element, errorClass, validClass) {
+          $(element).removeClass('is-invalid');
+        }
+      });
+    } else {
+      // Optionally, you can display a message or take another action if no IDs are selected
+      alert("Please select at least one DO to Deliver.");
+    }
+  });
+
+  $('#printLoading').on('click', function () {
+    var selectedIds = []; // An array to store the selected 'id' values
+
+    $("#weightTable tbody input[type='checkbox']").each(function () {
+      if (this.checked) {
+        selectedIds.push($(this).val());
+      }
+    });
+
+    if (selectedIds.length > 0) {
+      $("#printReportModal").find('#id').val(selectedIds);
+      $("#printReportModal").find('#driver').val('');
+      $("#printReportModal").find('#lorry').val('');
+      $("#printReportModal").modal("show");
+
+      $('#printReportForm').validate({
+        errorElement: 'span',
+        errorPlacement: function (error, element) {
+          error.addClass('invalid-feedback');
+          element.closest('.form-group').append(error);
+        },
+        highlight: function (element, errorClass, validClass) {
+          $(element).addClass('is-invalid');
+        },
+        unhighlight: function (element, errorClass, validClass) {
+          $(element).removeClass('is-invalid');
+        }
+      });
+    } else {
+      // Optionally, you can display a message or take another action if no IDs are selected
+      alert("Please select at least one DO to Load.");
+    }
+  });
 });
 
 function format (row) {
@@ -1139,9 +1452,10 @@ function format (row) {
   ')"><i class="fas fa-trash"></i></button></div><div class="col-3"><button type="button" class="btn btn-info btn-sm" onclick="picked('+row.id+
   ')"><i class="fas fa-pallet"></i></button></div></div></div></div>';
   }
-  else if(row.status == 'Loaded'){
+  else if(row.status == 'Posted'){
     returnString +='<div class="row"><div class="col-3"><button type="button" class="btn btn-warning btn-sm" onclick="edit('+row.id+
-  ')"><i class="fas fa-pen"></i></button></div><div class="col-3"><button type="button" class="btn btn-info btn-sm" onclick="delivered('+row.id+
+  ')"><i class="fas fa-pen"></i></button></div><div class="col-3"><button type="button" class="btn btn-danger btn-sm" onclick="reject('+row.id+
+  ')"><i class="fas fa-times"></i></button></div><div class="col-3"><button type="button" class="btn btn-info btn-sm" onclick="delivered('+row.id+
   ')"><i class="fas fa-truck"></i></button></div></div></div></div>';
   }
   else if(row.status == 'Delivered'){
@@ -1225,6 +1539,72 @@ function edit(id) {
       $('#extendModal').modal('show');
 
       $('#extendForm').validate({
+        errorElement: 'span',
+        errorPlacement: function (error, element) {
+          error.addClass('invalid-feedback');
+          element.closest('.form-group').append(error);
+        },
+        highlight: function (element, errorClass, validClass) {
+          $(element).addClass('is-invalid');
+        },
+        unhighlight: function (element, errorClass, validClass) {
+          $(element).removeClass('is-invalid');
+        }
+      });
+    }
+    else if(obj.status === 'failed'){
+      toastr["error"](obj.message, "Failed:");
+    }
+    else{
+      toastr["error"]("Something wrong when pull data", "Failed:");
+    }
+    $('#spinnerLoading').hide();
+  });
+}
+
+function reject(id) {
+  $('#spinnerLoading').show();
+  $.post('php/getDO.php', {userID: id}, function(data){
+    var obj = JSON.parse(data);
+    
+    if(obj.status === 'success'){
+      $('#updateModal').find('#id').val(obj.message.id);
+      $('#updateModal').find('#booking_date').val(obj.message.booking_date.toLocaleString('en-AU', { hour12: false }));
+      $('#updateModal').find('#delivery_date').val(obj.message.delivery_date.toLocaleString('en-AU', { hour12: false }));
+      $('#updateModal').find('#cancellation_date').val(obj.message.cancellation_date.toLocaleString('en-AU', { hour12: false }));
+      $('#updateModal').find('#customerNo').val(obj.message.customer);
+      $('#updateModal').find('#hypermarket').val(obj.message.hypermarket);
+      $('#updateModal').find('#states').val(obj.message.states);
+      $('#updateModal').find('#states').trigger('change');
+      $('#updateModal').find('#zones').val(obj.message.zone);
+      $('#updateModal').find('#hypermarket').trigger('change');
+      $('#updateModal').find('#do_type').val(obj.message.do_type);
+      $('#updateModal').find('#do_no').val(obj.message.do_number);
+      $('#updateModal').find('#po_no').val(obj.message.po_number);
+      $('#updateModal').find('#description').val(obj.message.note);
+      $('#updateModal').find('#actual_ctn').val(obj.message.actual_carton);
+      $('#updateModal').find('#need_grn').val(obj.message.need_grn);
+      $('#updateModal').find('#loadingTime').val(obj.message.loading_time);
+
+      if(obj.message.hypermarket == '0'){
+        $('#updateModal').find('#outlets').empty().val(obj.message.outlet);
+        $('#updateModal').find('#outlets').attr('required', false);
+        $('#updateModal').find('#direct_store').attr('required', true);
+        $('#updateModal').find('#direct_store').val(obj.message.direct_store);
+        $('#updateModal').find('#outlets').hide();
+        $('#updateModal').find("#direct_store").show();
+      }
+      else{
+        $('#updateModal').find('#zones').empty().val(obj.message.zone);
+        $('#updateModal').find('#outlets').attr('required', true);
+        $('#updateModal').find('#outlets').show();
+        $('#updateModal').find('#direct_store').val('');
+        $('#updateModal').find("#direct_store").hide();
+      }
+      
+      $('#updateModal').modal('show');
+
+      $('#updateForm').validate({
         errorElement: 'span',
         errorPlacement: function (error, element) {
           error.addClass('invalid-feedback');

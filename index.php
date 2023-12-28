@@ -413,6 +413,20 @@ to get the desired effect
               </li>
               <li class="nav-item has-treeview">
                 <a href="#" class="nav-link">
+                  <i class="nav-icon fas fa-users"></i>
+                  <p>Driver Management<i class="fas fa-angle-left right"></i></p>
+                </a>
+                <ul class="nav nav-treeview" style="display: none;">
+                  <li class="nav-item">
+                    <a href="#drivers" data-file="drivers.php" class="nav-link link">
+                      <i class="nav-icon fas fa-user"></i>
+                      <p>Drivers</p>
+                    </a>
+                  </li>
+                </ul>
+              </li>
+              <li class="nav-item has-treeview">
+                <a href="#" class="nav-link">
                   <i class="nav-icon fas fa-database"></i>
                   <p>Master Data<i class="fas fa-angle-left right"></i></p>
                 </a>
@@ -469,12 +483,6 @@ to get the desired effect
                     <a href="#vehicles" data-file="vehicles.php" class="nav-link link">
                       <i class="nav-icon fas fa-car"></i>
                       <p>Vehicles</p>
-                    </a>
-                  </li>
-                  <li class="nav-item">
-                    <a href="#drivers" data-file="drivers.php" class="nav-link link">
-                      <i class="nav-icon fas fa-user"></i>
-                      <p>Drivers</p>
                     </a>
                   </li>
                   <li class="nav-item">

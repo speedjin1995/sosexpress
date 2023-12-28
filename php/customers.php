@@ -22,6 +22,10 @@ $_POST['email'], $_POST['payment_term'])){
     $email = filter_input(INPUT_POST, 'email', FILTER_SANITIZE_STRING);
     $payment_term = filter_input(INPUT_POST, 'payment_term', FILTER_SANITIZE_STRING);
 
+    $phone2 = null;
+    $phone3 = null;
+    $phone4 = null;
+    $workingHours = null;
     $shortname = null;
     $pic = null;
     $term = null;
@@ -32,6 +36,22 @@ $_POST['email'], $_POST['payment_term'])){
     $size = $_POST['size'];
     $description = $_POST['description'];
     $price = $_POST['price'];
+
+    if(isset($_POST['phone2']) && $_POST['phone2'] != null && $_POST['phone2'] != ''){
+        $phone2 = filter_input(INPUT_POST, 'phone2', FILTER_SANITIZE_STRING);
+    }
+
+    if(isset($_POST['phone3']) && $_POST['phone3'] != null && $_POST['phone3'] != ''){
+        $phone3 = filter_input(INPUT_POST, 'phone3', FILTER_SANITIZE_STRING);
+    }
+
+    if(isset($_POST['phone4']) && $_POST['phone4'] != null && $_POST['phone4'] != ''){
+        $phone4 = filter_input(INPUT_POST, 'phone4', FILTER_SANITIZE_STRING);
+    }
+
+    if(isset($_POST['workingHours']) && $_POST['workingHours'] != null && $_POST['workingHours'] != ''){
+        $workingHours = filter_input(INPUT_POST, 'workingHours', FILTER_SANITIZE_STRING);
+    }
 
     if(isset($_POST['shortname']) && $_POST['shortname'] != null && $_POST['shortname'] != ''){
         $shortname = filter_input(INPUT_POST, 'shortname', FILTER_SANITIZE_STRING);
@@ -70,9 +90,9 @@ $_POST['email'], $_POST['payment_term'])){
                 }
             }
 
-            if ($update_stmt = $db->prepare("UPDATE customers SET username=?, customer_code=?, customer_name=?, short_name=?, reg_no=?, pic=?, customer_address=?, customer_phone=?, customer_email=?, payment_term=?, payment_details=?, pricing=?, notes=? WHERE id=?")) {
+            if ($update_stmt = $db->prepare("UPDATE customers SET username=?, customer_code=?, customer_name=?, short_name=?, reg_no=?, pic=?, customer_address=?, customer_phone=?, customer_phone2=?, customer_phone3=?, customer_phone4=?, customer_email=?, working_hours=?, payment_term=?, payment_details=?, pricing=?, notes=? WHERE id=?")) {
                 $data = json_encode($pricing);
-                $update_stmt->bind_param('ssssssssssssss', $username, $code, $name, $shortname, $reg_no, $pic, $address, $phone, $email, $payment_term, $term, $data, $note, $_POST['id']);
+                $update_stmt->bind_param('ssssssssssssssssss', $username, $code, $name, $shortname, $reg_no, $pic, $address, $phone, $phone2, $phone3, $phone4, $email, $workingHours, $payment_term, $term, $data, $note, $_POST['id']);
                 
                 // Execute the prepared query.
                 if (! $update_stmt->execute()) {
@@ -119,9 +139,9 @@ $_POST['email'], $_POST['payment_term'])){
                 }
             }
 
-            if ($insert_stmt = $db->prepare("INSERT INTO customers (username, password, salt, customer_code, customer_name, short_name, reg_no, pic, customer_address, customer_phone, customer_email, payment_term, payment_details, pricing, notes) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")) {
+            if ($insert_stmt = $db->prepare("INSERT INTO customers (username, password, salt, customer_code, customer_name, short_name, reg_no, pic, customer_address, customer_phone, customer_phone2, customer_phone3, customer_phone4, customer_email, working_hours, payment_term, payment_details, pricing, notes) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")) {
                 $data = json_encode($pricing);
-                $insert_stmt->bind_param('sssssssssssssss', $username, $password, $random_salt, $code, $name, $shortname, $reg_no, $pic, $address, $phone, $email, $payment_term, $term, $data, $note);
+                $insert_stmt->bind_param('sssssssssssssssssss', $username, $password, $random_salt, $code, $name, $shortname, $reg_no, $pic, $address, $phone, $phone2, $phone3, $phone4, $email, $workingHours, $payment_term, $term, $data, $note);
                 
                 // Execute the prepared query.
                 if (! $insert_stmt->execute()) {

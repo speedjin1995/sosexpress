@@ -104,9 +104,25 @@ else{
                         <label for="phone">Phone *</label>
                         <input type="text" class="form-control" name="phone" id="phone" placeholder="01x-xxxxxxx" required>
                     </div>
+                    <div class="form-group col-6">
+                        <label for="phone">Phone 2</label>
+                        <input type="text" class="form-control" name="phone2" id="phone2" placeholder="01x-xxxxxxx">
+                    </div>
+                    <div class="form-group col-6">
+                        <label for="phone">Phone 3</label>
+                        <input type="text" class="form-control" name="phone3" id="phone3" placeholder="01x-xxxxxxx">
+                    </div>
+                    <div class="form-group col-6">
+                        <label for="phone">Phone 4</label>
+                        <input type="text" class="form-control" name="phone4" id="phone4" placeholder="01x-xxxxxxx">
+                    </div>
                     <div class="form-group col-6"> 
                         <label for="email">Email *</label>
                         <input type="email" class="form-control" id="email" name="email" placeholder="Enter your email" required>
+                    </div>
+                    <div class="form-group col-6">
+                        <label for="phone">Working Hours</label>
+                        <input type="text" class="form-control" name="workingHours" id="workingHours">
                     </div>
                     <div class="form-group col-6"> 
                         <label for="payment_term">Payment Term *</label>
@@ -235,6 +251,7 @@ $(function () {
             $('#spinnerLoading').show();
             if($('#addModal').hasClass('show')){
                 $.post('php/customers.php', $('#customerForm').serialize(), function(data){
+                    debugger;
                     var obj = JSON.parse(data); 
                     
                     if(obj.status === 'success'){
@@ -289,6 +306,10 @@ $(function () {
         $('#addModal').find('#pic').val("");
         $('#addModal').find('#address').val("");
         $('#addModal').find('#phone').val("");
+        $('#addModal').find('#phone2').val("");
+        $('#addModal').find('#phone3').val("");
+        $('#addModal').find('#phone4').val("");
+        $('#addModal').find('#workingHours').val("");
         $('#addModal').find('#email').val("");
         $('#addModal').find('#payment_term').val("");
         $('#addModal').find('#term').val("");
@@ -390,6 +411,10 @@ function edit(id){
             $('#addModal').find('#reg_no').val(obj.message.reg_no);
             $('#addModal').find('#address').val(obj.message.customer_address);
             $('#addModal').find('#phone').val(obj.message.customer_phone);
+            $('#addModal').find('#phone2').val(obj.message.customer_phone2);
+            $('#addModal').find('#phone3').val(obj.message.customer_phone3);
+            $('#addModal').find('#phone4').val(obj.message.customer_phone4);
+            $('#addModal').find('#workingHours').val(obj.message.working_hours);
             $('#addModal').find('#email').val(obj.message.customer_email);
             $('#addModal').find('#payment_term').val(obj.message.payment_term);
             $('#addModal').find('#shortname').val(obj.message.short_name);
