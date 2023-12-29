@@ -25,6 +25,8 @@ else{
   $branch2 = $db->query("SELECT * FROM branch WHERE deleted = '0'");
   $users = $db->query("SELECT * FROM users WHERE deleted = '0'");
   $vehicles = $db->query("SELECT * FROM vehicles WHERE deleted = '0'");
+  $vehicles2 = $db->query("SELECT * FROM vehicles WHERE deleted = '0'");
+  $drivers = $db->query("SELECT * FROM drivers WHERE deleted = '0'");
 }
 ?>
 
@@ -373,11 +375,21 @@ else{
             <div class="col-6">
               <div class="form-group">
                 <label>Driver Name *</label>
-                <input class="form-control" type="text" placeholder="Driver Name" id="driver" name="driver" />
+                <select class="form-control" id="driver" name="driver" required>
+                  <option value="" selected disabled hidden>Please Select</option>
+                  <?php while($rowdrivers2=mysqli_fetch_assoc($drivers)){ ?>
+                    <option value="<?=$rowdrivers2['id'] ?>"><?=$rowdrivers2['name'] ?></option>
+                  <?php } ?>
+                </select>
               </div>
               <div class="form-group">
                 <label>Lorry No *</label>
-                <input class="form-control" type="text" placeholder="Lorry Number" id="lorry" name="lorry" />
+                <select class="form-control" id="lorry" name="lorry" required>
+                  <option value="" selected disabled hidden>Please Select</option>
+                  <?php while($rowvehicles2=mysqli_fetch_assoc($vehicles2)){ ?>
+                    <option value="<?=$rowvehicles2['veh_number'] ?>"><?=$rowvehicles2['veh_number'] ?></option>
+                  <?php } ?>
+                </select>
               </div>
             </div>
           </div>  
@@ -499,7 +511,7 @@ $(function () {
             var response = JSON.parse(data);
 
             if (response.status == 'success') {
-                var tableContent = '<table class="table">';
+                var tableContent = '<h2>'+response.message[0].customer_name+'</h2><table class="table" style="width:100%;">';
                 tableContent += '<thead><tr><th></th><th>Outlet</th><th>Booking Date</th><th>Number of Carton</th><th>DO No.</th><th>PO No.</th><th>Notes</th></tr></thead><tbody>';
 
                 // Loop through each item in the 'message' array

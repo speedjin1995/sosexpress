@@ -7,9 +7,57 @@ if(isset($_POST['id'], $_POST['driver'], $_POST['lorry'])){
     $arrayOfId = explode(",", $selectedIds);
     $driver = filter_input(INPUT_POST, 'driver', FILTER_SANITIZE_STRING);
     $lorry = filter_input(INPUT_POST, 'lorry', FILTER_SANITIZE_STRING);
+    $driverName = '';
+    $driverIc = '';
+    $driverPhone = '';
+    $do = '';
+    $todayDate = date('d/m/Y');
+    $today = date("Y-m-d 00:00:00");
+
+    if ($update_stmt = $db->prepare("SELECT * FROM drivers WHERE id=?")) {
+        $update_stmt->bind_param('s', $driver);
+        
+        if ($update_stmt->execute()) {
+            $result = $update_stmt->get_result();
+            $message = array();
+            
+            if ($row = $result->fetch_assoc()) {
+                $driverName = $row['name'];
+                $driverIc = $row['ic_number'];
+                $driverPhone = $row['contact_no'];
+            }  
+        }
+    }
+    
+    
+    if ($select_stmt2 = $db->prepare("SELECT COUNT(*) FROM do_request WHERE delivery_date >= ?")) {
+        $select_stmt2->bind_param('s', $today);
+        
+        // Execute the prepared query.
+        if ($select_stmt2->execute()) {
+            $result = $select_stmt2->get_result();
+            $count = 1;
+            $do = 'DO-'.date("ym")."-";
+            
+            if ($row = $result->fetch_assoc()) {
+                $count = (int)$row['COUNT(*)'] + 1;
+                $select_stmt2->close();
+            }
+
+            $charSize = strlen(strval($count));
+
+            for($i=0; $i<(3-(int)$charSize); $i++){
+                $do.='0';
+            }
+    
+            $do .= strval($count);
+        }
+    }
+
     $placeholders = implode(',', array_fill(0, count($arrayOfId), '?'));
-    $todayDate = date('Y-m-d');
-    $select_stmt = $db->prepare("SELECT customers.customer_name, booking.estimated_ctn, booking.internal_notes FROM customers, booking WHERE booking.customer = customers.id AND booking.id IN ($placeholders)");
+    $select_stmt = $db->prepare("SELECT outlet.name, do_request.do_number, do_request.do_details, do_request.po_number, 
+    do_request.note, do_request.actual_carton FROM outlet, do_request WHERE do_request.outlet = outlet.id AND 
+    do_request.id IN ($placeholders)");
 
     // Check if the statement is prepared successfully
     if ($select_stmt) {
@@ -17,10 +65,40 @@ if(isset($_POST['id'], $_POST['driver'], $_POST['lorry'])){
         $types = str_repeat('i', count($arrayOfId)); // Assuming the IDs are integers
         $select_stmt->bind_param($types, ...$arrayOfId);
         $select_stmt->execute();
-        $select_stmt->bind_result($customer_name, $estimated_ctn, $internal_notes);
+        $select_stmt->bind_result($outlet_name, $do_number, $do_details, $po_number, $note, $actual_carton);
         $results = array();
         $index = 1;
-        $count = 0;
+
+        while ($select_stmt->fetch()) {
+            if($do_details == null || $do_details == ''){
+                $results[]=array(
+                    'index' => $index,
+                    'notes' => $note,
+                    'po' => $po_number,
+                    'do' => $do_number,
+                    'carton' => $actual_carton,
+                    'outlet' => $outlet_name
+                );
+
+                $index++;
+            }
+            else{
+                $poList = json_decode($do_details, true);
+
+                for($i=0; $i<count($poList); $i++){
+                    $results[]=array(
+                        'index' => $index,
+                        'notes' => $note,
+                        'po' => $poList[$i]['poNumber'],
+                        'do' => $poList[$i]['doNumber'],
+                        'carton' => $actual_carton,
+                        'outlet' => $outlet_name
+                    );
+
+                    $index++;
+                }
+            }
+        }
 
         $message = '<html>
             <head>
@@ -76,33 +154,82 @@ if(isset($_POST['id'], $_POST['driver'], $_POST['lorry'])){
                 </style>
             </head>
             <body>
-                <table style="width:100%" class="table-bordered">
-                    <tbody>
-                        <tr>
-                            <td colspan="4">
-                                <span>DAILY PICK UP LIST<span>
-                                <span style="float: right;">DATE: '.$todayDate.'<span>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td colspan="4">
-                                <span>DRIVER: '.$driver.'<span>
-                                <span style="float: right;">LORRY NO: '.$lorry.'<span>
-                            </td>
-                        </tr>
-                        <tr>
-                            <th>NO.</th>
-                            <th>PICKUP CUSTOMER NAME</th>
-                            <th>CTN</th>
-                            <th>NOTES</th>
-                        </tr>';
+            <br><br><br><br><br><br><br><br>
+            <table style="width:100%">
+                <tbody>
+                    <tr>
+                        <td style="width:70%">
+                            <span>TO: '.$results[0]['outlet'].'<span>
+                        </td>
+                        <td style="width:30%">
+                            <span>NO. : '.$do.'<span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td style="width:70%"></td>
+                        <td style="width:30%">
+                            <span>Date: '.$todayDate.'<span>
+                        </td>
+                    </tr>
+                </tbody>
+            </table><br><br><br>
+            <table style="width:100%">
+                <tbody>';
 
-        while ($select_stmt->fetch()) {
-            $message .= '<tr><td>'.$index.'</td><td>'.$customer_name.'</td><td>'.$estimated_ctn.'</td><td>'.$internal_notes.'</td></tr>';
-            $count += (int)$estimated_ctn;
+        $count = 0;
+        for($j=0; $j<count($results); $j++) {
+            $message .= '<tr><td>'.$results[$j]['index'].'</td><td>'.$results[$j]['notes'].'</td><td>'.$results[$j]['po'].'</td><td>'.$results[$j]['do'].'</td><td style="text-align: center;">'.$results[$j]['carton'].'</td></tr>';
+            $count += (int)$results[$j]['carton'];
         }
 
-        $message .= '</tbody><tfoot><th colspan="2" style="text-align: right;">TOTAL CTN</th><th>'.$count.'</th><th></th></tfoot></table></html>';
+        $message .= '</tbody><tfoot>
+        <tr>
+            <th colspan="4"></th>
+            <th>'.$count.'</th>
+        </tr>
+    </tfoot></table><br><br><br>
+    <table style="width:100%">
+        <tbody>
+            <tr>
+                <td style="width:60%"></td>
+                <td style="width:40%">
+                    <span>Phone: '.$driverPhone.'<span>
+                </td>
+            </tr>
+            <tr>
+                <td style="width:60%"></td>
+                <td style="width:40%">
+                    <span>Driver Name: '.$driverName.'<span>
+                </td>
+            </tr>
+            <tr>
+                <td style="width:60%"></td>
+                <td style="width:40%">
+                    <span>Driver IC: '.$driverIc.'<span>
+                </td>
+            </tr>
+            <tr>
+                <td style="width:60%"></td>
+                <td style="width:40%">
+                    <span>Lorry: '.$lorry.'<span>
+                </td>
+            </tr>
+        </tbody>
+    </table>';
+    
+    $message .= '</html>';
 
         // Fetch each row
         $select_stmt->close();

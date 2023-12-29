@@ -7,9 +7,24 @@ if(isset($_POST['id'], $_POST['driver'], $_POST['lorry'])){
     $arrayOfId = explode(",", $selectedIds);
     $driver = filter_input(INPUT_POST, 'driver', FILTER_SANITIZE_STRING);
     $lorry = filter_input(INPUT_POST, 'lorry', FILTER_SANITIZE_STRING);
-    $placeholders = implode(',', array_fill(0, count($arrayOfId), '?'));
     $todayDate = date('Y-m-d');
-    $select_stmt = $db->prepare("SELECT customers.customer_name, booking.estimated_ctn, booking.internal_notes FROM customers, booking WHERE booking.customer = customers.id AND booking.id IN ($placeholders)");
+    $driverName = '';
+
+    if ($update_stmt = $db->prepare("SELECT * FROM drivers WHERE id=?")) {
+        $update_stmt->bind_param('s', $driver);
+        
+        if ($update_stmt->execute()) {
+            $result = $update_stmt->get_result();
+            $message = array();
+            
+            if ($row = $result->fetch_assoc()) {
+                $driverName = $row['name'];
+            }  
+        }
+    }
+
+    $placeholders = implode(',', array_fill(0, count($arrayOfId), '?'));
+    $select_stmt = $db->prepare("SELECT customers.customer_name, customers.customer_phone, customers.customer_address, booking.estimated_ctn, booking.internal_notes FROM customers, booking WHERE booking.customer = customers.id AND booking.id IN ($placeholders)");
 
     // Check if the statement is prepared successfully
     if ($select_stmt) {
@@ -17,7 +32,7 @@ if(isset($_POST['id'], $_POST['driver'], $_POST['lorry'])){
         $types = str_repeat('i', count($arrayOfId)); // Assuming the IDs are integers
         $select_stmt->bind_param($types, ...$arrayOfId);
         $select_stmt->execute();
-        $select_stmt->bind_result($customer_name, $estimated_ctn, $internal_notes);
+        $select_stmt->bind_result($customer_name, $customer_phone, $customer_address, $estimated_ctn, $internal_notes);
         $results = array();
         $index = 1;
         $count = 0;
@@ -86,7 +101,7 @@ if(isset($_POST['id'], $_POST['driver'], $_POST['lorry'])){
                         </tr>
                         <tr>
                             <td colspan="4">
-                                <span>DRIVER: '.$driver.'<span>
+                                <span>DRIVER: '.$driverName.'<span>
                                 <span style="float: right;">LORRY NO: '.$lorry.'<span>
                             </td>
                         </tr>
@@ -98,7 +113,7 @@ if(isset($_POST['id'], $_POST['driver'], $_POST['lorry'])){
                         </tr>';
 
         while ($select_stmt->fetch()) {
-            $message .= '<tr><td>'.$index.'</td><td>'.$customer_name.'</td><td>'.$estimated_ctn.'</td><td>'.$internal_notes.'</td></tr>';
+            $message .= '<tr><td>'.$index.'</td><td>'.$customer_name.'<br>'.$customer_phone.'<br>'.$customer_address.'</td><td>'.$estimated_ctn.'</td><td>'.$internal_notes.'</td></tr>';
             $count += (int)$estimated_ctn;
         }
 

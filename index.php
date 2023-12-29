@@ -369,6 +369,12 @@ to get the desired effect
               <p>Good Return</p>
             </a>
           </li>
+          <li class="nav-item">
+            <a href="#task" data-file="task.php" class="nav-link link">
+              <i class="nav-icon fas fa-files"></i>
+              <p>Task</p>
+            </a>
+          </li>
           <li class="nav-item has-treeview">
             <a href="#" class="nav-link">
               <i class="nav-icon fas fa-book"></i>

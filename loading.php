@@ -29,6 +29,11 @@ else{
   $zones2 = $db->query("SELECT * FROM zones WHERE deleted = '0'");
   $outlet = $db->query("SELECT * FROM outlet WHERE deleted = '0'");
   $reasons = $db->query("SELECT * FROM reasons WHERE deleted = '0'");
+  $vehicles = $db->query("SELECT * FROM vehicles WHERE deleted = '0'");
+  $vehicles2 = $db->query("SELECT * FROM vehicles WHERE deleted = '0'");
+  $vehicles3 = $db->query("SELECT * FROM vehicles WHERE deleted = '0'");
+  $drivers = $db->query("SELECT * FROM drivers WHERE deleted = '0'");
+  $drivers2 = $db->query("SELECT * FROM drivers WHERE deleted = '0'");
 }
 ?>
 
@@ -642,11 +647,21 @@ else{
             <div class="col-6">
               <div class="form-group">
                 <label>Driver Name *</label>
-                <input class="form-control" type="text" placeholder="Driver Name" id="driver" name="driver" />
+                <select class="form-control" id="driver" name="driver" required>
+                  <option value="" selected disabled hidden>Please Select</option>
+                  <?php while($rowdrivers2=mysqli_fetch_assoc($drivers)){ ?>
+                    <option value="<?=$rowdrivers2['id'] ?>"><?=$rowdrivers2['name'] ?></option>
+                  <?php } ?>
+                </select>
               </div>
               <div class="form-group">
                 <label>Lorry No *</label>
-                <input class="form-control" type="text" placeholder="Lorry Number" id="lorry" name="lorry" />
+                <select class="form-control" id="lorry" name="lorry" required>
+                  <option value="" selected disabled hidden>Please Select</option>
+                  <?php while($rowvehicles2=mysqli_fetch_assoc($vehicles2)){ ?>
+                    <option value="<?=$rowvehicles2['veh_number'] ?>"><?=$rowvehicles2['veh_number'] ?></option>
+                  <?php } ?>
+                </select>
               </div>
             </div>
           </div>  
@@ -679,11 +694,21 @@ else{
             <div class="col-6">
               <div class="form-group">
                 <label>Driver Name *</label>
-                <input class="form-control" type="text" placeholder="Driver Name" id="driver" name="driver" />
+                <select class="form-control" id="driver" name="driver" required>
+                  <option value="" selected disabled hidden>Please Select</option>
+                  <?php while($rowdrivers=mysqli_fetch_assoc($drivers2)){ ?>
+                    <option value="<?=$rowdrivers['id'] ?>"><?=$rowdrivers['name'] ?></option>
+                  <?php } ?>
+                </select>
               </div>
               <div class="form-group">
                 <label>Lorry No *</label>
-                <input class="form-control" type="text" placeholder="Lorry Number" id="lorry" name="lorry" />
+                <select class="form-control" id="lorry" name="lorry" required>
+                  <option value="" selected disabled hidden>Please Select</option>
+                  <?php while($rowvehicles=mysqli_fetch_assoc($vehicles)){ ?>
+                    <option value="<?=$rowvehicles['veh_number'] ?>"><?=$rowvehicles['veh_number'] ?></option>
+                  <?php } ?>
+                </select>
               </div>
             </div>
           </div>  

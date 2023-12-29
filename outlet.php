@@ -52,6 +52,8 @@ else{
 							<thead>
 								<tr>
 									<th>No.</th>
+                                    <th>States</th>
+                                    <th>Zones</th>
 									<th>Hypermarket</th>
                                     <th>Outlets</th>
 									<th>Actions</th>
@@ -134,6 +136,8 @@ $(function () {
         },
         'columns': [
             { data: 'counter' },
+            { data: 'states' },
+            { data: 'zones' },
             { data: 'hypermarket' },
             { data: 'name' },
             { 

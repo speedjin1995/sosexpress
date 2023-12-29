@@ -24,6 +24,8 @@ else{
   $reasons = $db->query("SELECT * FROM reasons WHERE deleted = '0'");
   $hypermarket = $db->query("SELECT * FROM hypermarket WHERE deleted = '0'");
   $users = $db->query("SELECT * FROM users WHERE deleted = '0'");
+  $vehicles = $db->query("SELECT * FROM vehicles WHERE deleted = '0'");
+  $drivers = $db->query("SELECT * FROM drivers WHERE deleted = '0'");
 }
 ?>
 
@@ -187,10 +189,24 @@ else{
             </div>
             <div class="form-group col-4">
               <label>Driver</label>
-              <input class="form-control" type="text" placeholder="Driver" id="driver" name="driver"/>                        
+              <select class="form-control" id="driver" name="driver" >
+                <option value="" selected disabled hidden>Please Select</option>
+                <?php while($rowdrivers=mysqli_fetch_assoc($drivers)){ ?>
+                  <option value="<?=$rowdrivers['name'] ?>"><?=$rowdrivers['name'] ?></option>
+                <?php } ?>
+              </select>                      
             </div>
           </div>
           <div class="row">
+            <div class="form-group col-4">
+              <label>Lorry No</label>
+              <select class="form-control" id="lorry" name="lorry" >
+                <option value="" selected disabled hidden>Please Select</option>
+                <?php while($rowvehicles=mysqli_fetch_assoc($vehicles)){ ?>
+                  <option value="<?=$rowvehicles['veh_number'] ?>"><?=$rowvehicles['veh_number'] ?></option>
+                <?php } ?>
+              </select>                      
+            </div>
             <div class="col-4">
               <div class="form-group">
                 <label>Collection Date </label>
