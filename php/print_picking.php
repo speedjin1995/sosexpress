@@ -115,6 +115,7 @@ if(isset($_POST['id'], $_POST['driver'], $_POST['lorry'])){
         while ($select_stmt->fetch()) {
             $message .= '<tr><td>'.$index.'</td><td>'.$customer_name.'<br>'.$customer_phone.'<br>'.$customer_address.'</td><td>'.$estimated_ctn.'</td><td>'.$internal_notes.'</td></tr>';
             $count += (int)$estimated_ctn;
+            $index++;
         }
 
         $message .= '</tbody><tfoot><th colspan="2" style="text-align: right;">TOTAL CTN</th><th>'.$count.'</th><th></th></tfoot></table></html>';
