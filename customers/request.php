@@ -261,7 +261,6 @@ $(function () {
         submitHandler: function () {
             //$('#spinnerLoading').show();
             $.post('php/updateProfile.php', $('#profileForm').serialize(), function(data){
-                debugger;
                 var obj = JSON.parse(data); 
                 
                 if(obj.status === 'success'){

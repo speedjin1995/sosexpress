@@ -100,6 +100,10 @@ else{
                         <label for="address">Address *</label>
                         <textarea class="form-control" id="address" name="address" placeholder="Enter your address" required></textarea>
                     </div>
+                    <div class="form-group col-12"> 
+                        <label for="address">Pickup Address *</label>
+                        <textarea class="form-control" id="pickupaddress" name="pickupaddress" placeholder="Enter your Pickup address" required></textarea>
+                    </div>
                     <div class="form-group col-6">
                         <label for="phone">Phone *</label>
                         <input type="text" class="form-control" name="phone" id="phone" placeholder="01x-xxxxxxx" required>
@@ -119,6 +123,18 @@ else{
                     <div class="form-group col-6"> 
                         <label for="email">Email *</label>
                         <input type="email" class="form-control" id="email" name="email" placeholder="Enter your email" required>
+                    </div>
+                    <div class="form-group col-6"> 
+                        <label for="email">Email 2</label>
+                        <input type="email" class="form-control" id="email2" name="email2" placeholder="Enter your email" >
+                    </div>
+                    <div class="form-group col-6"> 
+                        <label for="email">Email 3</label>
+                        <input type="email" class="form-control" id="email3" name="email3" placeholder="Enter your email" >
+                    </div>
+                    <div class="form-group col-6"> 
+                        <label for="email">Email 4</label>
+                        <input type="email" class="form-control" id="email4" name="email4" placeholder="Enter your email" >
                     </div>
                     <div class="form-group col-6">
                         <label for="phone">Working Hours</label>
@@ -251,7 +267,6 @@ $(function () {
             $('#spinnerLoading').show();
             if($('#addModal').hasClass('show')){
                 $.post('php/customers.php', $('#customerForm').serialize(), function(data){
-                    debugger;
                     var obj = JSON.parse(data); 
                     
                     if(obj.status === 'success'){
@@ -305,12 +320,16 @@ $(function () {
         $('#addModal').find('#reg_no').val("");
         $('#addModal').find('#pic').val("");
         $('#addModal').find('#address').val("");
+        $('#addModal').find('#pickupaddress').val("");
         $('#addModal').find('#phone').val("");
         $('#addModal').find('#phone2').val("");
         $('#addModal').find('#phone3').val("");
         $('#addModal').find('#phone4').val("");
         $('#addModal').find('#workingHours').val("");
         $('#addModal').find('#email').val("");
+        $('#addModal').find('#email2').val("");
+        $('#addModal').find('#email3').val("");
+        $('#addModal').find('#email4').val("");
         $('#addModal').find('#payment_term').val("");
         $('#addModal').find('#term').val("");
         $('#addModal').find('#note').val("");
@@ -410,12 +429,16 @@ function edit(id){
             $('#addModal').find('#name').val(obj.message.customer_name);
             $('#addModal').find('#reg_no').val(obj.message.reg_no);
             $('#addModal').find('#address').val(obj.message.customer_address);
+            $('#addModal').find('#pickupaddress').val(obj.message.pickup_address);
             $('#addModal').find('#phone').val(obj.message.customer_phone);
             $('#addModal').find('#phone2').val(obj.message.customer_phone2);
             $('#addModal').find('#phone3').val(obj.message.customer_phone3);
             $('#addModal').find('#phone4').val(obj.message.customer_phone4);
             $('#addModal').find('#workingHours').val(obj.message.working_hours);
             $('#addModal').find('#email').val(obj.message.customer_email);
+            $('#addModal').find('#email2').val(obj.message.customer_email2);
+            $('#addModal').find('#email3').val(obj.message.customer_email3);
+            $('#addModal').find('#email4').val(obj.message.customer_email4);
             $('#addModal').find('#payment_term').val(obj.message.payment_term);
             $('#addModal').find('#shortname').val(obj.message.short_name);
             $('#addModal').find('#pic').val(obj.message.pic);

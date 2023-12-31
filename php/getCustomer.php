@@ -27,11 +27,15 @@ if(isset($_POST['userID'])){
                 $message['customer_code'] = $row['customer_code'];
                 $message['customer_name'] = $row['customer_name'];
                 $message['customer_address'] = $row['customer_address'];
+                $message['pickup_address'] = $row['pickup_address'];
                 $message['customer_phone'] = $row['customer_phone'];
                 $message['customer_phone2'] = $row['customer_phone2'];
                 $message['customer_phone3'] = $row['customer_phone3'];
                 $message['customer_phone4'] = $row['customer_phone4'];
                 $message['customer_email'] = $row['customer_email'];
+                $message['customer_email2'] = $row['customer_email2'];
+                $message['customer_email3'] = $row['customer_email3'];
+                $message['customer_email4'] = $row['customer_email4'];
                 $message['working_hours'] = $row['working_hours'];
                 $message['short_name'] = $row['short_name'];
                 $message['reg_no'] = $row['reg_no'];
