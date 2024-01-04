@@ -29,6 +29,7 @@ if(isset($_POST['userID'])){
                 $message["GR_No"]=$row['GR_No'];
                 $message["return_date"]=$formattedDate;
                 $message["customer"]=$row['customer'];
+                $message["vehicle"]=$row['vehicle'];
                 $message["driver"]=$row['driver'];
                 $message["return_details"]=json_decode($row['return_details'], true);
                 $message["total_carton"]=$row['total_carton'];

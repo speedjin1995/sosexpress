@@ -339,32 +339,11 @@ else{
                 </select>
               </div>
             </div>
-            <div class="col-4">
-              <div class="form-group">
-                <label>Need GRN *</label>
-                <select class="form-control" id="need_grn" name="need_grn" required>
-                  <option value="Yes">Yes</option>
-                  <option value="No">No</option>
-                </select>
-              </div>
-            </div>
-            <div class="col-4">
-              <div class="form-group">
-                <label>Loading </label>
-                <select class="form-control" id="loadingTime" name="loadingTime">
-                  <option value="" selected disabled hidden>Please Select</option>
-                  <option value="M">Morning</option>
-                  <option value="N">Night</option>
-                </select>
-              </div>
-            </div>
           </div>  
-          <div class="row">
-            <div class="col-12">
-              <div class="form-group">
-                <label class="labelStatus">Notes</label>
-                <textarea class="form-control" id="description" name="description" placeholder="Enter your description"></textarea>
-              </div>
+          <div class="col-8">
+            <div class="form-group">
+              <label class="labelStatus">Notes</label>
+              <textarea class="form-control" id="description" name="description" placeholder="Enter your description"></textarea>
             </div>
           </div>
         </div>

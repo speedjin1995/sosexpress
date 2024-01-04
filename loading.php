@@ -208,18 +208,18 @@ else{
         <div class="modal-body">
           <input type="hidden" class="form-control" id="id" name="id">
           <div class="row">
-            <div class="col-4">
+            <div class="col-3">
               <div class="form-group">
                 <label>Booking Date *</label>
-                  <div class='input-group date' id="bookingDate" data-target-input="nearest">
-                    <input type='text' class="form-control datetimepicker-input" data-target="#bookingDate" id="booking_date" name="bookingDate" readonly/>
-                    <div class="input-group-append" data-target="#bookingDate" data-toggle="datetimepicker">
-                      <div class="input-group-text"><i class="fa fa-calendar"></i></div>
-                    </div>
+                <div class='input-group date' id="bookingDate" data-target-input="nearest">
+                  <input type='text' class="form-control datetimepicker-input" data-target="#bookingDate" id="booking_date" name="bookingDate" readonly/>
+                  <div class="input-group-append" data-target="#bookingDate" data-toggle="datetimepicker">
+                    <div class="input-group-text"><i class="fa fa-calendar"></i></div>
                   </div>
+                </div>
               </div>
             </div>
-            <div class="col-4">
+            <div class="col-3">
               <div class="form-group">
                 <label>Delivery Date *</label>
                   <div class='input-group date' id="deliveryDate" data-target-input="nearest">
@@ -230,7 +230,7 @@ else{
                   </div>
               </div>
             </div>
-            <div class="col-4">
+            <div class="col-3">
               <div class="form-group">
                 <label>Cancellation Date *</label>
                   <div class='input-group date' id="cancellationDate" data-target-input="nearest">
@@ -241,9 +241,7 @@ else{
                   </div>
               </div>
             </div>
-          </div>
-          <div class="row">
-            <div class="col-4">
+            <div class="col-3">
               <div class="form-group">
                 <label class="labelStatus">Customer *</label>
                 <select class="form-control" id="customerNo" name="customerNo" readonly>
@@ -254,7 +252,9 @@ else{
                 </select>
               </div>
             </div>
-            <div class="col-4">
+          </div>
+          <div class="row">
+            <div class="col-3">
               <div class="form-group">
                 <label class="labelStatus">Hypermarket *</label>
                 <select class="form-control" id="hypermarket" name="hypermarket" readonly>
@@ -265,7 +265,7 @@ else{
                 </select>
               </div>
             </div>
-            <div class="col-4">
+            <div class="col-3">
               <div class="form-group">
                 <label class="labelStatus">States *</label>
                 <select class="form-control" id="states" name="states" readonly>
@@ -276,22 +276,22 @@ else{
                 </select>
               </div>
             </div>
-          </div>
-          <div class="row">
-            <div class="col-4">
+            <div class="col-3">
               <div class="form-group">
                 <label for="rate">Zones *</label>
                 <select class="form-control" style="width: 100%;" id="zones" name="zones" readonly></select>
               </div>
             </div>
-            <div class="col-4">
+            <div class="col-3">
               <div class="form-group">
                 <label for="rate">Outlet *</label>
                 <select class="form-control" style="width: 100%;" id="outlets" name="outlets" readonly></select>
                 <input class="form-control" type="text" placeholder="DO No." id="direct_store" name="direct_store" >
               </div>
             </div>
-            <div class="col-4">
+          </div>
+          <div class="row">
+            <div class="col-3">
               <div class="form-group">
                 <label for="rate">DO Type *</label>
                 <select class="form-control" id="do_type" name="do_type" readonly>
@@ -302,21 +302,19 @@ else{
                 </select>
               </div>
             </div>
-          </div>
-          <div class="row">
-            <div class="col-4">
+            <div class="col-3">
               <div class="form-group">
                 <label>DO No.</label>
                 <input class="form-control" type="text" placeholder="DO No." id="do_no" name="do_no" readonly>
               </div>
             </div>
-            <div class="col-4">
+            <div class="col-3">
               <div class="form-group">
                 <label>PO No.</label>
                 <input class="form-control" type="text" placeholder="PO Number" id="po_no" name="po_no" readonly>
               </div>
             </div>
-            <div class="col-4">
+            <div class="col-3">
               <div class="form-group">
                 <label>Actual Carton *</label>
                 <input class="form-control" type="number" placeholder="Actual Carton" id="actual_ctn" name="actual_ctn" readonly>
@@ -326,28 +324,7 @@ else{
           <div class="row">
             <div class="col-4">
               <div class="form-group">
-                <label>Need GRN *</label>
-                <select class="form-control" id="need_grn" name="need_grn" readonly>
-                  <option value="Yes">Yes</option>
-                  <option value="No">No</option>
-                </select>
-              </div>
-            </div>
-            <div class="col-4">
-              <div class="form-group">
-                <label>Loading </label>
-                <select class="form-control" id="loadingTime" name="loadingTime" readonly>
-                  <option value="" selected disabled hidden>Please Select</option>
-                  <option value="M">Morning</option>
-                  <option value="N">Night</option>
-                </select>
-              </div>
-            </div>
-          </div>  
-          <div class="row">
-            <div class="col-4">
-              <div class="form-group">
-                <label>Sent on Date *</label>
+                <label>Sent on Date </label>
                   <div class='input-group date' id="sentOnDate" data-target-input="nearest">
                     <input type='text' class="form-control datetimepicker-input" data-target="#sentOnDate" id="sent_on_date" name="sentOnDate"/>
                     <div class="input-group-append" data-target="#sentOnDate" data-toggle="datetimepicker">
@@ -358,7 +335,7 @@ else{
             </div>
             <div class="col-4">
               <div class="form-group">
-                <label>Back On Date *</label>
+                <label>Back On Date </label>
                   <div class='input-group date' id="backOnDate" data-target-input="nearest">
                     <input type='text' class="form-control datetimepicker-input" data-target="#backOnDate" id="back_on_date" name="backOnDate"/>
                     <div class="input-group-append" data-target="#backOnDate" data-toggle="datetimepicker">
@@ -369,7 +346,7 @@ else{
             </div>
             <div class="col-4">
               <div class="form-group">
-                <label>GRN Received *</label>
+                <label>GRN Received </label>
                 <input class="form-control" type="text" placeholder="GRN No." id="grn_received" name="grn_received">
               </div>
             </div>
@@ -774,6 +751,8 @@ else{
 </script>
 
 <script>
+var pricingCount = $("#pricingTable").find(".details").length;
+
 $(function () {
   $("#zoneHidden").hide();
   $("#branchHidden").hide();
@@ -1036,7 +1015,7 @@ $(function () {
     submitHandler: function () {
       if($('#extendModal').hasClass('show')){
         $('#spinnerLoading').show();
-        $.post('php/doRequest.php', $('#extendForm').serialize(), function(data){
+        $.post('php/loading.php', $('#extendForm').serialize(), function(data){
           var obj = JSON.parse(data); 
           if(obj.status === 'success'){
             $('#extendModal').modal('hide');
@@ -1342,6 +1321,17 @@ $(function () {
     });
   });
 
+  $("#pricingTable").on('change', 'input[id^="price"]', function(){
+    var totalAmount = 0;
+
+    $('#pricingTable tr.details').each(function () {
+      // Get the values of itemPrice and itemWeight for the current row
+      var itemPrice = parseFloat($(this).find('input[id^="price"]').val()) || 0;
+      totalAmount += itemPrice;
+      $('#totalAmount').val(parseFloat(totalAmount).toFixed(2));
+    });
+  });
+
   $(".add-reject").click(function(){
     var $addContents = $("#pricingDetails2").clone();
     $("#pricingTable2").append($addContents.html());
@@ -1528,14 +1518,26 @@ function edit(id) {
     
     if(obj.status === 'success'){
       $('#extendModal').find('#id').val(obj.message.id);
-      $('#extendModal').find('#booking_date').val(obj.message.booking_date.toLocaleString('en-AU', { hour12: false }));
-      $('#extendModal').find('#delivery_date').val(obj.message.delivery_date.toLocaleString('en-AU', { hour12: false }));
-      $('#extendModal').find('#cancellation_date').val(obj.message.cancellation_date.toLocaleString('en-AU', { hour12: false }));
+      $('#extendModal').find('#booking_date').val(formatDate2(new Date(obj.message.booking_date)));
+      $('#extendModal').find('#delivery_date').val(formatDate2(new Date(obj.message.delivery_date)));
+      $('#extendModal').find('#cancellation_date').val(formatDate2(new Date(obj.message.cancellation_date)));
       $('#extendModal').find('#customerNo').val(obj.message.customer);
       $('#extendModal').find('#hypermarket').val(obj.message.hypermarket);
       $('#extendModal').find('#states').val(obj.message.states);
-      $('#extendModal').find('#states').trigger('change');
-      $('#extendModal').find('#zones').val(obj.message.zone);
+
+      $('#extendModal').find('#zones').empty();
+      var dataIndexToMatch = obj.message.states;
+
+      $('#zoneHidden option').each(function() {
+        var dataIndex = $(this).data('index');
+
+        if (dataIndex == dataIndexToMatch) {
+          $('#extendModal').find('#zones').append($(this).clone());
+          $('#extendModal').find('#zones').val(obj.message.zone);
+          $('#extendModal').find('#zones').trigger('change');
+        }
+      });
+
       $('#extendModal').find('#hypermarket').trigger('change');
       $('#extendModal').find('#do_type').val(obj.message.do_type);
       $('#extendModal').find('#do_no').val(obj.message.do_number);
@@ -1546,19 +1548,23 @@ function edit(id) {
       $('#extendModal').find('#loadingTime').val(obj.message.loading_time);
 
       if(obj.message.hypermarket == '0'){
+        $('#extendModal').find('#hypermarket').trigger('change');
         $('#extendModal').find('#outlets').empty().val(obj.message.outlet);
         $('#extendModal').find('#outlets').attr('required', false);
         $('#extendModal').find('#direct_store').attr('required', true);
         $('#extendModal').find('#direct_store').val(obj.message.direct_store);
         $('#extendModal').find('#outlets').hide();
         $('#extendModal').find("#direct_store").show();
+        //$('#extendModal').find('.select2-container').show();
       }
       else{
-        $('#extendModal').find('#zones').empty().val(obj.message.zone);
+        $('#extendModal').find('#hypermarket').trigger('change');
+        //$('#extendModal').find('#zones').empty().val(obj.message.zone);
         $('#extendModal').find('#outlets').attr('required', true);
         $('#extendModal').find('#outlets').show();
         $('#extendModal').find('#direct_store').val('');
         $('#extendModal').find("#direct_store").hide();
+        //$('#extendModal').find('.select2-container').hide();
       }
       
       $('#extendModal').modal('show');

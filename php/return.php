@@ -9,6 +9,7 @@ if(isset($_POST['returnDate'], $_POST['customerNo'], $_POST['driver'], $_POST['c
 	$returnDate = filter_input(INPUT_POST, 'returnDate', FILTER_SANITIZE_STRING);
 	$customerNo = filter_input(INPUT_POST, 'customerNo', FILTER_SANITIZE_STRING);
 	$driver = filter_input(INPUT_POST, 'driver', FILTER_SANITIZE_STRING);
+	$lorry = filter_input(INPUT_POST, 'lorry', FILTER_SANITIZE_STRING);
 	$collectionType = filter_input(INPUT_POST, 'collectionType', FILTER_SANITIZE_STRING);
 	$totalCarton = filter_input(INPUT_POST, 'totalCarton', FILTER_SANITIZE_STRING);
 	$totalAmount = filter_input(INPUT_POST, 'totalAmount', FILTER_SANITIZE_STRING);
@@ -32,7 +33,7 @@ if(isset($_POST['returnDate'], $_POST['customerNo'], $_POST['driver'], $_POST['c
 		$res = '0';
 		$others = '';
 
-		if($reason[$i] == '0'){
+		if($reason[$i] == 'Others'){
 			$others = $other_reason[$i];
 		}
 		else{
@@ -57,12 +58,9 @@ if(isset($_POST['returnDate'], $_POST['customerNo'], $_POST['driver'], $_POST['c
 	}
 
 	if(isset($_POST['id']) && $_POST['id'] != null && $_POST['id'] != ''){
-		$booking_date = DateTime::createFromFormat('d/m/Y H:i:s A', $booking_date)->format('Y-m-d H:i:s');
-
-		if ($update_stmt = $db->prepare("UPDATE booking SET booking_date=?, pickup_method=?, customer=?, pickup_location=?, description=?, estimated_ctn=?, actual_ctn=?, vehicle_no=?, col_goods=?
-		, col_chq=?, form_no=?, gate=?, checker=?, internal_notes=? WHERE id=?")){
-			$update_stmt->bind_param('sssssssssssssss', $booking_date, $pickup_method, $customerNo, $address, $description, $extimated_ctn, $actual_ctn, $vehicleNoTxt, $col_goods,
-			$col_chk, $form_no, $gate, $checker, $internal_notes, $_POST['id']);
+		if ($update_stmt = $db->prepare("UPDATE goods_return SET return_date=?, customer=?, vehicle=?, driver=?, return_details=?, total_carton=?, total_amount=?, collection_date=?, collection_type=?
+		, return_type=? WHERE id=?")){
+			$update_stmt->bind_param('sssssssssss', $returnDate, $customerNo, $lorry, $driver, $data, $totalCarton, $totalAmount, $collectionDate, $collectionType, $return_type, $_POST['id']);
 		
 			// Execute the prepared query.
 			if (! $update_stmt->execute()){
@@ -124,9 +122,9 @@ if(isset($_POST['returnDate'], $_POST['customerNo'], $_POST['driver'], $_POST['c
 		
 				$firstChar .= strval($count);
 
-				if ($insert_stmt = $db->prepare("INSERT INTO goods_return (GR_No, return_date, customer, driver, return_details, total_carton, total_amount, collection_date, collection_type, return_type) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")) {
+				if ($insert_stmt = $db->prepare("INSERT INTO goods_return (GR_No, return_date, customer, vehicle, driver, return_details, total_carton, total_amount, collection_date, collection_type, return_type) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")) {
 					$data = json_encode($return_details);
-					$insert_stmt->bind_param('ssssssssss', $firstChar, $returnDate, $customerNo, $driver, $data, $totalCarton, $totalAmount, $collectionDate, $collectionType, $return_type);
+					$insert_stmt->bind_param('sssssssssss', $firstChar, $returnDate, $customerNo, $lorry, $driver, $data, $totalCarton, $totalAmount, $collectionDate, $collectionType, $return_type);
 					
 					if(!$insert_stmt->execute()){
 						echo json_encode(

@@ -331,7 +331,13 @@ $(function () {
       { data: 'collection_date' },
       { data: 'collection_type' },
       { data: 'total_carton' },
-      { data: 'return_type' },
+      { 
+        data: 'locations', // Change from 'return_type' to 'locations'
+        render: function ( data, type, row ) {
+          // Assuming data is an array, create a string with <br> between each location
+          return Array.isArray(data) ? data.join('<br>') : data;
+        }
+      },
       { 
         data: 'id',
         render: function ( data, type, row ) {
@@ -418,6 +424,7 @@ $(function () {
     $('#extendModal').find('#id').val("");
     $('#extendModal').find('#return_date').val(formatDate(date));
     $('#extendModal').find('#customerNo').val("");
+    $('#extendModal').find('#lorry').val("");
     $('#extendModal').find('#driver').val("");
     $('#extendModal').find('#collection_date').val("");
     $('#extendModal').find('#collectionType').val("");
@@ -488,6 +495,7 @@ $(function () {
 
   $("#pricingTable").on('change', 'select[id^="hypermarket"]', function(){
     var element = $(this).parents('.details').find('select[id^="location"]');
+    element.html('');
     $.post('php/retrieveOutlets.php', {hypermarket: $(this).val()}, function(data){
       var obj = JSON.parse(data);
       
@@ -504,6 +512,17 @@ $(function () {
       }
       $('#spinnerLoading').hide();
     });
+  });
+
+  $("#pricingTable").on('change', 'select[id^="reason"]', function(){
+    if($(this).val() == 'Others'){
+      $(this).parents('.details').find('input[id^="other_reason"]').show();
+      $(this).parents('.details').find('select[id^="reason"]').hide();
+    }
+    else{
+      $(this).parents('.details').find('input[id^="other_reason"]').hide();
+      $(this).parents('.details').find('select[id^="reason"]').show();
+    }
   });
 
   $("#pricingTable").on('change', 'input[id^="price"]', function(){
@@ -722,6 +741,7 @@ function edit(id) {
       $('#extendModal').find('#id').val(obj.message.id);
       $('#extendModal').find('#return_date').val(obj.message.return_date);
       $('#extendModal').find('#customerNo').val(obj.message.customer);
+      $('#extendModal').find('#lorry').val(obj.message.vehicle);
       $('#extendModal').find('#driver').val(obj.message.driver);
       $('#extendModal').find('#collection_date').val(obj.message.collection_date);
       $('#extendModal').find('#collectionType').val(obj.message.collection_type);

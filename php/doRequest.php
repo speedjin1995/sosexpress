@@ -6,7 +6,7 @@ session_start();
 
 if(isset($_POST['bookingDate'], $_POST['deliveryDate'], $_POST['cancellationDate'], $_POST['customerNo']
 , $_POST['hypermarket'], $_POST['states'], $_POST['zones'], $_POST['do_type']
-, $_POST['actual_ctn'], $_POST['need_grn'], $_POST['on_hold'])){
+, $_POST['actual_ctn'], $_POST['on_hold'])){
 	$booking_date = filter_input(INPUT_POST, 'bookingDate', FILTER_SANITIZE_STRING);
     $booking_date2 = $booking_date;
 	$delivery_date = filter_input(INPUT_POST, 'deliveryDate', FILTER_SANITIZE_STRING);
@@ -18,9 +18,9 @@ if(isset($_POST['bookingDate'], $_POST['deliveryDate'], $_POST['cancellationDate
 	$outlet = '0';
 	$do_type = filter_input(INPUT_POST, 'do_type', FILTER_SANITIZE_STRING);
 	$actual_carton = filter_input(INPUT_POST, 'actual_ctn', FILTER_SANITIZE_STRING);
-    $need_grn = filter_input(INPUT_POST, 'need_grn', FILTER_SANITIZE_STRING);
     $on_hold = filter_input(INPUT_POST, 'on_hold', FILTER_SANITIZE_STRING);
 
+    $need_grn = null;
 	$do_number = null;
     $do_details = null;
     $direct_store = null;
@@ -43,6 +43,10 @@ if(isset($_POST['bookingDate'], $_POST['deliveryDate'], $_POST['cancellationDate
 
     if(isset($_POST['description']) && $_POST['description'] != null && $_POST['description'] != ''){
         $note = filter_input(INPUT_POST, 'description', FILTER_SANITIZE_STRING);
+    }
+
+    if(isset($_POST['need_grn']) && $_POST['need_grn'] != null && $_POST['need_grn'] != ''){
+        $need_grn = filter_input(INPUT_POST, 'need_grn', FILTER_SANITIZE_STRING);
     }
 
     if(isset($_POST['loadingTime']) && $_POST['loadingTime'] != null && $_POST['loadingTime'] != ''){
