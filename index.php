@@ -371,7 +371,7 @@ to get the desired effect
           </li>
           <li class="nav-item">
             <a href="#task" data-file="task.php" class="nav-link link">
-              <i class="nav-icon fas fa-files"></i>
+              <i class="nav-icon fas fa-file-alt"></i>
               <p>Task</p>
             </a>
           </li>
@@ -405,7 +405,7 @@ to get the desired effect
                 <ul class="nav nav-treeview" style="display: none;">
                   <li class="nav-item">
                     <a href="#roles" data-file="roles.php" class="nav-link link">
-                      <i class="nav-icon fas fa-critical-role"></i>
+                      <i class="nav-icon fas fa-user-tag"></i>
                       <p>Roles</p>
                     </a>
                   </li>
@@ -498,6 +498,20 @@ to get the desired effect
                     </a>
                   </li>
                 </ul>
+              </li>
+              <li class="nav-item has-treeview">
+                <a href="#" class="nav-link">
+                  <i class="nav-icon fas fa-desktop"></i>
+                  <p>Content Management<i class="fas fa-angle-left right"></i></p>
+                </a>
+                <ul class="nav nav-treeview" style="display: none;">
+                  <li class="nav-item">
+                    <a href="#anouncement" data-file="anouncement.php" class="nav-link link">
+                      <i class="nav-icon fas fa-bullhorn"></i>
+                      <p>Announcement</p>
+                    </a>
+                  </li>
+                </ul>
               </li>';
               }
           ?>
@@ -585,6 +599,7 @@ to get the desired effect
 <script src="plugins/bootstrap-switch/js/bootstrap-switch.min.js"></script>
 <script src="plugins/chart.js/Chart.min.js"></script>
 <script src="plugins/daterangepicker/daterangepicker.js"></script>
+<script src="plugins/summernote/summernote-bs4.min.js"></script>
 
 <script>
 $(function () {
