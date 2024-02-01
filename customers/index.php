@@ -310,7 +310,7 @@ to get the desired effect
       <!-- Sidebar user panel (optional) -->
       <div class="user-panel mt-3 pb-3 mb-3 d-flex">
           <div class="image" style="align-self: center;">
-            <img src="../assets/user-avatar.png" class="img-circle elevation-2" alt="User Image">
+            <img src="assets/user-avatar.png" class="img-circle elevation-2" alt="User Image">
           </div>
           <div class="info" style="white-space: nowrap;">
             <p style="font-size:0.75rem; color:#E3E3E3; margin-bottom:0rem; color:#1888CA">Welcome</p>

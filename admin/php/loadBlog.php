@@ -38,9 +38,7 @@ while($row = mysqli_fetch_assoc($empRecords)) {
       "counter"=>$counter,
       "id"=>$row['id'],
       "title_en"=>$row['title_en'],
-      "title_ch"=>$row['title_ch'],
-      "en"=>$row['en'],
-      "ch"=>$row['ch'],
+      "content_en"=>$row['content_en'],
       "created_datetime"=>$row['created_datetime']
     );
 

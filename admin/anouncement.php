@@ -31,8 +31,8 @@
                   <thead>
                     <tr>
                         <th>No.</th>
-                        <th>English Title</th>
-                        <th>Chinese Title</th>
+                        <th>Title</th>
+                        <!--th>Chinese Title</th-->
                         <th>Created Date</th>
                         <th>Action</th>
                     </tr>
@@ -60,21 +60,21 @@
                 <input type="hidden" class="form-control" id="blogId" name="blogId">
               </div>
               <div class="form-group">
-                <label for="keyCode">English Title *</label>
+                <label for="keyCode">Title *</label>
                 <input class="form-control" name="engTitle" id="engTitle" placeholder="Message Key Code" required>
               </div>
-              <div class="form-group">
+              <!--div class="form-group">
                 <label for="keyCode">中文主题 *</label>
                 <input class="form-control" name="chTitle" id="chTitle" placeholder="Message Key Code" required>
-              </div>
+              </div-->
               <div class="form-group">
-                <label for="engBlog">English Content</label>
+                <label for="engBlog">Content</label>
                 <textarea class="form-control"  id="engBlog" name="engBlog" placeholder="Place some text here"></textarea>
               </div>
-              <div class="form-group"> 
+              <!--div class="form-group"> 
                 <label for="chineseBlog">中文内容</label>
                 <textarea class="form-control" id="chineseBlog" name="chineseBlog" placeholder="Place some text here"></textarea>
-              </div>
+              </div-->
             </div>
             <div class="modal-footer justify-content-between">
               <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
@@ -101,7 +101,6 @@ $(function () {
         'columns': [
             { data: 'counter' },
             { data: 'title_en' },
-            { data: 'title_ch' },
             { data: 'created_datetime' },
             { 
                 data: 'id',
@@ -139,9 +138,7 @@ $(function () {
     $('#addBlog').on('click', function(){
         $('#blogModal').find('#blogId').val('');
         $('#blogModal').find('#engTitle').val('');
-        $('#blogModal').find('#chTitle').val('');
         $('#blogModal').find('#engBlog').val('');
-        $('#blogModal').find('#chineseBlog').val('');
         $('#blogModal').modal('show');
         
         $('#blogForm').validate({
@@ -167,9 +164,7 @@ function edit(id){
         if(decode.status === 'success'){
             $('#blogModal').find('#blogId').val(decode.message.id);
             $('#blogModal').find('#engTitle').val(decode.message.title_en);
-            $('#blogModal').find('#chTitle').val(decode.message.title_ch);
-            $('#blogModal').find('#engBlog').val(decode.message.en);
-            $('#blogModal').find('#chineseBlog').val(decode.message.ch);
+            $('#blogModal').find('#engBlog').val(decode.message.content_en);
             $('#blogModal').modal('show');
             
             $('#blogForm').validate({

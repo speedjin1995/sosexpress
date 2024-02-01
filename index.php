@@ -1,3 +1,9 @@
+<?php
+require_once 'php/db_connect.php';
+
+$blog = $db->query("SELECT * FROM blog WHERE deleted = '0'");
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -54,8 +60,11 @@
                   <a class="page-scroll active" href="#hero-area">Home</a>
                 </li>
                 <li class="nav-item">
-                  <a class="page-scroll" href="#services">Services</a>
+                  <a class="page-scroll" href="#blog">Latest News</a>
                 </li>
+                <!--li class="nav-item">
+                  <a class="page-scroll" href="#services">Services</a>
+                </li-->
                 <!--li class="nav-item">
                   <a class="page-scroll" href="#pricing">Pricing</a>
                 </li-->
@@ -89,19 +98,18 @@
       <div class="sidebar-logo">
         <a href="index.html"><img src="assets/logo.png" alt="Logo" /></a>
       </div>
-      <p class="text">Lorem ipsum dolor sit amet adipisicing elit. Sapiente fuga nisi rerum iusto intro.</p>
+      <p class="text">Call S.O.S today. We are ready to provide optimal service.</p>
       <!-- logo -->
       <div class="sidebar-menu">
         <h5 class="menu-title">Quick Links</h5>
         <ul>
-          <li><a href="javascript:void(0)">About Us</a></li>
-          <li><a href="javascript:void(0)">Our Team</a></li>
-          <li><a href="javascript:void(0)">Latest News</a></li>
-          <li><a href="javascript:void(0)">Contact Us</a></li>
+          <li><a href="#blog">Latest News</a></li>
+          <li><a href="#contact">Contact Us</a></li>
+          <li><a href="customers/index.php">Login</a></li>
         </ul>
       </div>
       <!-- menu -->
-      <div class="sidebar-social align-items-center justify-content-center">
+      <!--div class="sidebar-social align-items-center justify-content-center">
         <h5 class="social-title">Follow Us On</h5>
         <ul>
           <li>
@@ -117,7 +125,7 @@
             <a href="javascript:void(0)"><i class="lni lni-youtube"></i></a>
           </li>
         </ul>
-      </div>
+      </div-->
       <!-- sidebar social -->
     </div>
     <!-- content -->
@@ -132,11 +140,12 @@
       <div class="row align-items-center">
         <div class="col-lg-6 col-md-12 col-12">
           <div class="header-content">
-            <h1>Corporate & Business Site Template by Ayro UI.</h1>
+            <h1>Call S.O.S today. We are ready to provide optimal service.</h1>
             <p>
-              We are a digital agency that helps brands to achieve their
-              business outcomes. We see technology as a tool to create amazing
-              things.
+              S.O.S is a huge and professional freight company in Peninsular Malaysia. The company is an expert in providing freight services to every hypermarket in the country. In this highly competitive freight industry, S.O.S places high importance on our clients as our first ambition in order to maintain a long-term business relationship with our partners, and this has makes the business expand rapidly.
+            </p>
+            <p>
+            Although S.O.S provides high quality freight services in the Peninsular Malaysia, we move forward to extend the business by improving and strengthening our management on the procedure of freightage. Furthermore, we will maximize our abilities to fulfill different partners' satisfaction.
             </p>
             <!--div class="button">
               <a href="javascript:void(0)" class="btn primary-btn">Get Started</a>
@@ -161,8 +170,7 @@
   <!-- End header Area -->
 
   <!--====== ABOUT FIVE PART START ======-->
-
-  <section class="about-area about-five">
+  <!--section class="about-area about-five">
     <div class="container">
       <div class="row align-items-center">
         <div class="col-lg-6 col-12">
@@ -301,15 +309,13 @@
           </div>
         </div>
       </div>
-    </div>
-    <!-- container -->
-  </section>
+    </div><!-- container -->
+  <!--/section-->
 
   <!--====== ABOUT FIVE PART ENDS ======-->
 
   <!-- ===== service-area start ===== -->
-  <section id="services" class="services-area services-eight">
-    <!--======  Start Section Title Five ======-->
+  <!--section id="services" class="services-area services-eight">
     <div class="section-title-five">
       <div class="container">
         <div class="row">
@@ -324,11 +330,8 @@
             </div>
           </div>
         </div>
-        <!-- row -->
       </div>
-      <!-- container -->
     </div>
-    <!--======  End Section Title Five ======-->
     <div class="container">
       <div class="row">
         <div class="col-lg-4 col-md-6">
@@ -417,13 +420,12 @@
         </div>
       </div>
     </div>
-  </section>
+  </section-->
   <!-- ===== service-area end ===== -->
 
 
   <!-- Start Pricing  Area -->
-  <section id="pricing" class="pricing-area pricing-fourteen">
-    <!--======  Start Section Title Five ======-->
+  <!--section id="pricing" class="pricing-area pricing-fourteen">
     <div class="section-title-five">
       <div class="container">
         <div class="row">
@@ -438,11 +440,8 @@
             </div>
           </div>
         </div>
-        <!-- row -->
       </div>
-      <!-- container -->
     </div>
-    <!--======  End Section Title Five ======-->
     <div class="container">
       <div class="row">
         <div class="col-lg-4 col-md-6 col-12">
@@ -531,13 +530,11 @@
         </div>
       </div>
     </div>
-  </section>
+  </section-->
   <!--/ End Pricing  Area -->
 
-
-
   <!-- Start Cta Area -->
-  <section id="call-action" class="call-action">
+  <!--section id="call-action" class="call-action">
     <div class="container">
       <div class="row justify-content-center">
         <div class="col-xxl-6 col-xl-7 col-lg-8 col-md-9">
@@ -557,10 +554,8 @@
         </div>
       </div>
     </div>
-  </section>
+  </section-->
   <!-- End Cta Area -->
-
-
 
   <!-- Start Latest News Area -->
   <div id="blog" class="latest-news-area section">
@@ -571,10 +566,9 @@
           <div class="col-12">
             <div class="content">
               <h6>latest news</h6>
-              <h2 class="fw-bold">Latest News & Blog</h2>
+              <h2 class="fw-bold">Latest News</h2>
               <p>
-                There are many variations of passages of Lorem Ipsum available,
-                but the majority have suffered alteration in some form.
+                All latest update and news
               </p>
             </div>
           </div>
@@ -586,87 +580,27 @@
     <!--======  End Section Title Five ======-->
     <div class="container">
       <div class="row">
+      <?php while($row = mysqli_fetch_assoc($blog)): ?>
         <div class="col-lg-4 col-md-6 col-12">
           <!-- Single News -->
           <div class="single-news">
-            <div class="image">
-              <a href="javascript:void(0)"><img class="thumb" src="assets/images/blog/1.jpg" alt="Blog" /></a>
-              <div class="meta-details">
-                <img class="thumb" src="assets/images/blog/b6.jpg" alt="Author" />
-                <span>BY TIM NORTON</span>
-              </div>
-            </div>
             <div class="content-body">
               <h4 class="title">
-                <a href="javascript:void(0)"> Make your team a Design driven company </a>
+                <a href="javascript:void(0)"><?= $row['title_en'] ?> </a>
               </h4>
-              <p>
-                Lorem Ipsum is simply dummy text of the printing and
-                typesetting industry. Lorem Ipsum has been the industry's
-                standard.
-              </p>
+              <p><?= $row['content_en'] ?></p>
             </div>
           </div>
           <!-- End Single News -->
         </div>
-        <div class="col-lg-4 col-md-6 col-12">
-          <!-- Single News -->
-          <div class="single-news">
-            <div class="image">
-              <a href="javascript:void(0)"><img class="thumb" src="assets/images/blog/2.jpg" alt="Blog" /></a>
-              <div class="meta-details">
-                <img class="thumb" src="assets/images/blog/b6.jpg" alt="Author" />
-                <span>BY TIM NORTON</span>
-              </div>
-            </div>
-            <div class="content-body">
-              <h4 class="title">
-                <a href="javascript:void(0)">
-                  The newest web framework that changed the world
-                </a>
-              </h4>
-              <p>
-                Lorem Ipsum is simply dummy text of the printing and
-                typesetting industry. Lorem Ipsum has been the industry's
-                standard.
-              </p>
-            </div>
-          </div>
-          <!-- End Single News -->
-        </div>
-        <div class="col-lg-4 col-md-6 col-12">
-          <!-- Single News -->
-          <div class="single-news">
-            <div class="image">
-              <a href="javascript:void(0)"><img class="thumb" src="assets/images/blog/3.jpg" alt="Blog" /></a>
-              <div class="meta-details">
-                <img class="thumb" src="assets/images/blog/b6.jpg" alt="Author" />
-                <span>BY TIM NORTON</span>
-              </div>
-            </div>
-            <div class="content-body">
-              <h4 class="title">
-                <a href="javascript:void(0)">
-                  5 ways to improve user retention for your startup
-                </a>
-              </h4>
-              <p>
-                Lorem Ipsum is simply dummy text of the printing and
-                typesetting industry. Lorem Ipsum has been the industry's
-                standard.
-              </p>
-            </div>
-          </div>
-          <!-- End Single News -->
-        </div>
+      <?php endwhile; ?>
       </div>
     </div>
   </div>
   <!-- End Latest News Area -->
 
   <!-- Start Brand Area -->
-  <div id="clients" class="brand-area section">
-    <!--======  Start Section Title Five ======-->
+  <!--div id="clients" class="brand-area section">
     <div class="section-title-five">
       <div class="container">
         <div class="row">
@@ -681,11 +615,8 @@
             </div>
           </div>
         </div>
-        <!-- row -->
       </div>
-      <!-- container -->
     </div>
-    <!--======  End Section Title Five ======-->
     <div class="container">
       <div class="row">
         <div class="col-lg-8 offset-lg-2 col-12">
@@ -712,7 +643,7 @@
         </div>
       </div>
     </div>
-  </div>
+  </div-->
   <!-- End Brand Area -->
 
   <!-- ========================= contact-section start ========================= -->
@@ -729,8 +660,8 @@
                   </div>
                   <div class="contact-content">
                     <h4>Contact</h4>
-                    <p>0984537278623</p>
-                    <p>yourmail@gmail.com</p>
+                    <p>603 - 6186 4844</p>
+                    <p>han@sosexpress.com.my</p>
                   </div>
                 </div>
               </div>
@@ -741,8 +672,8 @@
                   </div>
                   <div class="contact-content">
                     <h4>Address</h4>
-                    <p>175 5th Ave, New York, NY 10010</p>
-                    <p>United States</p>
+                    <p>No.7,9,11,13,15,17,19, Jalan SBC 10, Taman Sri Batu Caves,</p>
+                    <p>68100 Batu Caves, Selangor Darul Ehsan.</p>
                   </div>
                 </div>
               </div>
@@ -753,7 +684,7 @@
                   </div>
                   <div class="contact-content">
                     <h4>Schedule</h4>
-                    <p>24 Hours / 7 Days Open</p>
+                    <p>6 Days Open</p>
                     <p>Office time: 10 AM - 5:30 PM</p>
                   </div>
                 </div>
@@ -761,7 +692,7 @@
             </div>
           </div>
         </div>
-        <div class="col-xl-8">
+        <!--div class="col-xl-8">
           <div class="contact-form-wrapper">
             <div class="row">
               <div class="col-xl-10 col-lg-8 mx-auto">
@@ -810,7 +741,7 @@
               </div>
             </form>
           </div>
-        </div>
+        </div-->
       </div>
     </div>
   </section>
@@ -820,7 +751,7 @@
   <section class="map-section map-style-9">
     <div class="map-container">
       <object style="border:0; height: 500px; width: 100%;"
-        data="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3102.7887109309127!2d-77.44196278417968!3d38.95165507956235!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMzjCsDU3JzA2LjAiTiA3N8KwMjYnMjMuMiJX!5e0!3m2!1sen!2sbd!4v1545420879707"></object>
+        data="https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d15933.930113016866!2d101.6879635!3d3.229379!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x31cc47759131d6c5%3A0x4b04467468c70948!2sPengangkutan%20S.O.S%20Sdn%20Bhd!5e0!3m2!1szh-CN!2smy!4v1706782818176!5m2!1szh-CN!2smy"></object>
     </div>
     </div>
   </section>
@@ -838,59 +769,26 @@
               <div class="footer-widget f-about">
                 <div class="logo">
                   <a href="index.html">
-                    <img src="assets/images/logo.svg" alt="#" class="img-fluid" />
+                    <img src="assets/logo.png" alt="#" class="img-fluid" />
                   </a>
                 </div>
-                <p>
-                  Making the world a better place through constructing elegant
-                  hierarchies.
-                </p>
-                <p class="copyright-text">
-                  <span>© 2024 Ayro UI.</span>Designed and Developed by
-                  <a href="javascript:void(0)" rel="nofollow"> Ayro UI </a>
-                </p>
-              </div>
-              <!-- End Single Widget -->
-            </div>
-            <div class="col-lg-2 col-md-6 col-12">
-              <!-- Single Widget -->
-              <div class="footer-widget f-link">
-                <h5>Solutions</h5>
-                <ul>
-                  <li><a href="javascript:void(0)">Marketing</a></li>
-                  <li><a href="javascript:void(0)">Analytics</a></li>
-                  <li><a href="javascript:void(0)">Commerce</a></li>
-                  <li><a href="javascript:void(0)">Insights</a></li>
-                </ul>
-              </div>
-              <!-- End Single Widget -->
-            </div>
-            <div class="col-lg-2 col-md-6 col-12">
-              <!-- Single Widget -->
-              <div class="footer-widget f-link">
-                <h5>Support</h5>
-                <ul>
-                  <li><a href="javascript:void(0)">Pricing</a></li>
-                  <li><a href="javascript:void(0)">Documentation</a></li>
-                  <li><a href="javascript:void(0)">Guides</a></li>
-                  <li><a href="javascript:void(0)">API Status</a></li>
-                </ul>
               </div>
               <!-- End Single Widget -->
             </div>
             <div class="col-lg-4 col-md-6 col-12">
               <!-- Single Widget -->
-              <div class="footer-widget newsletter">
-                <h5>Subscribe</h5>
-                <p>Subscribe to our newsletter for the latest updates</p>
-                <form action="#" method="get" target="_blank" class="newsletter-form">
-                  <input name="EMAIL" placeholder="Email address" required="required" type="email" />
-                  <div class="button">
-                    <button class="sub-btn">
-                      <i class="lni lni-envelope"></i>
-                    </button>
-                  </div>
-                </form>
+              <div class="footer-widget f-link">
+                <p>Call S.O.S today. We are ready to provide optimal service.</p>
+              </div>
+              <!-- End Single Widget -->
+            </div>
+            <div class="col-lg-4 col-md-6 col-12">
+              <!-- Single Widget -->
+              <div class="footer-widget f-link">
+                <p class="copyright-text">
+                  <span>© 2024 </span>Developed by
+                  <a href="javascript:void(0)" rel="nofollow"> PENGANGKUTAN S.O.S SDN. BHD.(714353-A) </a>
+                </p>
               </div>
               <!-- End Single Widget -->
             </div>

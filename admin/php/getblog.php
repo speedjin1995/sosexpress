@@ -24,9 +24,7 @@ if(isset($_POST['messageId'])){
             while ($row = $result->fetch_assoc()) {
                 $message['id'] = $row['id'];
                 $message['title_en'] = $row['title_en'];
-                $message['title_ch'] = $row['title_ch'];
-                $message['en'] = $row['en'];
-                $message['ch'] = $row['ch'];
+                $message['content_en'] = $row['content_en'];
             }
             
             echo json_encode(
