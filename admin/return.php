@@ -338,10 +338,15 @@ $(function () {
           return Array.isArray(data) ? data.join('<br>') : data;
         }
       },
-      { 
+      {
         data: 'id',
-        render: function ( data, type, row ) {
-          return '<div class="row"><div class="col-3"><button type="button" id="edit'+data+'" onclick="edit('+data+')" class="btn btn-success btn-sm"><i class="fas fa-pen"></i></button></div><div class="col-3"><button type="button" id="deactivate'+data+'" onclick="deactivate('+data+')" class="btn btn-danger btn-sm"><i class="fas fa-trash"></i></button></div></div>';
+        render: function (data, type, row) {
+          return '<select id="actions' + data + '" class="form-select form-select-sm" onchange="performAction(' + data + ', this.value)">' +
+              '<option value="" selected disabled>Action</option>' +
+              '<option value="edit">Edit</option>' +
+              '<option value="print">Print</option>' +
+              '<option value="deactivate">Deactivate</option>' +
+              '</select>';
         }
       },
       { 
@@ -732,6 +737,23 @@ function formatNormal (row) {
   ;
 }
 
+function performAction(data, selectedValue) {
+  switch (selectedValue) {
+    case 'edit':
+      edit(data);
+      break;
+    case 'print':
+      print(data);
+      break;
+    case 'deactivate':
+      deactivate(data);
+      break;
+    default:
+      break;
+  }
+}
+
+
 function edit(id) {
   $('#spinnerLoading').show();
   $.post('php/getReturn.php', {userID: id}, function(data){
@@ -795,6 +817,34 @@ function edit(id) {
     }
     $('#spinnerLoading').hide();
   });
+}
+
+function print(id){
+  if (confirm('Are you sure you want to print this items?')) {
+    $('#spinnerLoading').show();
+    $.post('php/print_return.php', {userID: id}, function(data){
+      var obj = JSON.parse(data);
+
+      if(obj.status === 'success'){
+        //toastr["success"](obj.message, "Success:");
+        $('#weightTable').DataTable().ajax.reload();
+        var printWindow = window.open('', '', 'height=400,width=800');
+        printWindow.document.write(obj.message);
+        printWindow.document.close();
+        setTimeout(function(){
+          printWindow.print();
+          printWindow.close();
+        }, 1000);
+      }
+      else if(obj.status === 'failed'){
+        toastr["error"](obj.message, "Failed:");
+      }
+      else{
+        toastr["error"]("Something wrong when activate", "Failed:");
+      }
+      $('#spinnerLoading').hide();
+    });
+  }
 }
 
 function deactivate(id) {

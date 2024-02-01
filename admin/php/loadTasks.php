@@ -14,49 +14,149 @@ $searchValue = mysqli_real_escape_string($db,$_POST['search']['value']); // Sear
 ## Search 
 $searchQuery = "";
 if($searchValue != ''){
-   $searchQuery = " and (customers.customer_name like '%".$searchValue."%')";
+  $searchQuery = " and (customers.customer_name like '%".$searchValue."%')";
 }
 
 ## Total number of records without filtering
-$sel = mysqli_query($db, "select count(*) as allcount FROM tasks, customers, hypermarket, outlet, states, zones WHERE tasks.deleted = '0' AND tasks.customer = customers.id AND 
-tasks.hypermarket = hypermarket.id AND tasks.states = states.id AND tasks.zones = zones.id AND tasks.outlet = outlet.id");
+$sel = mysqli_query($db, "select count(*) as allcount FROM tasks WHERE deleted = '0'");
 $records = mysqli_fetch_assoc($sel);
 $totalRecords = $records['allcount'];
 
 ## Total number of record with filtering
-$sel = mysqli_query($db, "select count(*) as allcount FROM tasks, customers, hypermarket, outlet, states, zones WHERE tasks.deleted = '0' AND tasks.customer = customers.id AND 
-tasks.hypermarket = hypermarket.id AND tasks.states = states.id AND tasks.zones = zones.id AND tasks.outlet = outlet.id".$searchQuery);
+$sel = mysqli_query($db, "select count(*) as allcount FROM tasks WHERE tasks.deleted = '0'".$searchQuery);
 $records = mysqli_fetch_assoc($sel);
 $totalRecordwithFilter = $records['allcount'];
 
 ## Fetch records
-$empQuery = "SELECT tasks.*, customers.customer_name, hypermarket.name as hypermarket, states.states, zones.zones, outlet.name as outlet 
-FROM tasks, customers, hypermarket, outlet, states, zones WHERE tasks.deleted = '0' AND tasks.customer = customers.id AND 
-tasks.hypermarket = hypermarket.id AND tasks.states = states.id AND tasks.zones = zones.id AND tasks.outlet = outlet.id".$searchQuery." 
+$empQuery = "SELECT * FROM tasks WHERE deleted = '0'".$searchQuery." 
 order by ".$columnName." ".$columnSortOrder." limit ".$row.",".$rowperpage;
 $empRecords = mysqli_query($db, $empQuery);
 $data = array();
 $counter = 1;
 
 while($row = mysqli_fetch_assoc($empRecords)) {
+  $customerName = '';
+  $hypermarketName = '';
+  $statesName = '';
+  $zonesName = '';
+  $outletName = '';
+
+  if($row['customer'] != null && $row['customer'] != ''){
+    $id = $row['customer'];
+
+    if ($update_stmt = $db->prepare("SELECT customer_name FROM customers WHERE id=?")) {
+      $update_stmt->bind_param('s', $id);
+      
+      // Execute the prepared query.
+      if ($update_stmt->execute()) {
+        $result1 = $update_stmt->get_result();
+        
+        if ($row1 = $result1->fetch_assoc()) {
+          $customerName = $row1['customer_name'];
+        }
+      }
+
+      $update_stmt->close();
+    }
+  }
+
+  if($row['hypermarket'] != null && $row['hypermarket'] != ''){
+    $id = $row['hypermarket'];
+
+    if ($update_stmt = $db->prepare("SELECT name FROM hypermarket WHERE id=?")) {
+      $update_stmt->bind_param('s', $id);
+      
+      // Execute the prepared query.
+      if ($update_stmt->execute()) {
+        $result1 = $update_stmt->get_result();
+        
+        if ($row1 = $result1->fetch_assoc()) {
+          $hypermarketName = $row1['name'];
+        }
+      }
+
+      $update_stmt->close();
+    }
+  }
+
+  if($row['states'] != null && $row['states'] != ''){
+    $id = $row['states'];
+
+    if ($update_stmt = $db->prepare("SELECT states FROM states WHERE id=?")) {
+      $update_stmt->bind_param('s', $id);
+      
+      // Execute the prepared query.
+      if ($update_stmt->execute()) {
+        $result1 = $update_stmt->get_result();
+        
+        if ($row1 = $result1->fetch_assoc()) {
+          $statesName = $row1['states'];
+        }
+      }
+
+      $update_stmt->close();
+    }
+  }
+
+  if($row['zones'] != null && $row['zones'] != ''){
+    $id = $row['zones'];
+
+    if ($update_stmt = $db->prepare("SELECT zones FROM zones WHERE id=?")) {
+      $update_stmt->bind_param('s', $id);
+      
+      // Execute the prepared query.
+      if ($update_stmt->execute()) {
+        $result1 = $update_stmt->get_result();
+        
+        if ($row1 = $result1->fetch_assoc()) {
+          $zonesName = $row1['zones'];
+        }
+      }
+
+      $update_stmt->close();
+    }
+  }
+
+  if($row['outlet'] != null && $row['outlet'] != ''){
+    $id = $row['outlet'];
+
+    if ($update_stmt = $db->prepare("SELECT name FROM outlet WHERE id=?")) {
+      $update_stmt->bind_param('s', $id);
+      
+      // Execute the prepared query.
+      if ($update_stmt->execute()) {
+        $result1 = $update_stmt->get_result();
+        
+        if ($row1 = $result1->fetch_assoc()) {
+          $outletName = $row1['name'];
+        }
+      }
+
+      $update_stmt->close();
+    }
+  }
+
   $data[] = array( 
     "no"=>$counter,
     "id"=>$row['id'],
     "type"=>$row['type'],
-    "customer_id"=>$row['customer'],
-    "customer_name"=>$row['customer_name'],
+    "customer"=>$row['customer'],
     "vehicle_no"=>$row['vehicle_no'],
     "driver_name"=>$row['driver_name'],
-    "hypermarket"=>$row['hypermarket'],
     "states"=>$row['states'],
+    "hypermarket"=>$row['hypermarket'],
     "zones"=>$row['zones'],
     "outlet"=>$row['outlet'],
-    "date"=>$row['date'],
+    "booking_date"=>$row['booking_date'],
     "code"=>$row['code'],
     "remark"=>$row['remark'],
-    "reason"=>$row['reason'],
-    "back_on_date"=>$row['back_on_date'],
-    "grn_no"=>$row['grn_no']
+    "status"=>$row['status'],
+    "source"=>$row['source'],
+    "customerName"=>$customerName,
+    "hypermarketName"=>$hypermarketName,
+    "statesName"=>$statesName,
+    "zonesName"=>$zonesName,
+    "outletName"=>$outletName
   );
 
   $counter++;

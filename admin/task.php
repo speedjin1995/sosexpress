@@ -23,6 +23,9 @@ else{
   $customers2 = $db->query("SELECT * FROM customers WHERE deleted = '0'");
   $reasons = $db->query("SELECT * FROM reasons WHERE deleted = '0'");
   $hypermarket = $db->query("SELECT * FROM hypermarket WHERE deleted = '0'");
+  $states = $db->query("SELECT * FROM states WHERE deleted = '0'");
+  $zones = $db->query("SELECT * FROM zones WHERE deleted = '0'");
+  $outlet = $db->query("SELECT * FROM outlet WHERE deleted = '0'");
   $users = $db->query("SELECT * FROM users WHERE deleted = '0'");
   $vehicles = $db->query("SELECT * FROM vehicles WHERE deleted = '0'");
   $drivers = $db->query("SELECT * FROM drivers WHERE deleted = '0'");
@@ -36,6 +39,13 @@ else{
     }
   }
 </style>
+
+<select class="form-control" style="width: 100%;" id="zoneHidden" style="display: none;">
+  <option value="" selected disabled hidden>Please Select</option>
+  <?php while($row3=mysqli_fetch_assoc($zones)){ ?>
+    <option value="<?=$row3['id'] ?>" data-index="<?=$row3['states'] ?>"><?=$row3['zones'] ?></option>
+  <?php } ?>
+</select>
 
 <div class="content-header">
   <div class="container-fluid">
@@ -154,7 +164,7 @@ else{
 
       <form role="form" id="extendForm">
         <div class="modal-header bg-gray-dark color-palette">
-          <h4 class="modal-title">Add New Return</h4>
+          <h4 class="modal-title">Add New Task</h4>
           <button type="button" class="close bg-gray-dark color-palette" data-dismiss="modal" aria-label="Close">
             <span aria-hidden="true">&times;</span>
           </button>
@@ -165,13 +175,14 @@ else{
           <div class="row">
             <div class="col-4">
               <div class="form-group">
-                <label>Return Date *</label>
-                  <div class='input-group date' id="returnDate" data-target-input="nearest">
-                    <input type='text' class="form-control datetimepicker-input" data-target="#returnDate" id="return_date" name="returnDate" required/>
-                    <div class="input-group-append" data-target="#returnDate" data-toggle="datetimepicker">
-                      <div class="input-group-text"><i class="fa fa-calendar"></i></div>
-                    </div>
-                  </div>
+                <label>Type *</label>
+                <select class="form-control" id="taskType" name="taskType" required>
+                  <option value="" selected disabled hidden>Please Select</option>
+                  <option value="GRN Collection">GRN Collection</option>
+                  <option value="Reject Collection">Reject Collection</option>
+                  <option value="Goods Return">Goods Return</option>
+                  <option value="General">General</option>
+                </select>
               </div>
             </div>
             <div class="col-4">
@@ -207,54 +218,68 @@ else{
             </div>
             <div class="col-4">
               <div class="form-group">
-                <label>Collection Date </label>
-                  <div class='input-group date' id="collectionDate" data-target-input="nearest">
-                    <input type='text' class="form-control datetimepicker-input" data-target="#collectionDate" id="collection_date" name="collectionDate"/>
-                    <div class="input-group-append" data-target="#collectionDate" data-toggle="datetimepicker">
-                      <div class="input-group-text"><i class="fa fa-calendar"></i></div>
-                    </div>
-                  </div>
+                <label class="labelStatus">Hypermarket </label>
+                <select class="form-control" id="hypermarket" name="hypermarket" >
+                  <option value="" selected disabled hidden>Please Select</option>
+                  <?php while($rowhypermarket=mysqli_fetch_assoc($hypermarket)){ ?>
+                    <option value="<?=$rowhypermarket['id'] ?>"><?=$rowhypermarket['name'] ?></option>
+                  <?php } ?>
+                </select>
               </div>
             </div>
             <div class="col-4">
               <div class="form-group">
-                <label class="labelStatus">Collection Type </label>
-                <select class="form-control" id="collectionType" name="collectionType">
+                <label class="labelStatus">States </label>
+                <select class="form-control" id="states" name="states" >
                   <option value="" selected disabled hidden>Please Select</option>
-                  <option value="Self Collect">Self Collect</option>
-                  <option value="SOS Delivery">SOS Delivery</option>
+                  <?php while($rowCustomer=mysqli_fetch_assoc($states)){ ?>
+                    <option value="<?=$rowCustomer['id'] ?>"><?=$rowCustomer['states'] ?></option>
+                  <?php } ?>
                 </select>
               </div>
             </div>
           </div>
           <div class="row">
-            <h4>Return Items</h4>
-            <button style="margin-left:auto;margin-right: 25px;" type="button" class="btn btn-primary add-price">Add Items</button>
+            <div class="col-4">
+              <div class="form-group">
+                <label for="rate">Zones </label>
+                <select class="form-control" style="width: 100%;" id="zones" name="zones"></select>
+              </div>
+            </div>
+            <div class="col-4">
+              <div class="form-group">
+                <label for="rate">Outlet </label>
+                <select class="form-control" style="width: 100%;" id="outlets" name="outlets"></select>
+                <!--select class="js-data-example-ajax" id="direct_store" name="direct_store"></select-->
+                <input class="form-control" type="text" placeholder="Outlet" id="direct_store" name="direct_store">
+              </div>
+            </div>
+            <div class="col-4">
+              <div class="form-group">
+                <label>Booking Date *</label>
+                <div class='input-group date' id="bookingDate" data-target-input="nearest">
+                  <input type='text' class="form-control datetimepicker-input" data-target="#bookingDate" id="booking_date" name="bookingDate" required/>
+                  <div class="input-group-append" data-target="#bookingDate" data-toggle="datetimepicker">
+                    <div class="input-group-text"><i class="fa fa-calendar"></i></div>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
-          <table style="width: 100%;">
-            <thead>
-              <tr>
-                <th>GRN/RTV No.</th>
-                <th>Hypermarket</th>
-                <th>Location</th>
-                <th>Carton</th>
-                <th>Reason</th>
-                <th>Warehouse</th>
-                <th>Amount</th>
-                <th>Delete</th>
-              </tr>
-            </thead>
-            <tbody id="pricingTable"></tbody>
-            <tfoot id="pricingFoot">
-              <tr>
-                <th colspan="3" style="text-align:right;">Total Cartons</th>
-                <th><input type="number" class="form-control" id="totalCarton" name="totalCarton" readonly></th>
-                <th colspan="2" style="text-align:right;">Total Amount</th>
-                <th><input type="number" class="form-control" id="totalAmount" name="totalAmount" readonly></th>
-                <th></th>
-              </tr>
-            </tfoot>
-          </table>
+          <div class="row">
+            <div class="col-4">
+              <div class="form-group">
+                <label for="rate">RTV/GRN No.</label>
+                <input class="form-control" type="text" placeholder="RTV / GRN" id="rtvgrn" name="rtvgrn">
+              </div>
+            </div>
+            <div class="col-8">
+              <div class="form-group">
+                <label class="labelStatus">Remark</label>
+                <textarea class="form-control" id="description" name="description" placeholder="Enter your description"></textarea>
+              </div>
+            </div>
+          </div>
         </div>
 
         <div class="modal-footer justify-content-between bg-gray-dark color-palette">
@@ -268,6 +293,10 @@ else{
 
 <script>
 $(function () {
+  $("#zoneHidden").hide();
+  $("#branchHidden").hide();
+  $('#direct_store').hide();
+
   const today = new Date();
   const tomorrow = new Date(today);
   tomorrow.setDate(tomorrow.getDate() + 1);
@@ -284,11 +313,11 @@ $(function () {
       'url':'php/loadTasks.php'
     },
     'columns': [
-      { data: 'customer_name' },
+      { data: 'customerName' },
       { data: 'vehicle_no' },
       { data: 'driver_name' },
-      { data: 'outlet' },
-      { data: 'date' },
+      { data: 'outletName' },
+      { data: 'booking_date' },
       { data: 'type' },
       { 
         data: 'id',
@@ -335,14 +364,10 @@ $(function () {
       defaultDate: new Date
   });
 
-  $('#returnDate').datetimepicker({
+  $('#bookingDate').datetimepicker({
     icons: { time: 'far fa-calendar' },
+    format: 'DD/MM/YYYY',
     defaultDate: tomorrow,
-    minDate: tomorrow
-  });
-
-  $('#collectionDate').datetimepicker({
-    icons: { time: 'far fa-calendar' },
     minDate: tomorrow
   });
 
@@ -350,7 +375,7 @@ $(function () {
     submitHandler: function () {
       if($('#extendModal').hasClass('show')){
         $('#spinnerLoading').show();
-        $.post('php/return.php', $('#extendForm').serialize(), function(data){
+        $.post('php/task.php', $('#extendForm').serialize(), function(data){
           var obj = JSON.parse(data); 
           if(obj.status === 'success'){
             $('#extendModal').modal('hide');
@@ -370,138 +395,7 @@ $(function () {
     }
   });
 
-  $('#newReturn').on('click', function(){
-    var date = new Date();
-
-    $('#extendModal').find('#id').val("");
-    $('#extendModal').find('#return_date').val(formatDate(date));
-    $('#extendModal').find('#customerNo').val("");
-    $('#extendModal').find('#lorry').val("");
-    $('#extendModal').find('#driver').val("");
-    $('#extendModal').find('#collection_date').val("");
-    $('#extendModal').find('#collectionType').val("");
-    pricingCount = 0;
-    $('#pricingTable').html('');
-    $('#totalCarton').val("0");
-    $('#totalAmount').val("0.00");
-    $('#extendModal').modal('show');
-    
-    $('#extendForm').validate({
-      errorElement: 'span',
-      errorPlacement: function (error, element) {
-        error.addClass('invalid-feedback');
-        element.closest('.form-group').append(error);
-      },
-      highlight: function (element, errorClass, validClass) {
-        $(element).addClass('is-invalid');
-      },
-      unhighlight: function (element, errorClass, validClass) {
-        $(element).removeClass('is-invalid');
-      }
-    });
-  });
-
-  $(".add-price").click(function(){
-    var $addContents = $("#pricingDetails").clone();
-    $("#pricingTable").append($addContents.html());
-
-    $("#pricingTable").find('.details:last').attr("id", "detail" + pricingCount);
-    $("#pricingTable").find('.details:last').attr("data-index", pricingCount);
-    $("#pricingTable").find('#remove:last').attr("id", "remove" + pricingCount);
-
-    $("#pricingTable").find('#grn_no:last').attr('name', 'grn_no['+pricingCount+']').attr("id", "grn_no" + pricingCount);
-    $("#pricingTable").find('#hypermarket:last').attr('name', 'hypermarket['+pricingCount+']').attr("id", "hypermarket" + pricingCount);
-    $("#pricingTable").find('#location:last').attr('name', 'location['+pricingCount+']').attr("id", "location" + pricingCount);
-    $("#pricingTable").find('#carton:last').attr('name', 'carton['+pricingCount+']').attr("id", "carton" + pricingCount);
-    $("#pricingTable").find('#reason:last').attr('name', 'reason['+pricingCount+']').attr("id", "reason" + pricingCount).val("1");
-    $("#pricingTable").find('#other_reason').attr('name', 'other_reason['+pricingCount+']').attr("id", "other_reason" + pricingCount);
-    $("#pricingTable").find('#warehouse:last').attr('name', 'warehouse['+pricingCount+']').attr("id", "warehouse" + pricingCount);
-    $("#pricingTable").find('#price:last').attr('name', 'price['+pricingCount+']').attr("id", "price" + pricingCount);
-
-    $("#other_reason" + pricingCount).hide();
-    pricingCount++;
-  });
-
-  $("#pricingTable").on('click', 'button[id^="remove"]', function () {
-    var index = $(this).parents('.details').attr('data-index');
-    $("#pricingTable").append('<input type="hidden" name="deletedShip[]" value="'+index+'"/>');
-    pricingCount--;
-    $(this).parents('.details').remove();
-
-    var totalAmount = 0;
-
-    $('#pricingTable tr.details').each(function () {
-      // Get the values of itemPrice and itemWeight for the current row
-      var itemPrice = parseFloat($(this).find('input[name="price"]').val()) || 0;
-      totalAmount += itemPrice;
-      $('#totalAmount').val(parseFloat(totalAmount).toFixed(2));
-    });
-
-    $('#pricingTable tr.details').each(function () {
-      // Get the values of itemPrice and itemWeight for the current row
-      var itemPrice = parseFloat($(this).find('input[id^="carton"]').val()) || 0;
-      totalAmount += itemPrice;
-      $('#totalCarton').val(totalAmount);
-    });
-  });
-
-  $("#pricingTable").on('change', 'select[id^="hypermarket"]', function(){
-    var element = $(this).parents('.details').find('select[id^="location"]');
-    element.html('');
-    $.post('php/retrieveOutlets.php', {hypermarket: $(this).val()}, function(data){
-      var obj = JSON.parse(data);
-      
-      if(obj.status === 'success'){
-        for(var i=0; i<obj.message.length; i++){
-          element.append('<option value="'+obj.message[i].id+'">'+obj.message[i].name+'</option>')
-        }
-      }
-      else if(obj.status === 'failed'){
-        toastr["error"](obj.message, "Failed:");
-      }
-      else{
-        toastr["error"]("Something wrong when pull data", "Failed:");
-      }
-      $('#spinnerLoading').hide();
-    });
-  });
-
-  $("#pricingTable").on('change', 'select[id^="reason"]', function(){
-    if($(this).val() == 'Others'){
-      $(this).parents('.details').find('input[id^="other_reason"]').show();
-      $(this).parents('.details').find('select[id^="reason"]').hide();
-    }
-    else{
-      $(this).parents('.details').find('input[id^="other_reason"]').hide();
-      $(this).parents('.details').find('select[id^="reason"]').show();
-    }
-  });
-
-  $("#pricingTable").on('change', 'input[id^="price"]', function(){
-    var totalAmount = 0;
-
-    $('#pricingTable tr.details').each(function () {
-      // Get the values of itemPrice and itemWeight for the current row
-      var itemPrice = parseFloat($(this).find('input[id^="price"]').val()) || 0;
-      totalAmount += itemPrice;
-      $('#totalAmount').val(parseFloat(totalAmount).toFixed(2));
-    });
-  });
-
-  $("#pricingTable").on('change', 'input[id^="carton"]', function(){
-    var totalAmount = 0;
-
-    $('#pricingTable tr.details').each(function () {
-      // Get the values of itemPrice and itemWeight for the current row
-      var itemPrice = parseFloat($(this).find('input[id^="carton"]').val()) || 0;
-      totalAmount += itemPrice;
-      $('#totalCarton').val(totalAmount);
-    });
-  });
-
   $('#filterSearch').on('click', function(){
-    //$('#spinnerLoading').show();
-
     var fromDateValue = '';
     var toDateValue = '';
 
@@ -560,98 +454,197 @@ $(function () {
         } 
       },
       'columns': [
-        {
-          // Add a checkbox with a unique ID for each row
-          data: 'id', // Assuming 'serialNo' is a unique identifier for each row
-          className: 'select-checkbox',
-          orderable: false,
-          render: function (data, type, row) {
-            return '<input type="checkbox" class="select-checkbox" id="checkbox_' + data + '" value="'+data+'"/>';
-          }
-        },
         { data: 'customer_name' },
-        { data: 'description' },
-        { data: 'estimated_ctn' },
-        {
-          data: 'actual_ctn',
-          render: function (data, type, row) {
-            return '<a href="#" class="actualCtnLink" data-id="' + row.id + '" data-booking-date="' + row.booking_date + '" data-customer-id="' + row.customer_id + '">' + data + '</a>';
+        { data: 'vehicle_no' },
+        { data: 'driver_name' },
+        { data: 'outlet' },
+        { data: 'date' },
+        { data: 'type' },
+        { 
+          data: 'id',
+          render: function ( data, type, row ) {
+            return '<div class="row"><div class="col-3"><button type="button" id="edit'+data+'" onclick="edit('+data+')" class="btn btn-success btn-sm"><i class="fas fa-pen"></i></button></div><div class="col-3"><button type="button" id="deactivate'+data+'" onclick="deactivate('+data+')" class="btn btn-danger btn-sm"><i class="fas fa-trash"></i></button></div></div>';
           }
         },
-        { data: 'pickup_method' },
         { 
           className: 'dt-control',
           orderable: false,
           data: null,
           render: function ( data, type, row ) {
-            return '<td class="table-elipse" data-toggle="collapse" data-target="#demo'+row.serialNo+'"><i class="fas fa-angle-down"></i></td>';
+            return '<td class="table-elipse" data-toggle="collapse" data-target="#demo'+row.id+'"><i class="fas fa-angle-down"></i></td>';
           }
         }
-      ],
-      "rowCallback": function( row, data, index ) {
-        //$('td', row).css('background-color', '#E6E6FA');
-        //$('#spinnerLoading').hide();
-      },
-      // "footerCallback": function ( row, data, start, end, display ) {
-      //   var api = this.api();
-
-      //   // Remove the formatting to get integer data for summation
-      //   var intVal = function (i) {
-      //     return typeof i === 'string' ? i.replace(/[\$,]/g, '')*1 : typeof i === 'number' ? i : 0;
-      //   };
-
-      //   // Total over all pages
-      //   total = api.column(3).data().reduce( function (a, b) { return intVal(a) + intVal(b); }, 0 );
-      //   total2 = api.column(4).data().reduce( function (a, b) { return intVal(a) + intVal(b); }, 0 );
-      //   total3 = api.column(5).data().reduce( function (a, b) { return intVal(a) + intVal(b); }, 0 );
-      //   total4 = api.column(6).data().reduce( function (a, b) { return intVal(a) + intVal(b); }, 0 );
-      //   total5 = api.column(7).data().reduce( function (a, b) { return intVal(a) + intVal(b); }, 0 );
-      //   total6 = api.column(8).data().reduce( function (a, b) { return intVal(a) + intVal(b); }, 0 );
-      //   total7 = api.column(9).data().reduce( function (a, b) { return intVal(a) + intVal(b); }, 0 );
-
-      //   // Total over this page
-      //   pageTotal = api.column(3, {page: 'current'}).data().reduce( function (a, b) {return intVal(a) + intVal(b);}, 0 );
-      //   pageTotal2 = api.column(4, {page: 'current'}).data().reduce( function (a, b) {return intVal(a) + intVal(b);}, 0 );
-      //   pageTotal3 = api.column(5, {page: 'current'}).data().reduce( function (a, b) {return intVal(a) + intVal(b);}, 0 );
-      //   pageTotal4 = api.column(6, {page: 'current'}).data().reduce( function (a, b) {return intVal(a) + intVal(b);}, 0 );
-      //   pageTotal5 = api.column(7, {page: 'current'}).data().reduce( function (a, b) {return intVal(a) + intVal(b);}, 0 );
-      //   pageTotal6 = api.column(8, {page: 'current'}).data().reduce( function (a, b) {return intVal(a) + intVal(b);}, 0 );
-      //   pageTotal7 = api.column(9, {page: 'current'}).data().reduce( function (a, b) {return intVal(a) + intVal(b);}, 0 );
-
-      //   // Update footer
-      //   $(api.column(3).footer()).html(pageTotal +' kg ( '+ total +' kg)');
-      //   $(api.column(4).footer()).html(pageTotal2 +' kg ( '+ total2 +' kg)');
-      //   $(api.column(5).footer()).html(pageTotal3 +' kg ( '+ total3 +' kg)');
-      //   $(api.column(6).footer()).html(pageTotal4 +' kg ( '+ total4 +' kg)');
-      //   $(api.column(7).footer()).html(pageTotal5 +' ('+ total5 +')');
-      //   $(api.column(8).footer()).html('RM'+pageTotal6 +' ( RM'+ total6 +' total)');
-      //   $(api.column(9).footer()).html('RM'+pageTotal7 +' ( RM'+ total7 +' total)');
-      // }
+      ]
     });
+  });
+
+  $('#newReturn').on('click', function(){
+    var date = new Date();
+
+    $('#extendModal').find('#id').val("");
+    $('#extendModal').find('#taskType').val("");
+    $('#extendModal').find('#customerNo').val("");
+    $('#extendModal').find('#driver').val("");
+    $('#extendModal').find('#lorry').val("");
+    $('#extendModal').find('#hypermarket').val("");
+    $('#extendModal').find('#states').val("");
+    $('#extendModal').find('#zones').empty().val("");
+    $('#extendModal').find('#outlets').empty().val("");
+    $('#extendModal').find('#booking_date').val(formatDate2(date));
+    $('#extendModal').find('#rtvgrn').val("");
+    $('#extendModal').find('#description').val("");
+    $('#extendModal').modal('show');
+    
+    $('#extendForm').validate({
+      errorElement: 'span',
+      errorPlacement: function (error, element) {
+        error.addClass('invalid-feedback');
+        element.closest('.form-group').append(error);
+      },
+      highlight: function (element, errorClass, validClass) {
+        $(element).addClass('is-invalid');
+      },
+      unhighlight: function (element, errorClass, validClass) {
+        $(element).removeClass('is-invalid');
+      }
+    });
+  });
+
+  $('#states').on('change', function(){
+    $('#zones').empty();
+    var dataIndexToMatch = $(this).val();
+
+    $('#zoneHidden option').each(function() {
+      var dataIndex = $(this).data('index');
+
+      if (dataIndex == dataIndexToMatch) {
+        $('#zones').append($(this).clone());
+        $('#zones').trigger('change');
+      }
+    });
+
+    if($('#states').val() && $('#zones').val() && $('#hypermarket').val() && $('#hypermarket').val() != '0'){
+      $('#extendModal').find('#outlets').empty();
+      $('#extendModal').find("#direct_store").attr('required', false);
+      $('#extendModal').find('#outlets').attr('required', true);
+      $('#extendModal').find('#outlets').show();
+      $('#extendModal').find("#direct_store").hide();
+      //$('#extendModal').find('.select2-container').hide();
+
+      $.post('php/listOutlets.php', {states: $('#states').val(), zones: $('#zones').val(), hypermarket: $('#hypermarket').val()}, function(data){
+        var obj = JSON.parse(data);
+        
+        if(obj.status === 'success'){
+          for(var i=0; i<obj.message.length; i++){
+            $('#extendModal').find('#outlets').append('<option value="'+obj.message[i].id+'">'+obj.message[i].name+'</option>')
+          }
+        }
+        else if(obj.status === 'failed'){
+          toastr["error"](obj.message, "Failed:");
+        }
+        else{
+          toastr["error"]("Something wrong when pull data", "Failed:");
+        }
+        $('#spinnerLoading').hide();
+      });
+    }
+    else{
+      $('#extendModal').find('#outlets').attr('required', false);
+      $('#extendModal').find('#outlets').hide();
+      $('#extendModal').find("#direct_store").show();
+      $('#extendModal').find("#direct_store").attr('required', true);
+      $('#extendModal').find("#direct_store").val('');
+      //$('#extendModal').find('.select2-container').show();
+    }
+  });
+
+  $('#zones').on('change', function(){
+    if($('#states').val() && $('#zones').val() && $('#hypermarket').val() && $('#hypermarket').val() != '0'){
+      $('#extendModal').find('#outlets').empty();
+      $('#extendModal').find("#direct_store").attr('required', false);
+      $('#extendModal').find('#outlets').attr('required', true);
+      $('#extendModal').find('#outlets').show();
+      $('#extendModal').find("#direct_store").hide();
+      //$('#extendModal').find('.select2-container').hide();
+
+      $.post('php/listOutlets.php', {states: $('#states').val(), zones: $('#zones').val(), hypermarket: $('#hypermarket').val()}, function(data){
+        var obj = JSON.parse(data);
+        
+        if(obj.status === 'success'){
+          for(var i=0; i<obj.message.length; i++){
+            $('#extendModal').find('#outlets').append('<option value="'+obj.message[i].id+'">'+obj.message[i].name+'</option>')
+          }
+        }
+        else if(obj.status === 'failed'){
+          toastr["error"](obj.message, "Failed:");
+        }
+        else{
+          toastr["error"]("Something wrong when pull data", "Failed:");
+        }
+        $('#spinnerLoading').hide();
+      });
+    }
+    else{
+      $('#extendModal').find('#outlets').attr('required', false);
+      $('#extendModal').find('#outlets').hide();
+      $('#extendModal').find("#direct_store").show();
+      $('#extendModal').find("#direct_store").attr('required', true);
+      $('#extendModal').find("#direct_store").val('');
+      //$('#extendModal').find('.select2-container').show();
+    }
+  });
+
+  $('#hypermarket').on('change', function(){
+    if($('#states').val() && $('#zones').val() && $('#hypermarket').val() && $('#hypermarket').val() != '0'){
+      $('#extendModal').find('#outlets').empty();
+      $('#extendModal').find("#direct_store").attr('required', false);
+      $('#extendModal').find('#outlets').attr('required', true);
+      $('#extendModal').find('#outlets').show();
+      $('#extendModal').find("#direct_store").hide();
+      //$('#extendModal').find('.select2-container').hide();
+
+      $.post('php/listOutlets.php', {states: $('#states').val(), zones: $('#zones').val(), hypermarket: $('#hypermarket').val()}, function(data){
+        var obj = JSON.parse(data);
+        
+        if(obj.status === 'success'){
+          for(var i=0; i<obj.message.length; i++){
+            $('#extendModal').find('#outlets').append('<option value="'+obj.message[i].id+'">'+obj.message[i].name+'</option>')
+          }
+        }
+        else if(obj.status === 'failed'){
+          toastr["error"](obj.message, "Failed:");
+        }
+        else{
+          toastr["error"]("Something wrong when pull data", "Failed:");
+        }
+        $('#spinnerLoading').hide();
+      });
+    }
+    else{
+      $('#extendModal').find('#outlets').attr('required', false);
+      $('#extendModal').find('#outlets').hide();
+      $('#extendModal').find("#direct_store").show();
+      $('#extendModal').find("#direct_store").attr('required', true);
+      //$('#extendModal').find('.select2-container').show();
+      $('#extendModal').find("#direct_store").val('');
+    }
   });
 });
 
 function format(row) {
-    var returnString = '<table class="table table-bordered">';
-    returnString += '<thead><tr><th>GRN No</th><th>Hypermarket</th><th>Location</th><th>Carton</th><th>Warehouse</th><th>Price</th><th>Reason</th><th>Other Reason</th></tr></thead>';
-    returnString += '<tbody>';
-
-    for (var i = 0; i < row.return_details.length; i++) {
-        returnString += '<tr>';
-        returnString += '<td>' + row.return_details[i].grn_no + '</td>';
-        returnString += '<td>' + row.return_details[i].hypermarket + '</td>';
-        returnString += '<td>' + row.return_details[i].location + '</td>';
-        returnString += '<td>' + row.return_details[i].carton + '</td>';
-        returnString += '<td>' + row.return_details[i].warehouse + '</td>';
-        returnString += '<td>' + row.return_details[i].price + '</td>';
-        returnString += '<td>' + row.return_details[i].reason + '</td>';
-        returnString += '<td>' + row.return_details[i].other_reason + '</td>';
-        returnString += '</tr>';
-    }
-
-    returnString += '</tbody></table>';
-
-    return returnString;
+  return '<div class="row"><div class="col-md-3"><p>Customer Name: '+row.customerName+
+  '</p></div><div class="col-md-3"><p>Hypermarket: '+row.hypermarketName+
+  '</p></div><div class="col-md-3"><p>States: '+row.statesName+
+  '</p></div><div class="col-md-3"><p>Zones: '+row.zonesName+
+  '</p></div></div><div class="row"><div class="col-md-3"><p>Outlet: '+row.outletName+
+  '</p></div><div class="col-md-3"><p>Vehicle No: '+row.vehicle_no+
+  '</p></div><div class="col-md-3"><p>Driver Name: '+row.driver_name+
+  '</p></div><div class="col-md-3"><p>Date: '+row.booking_date+
+  '</p></div></div><div class="row"><div class="col-md-3">'+
+  '</div><div class="col-md-3"><p>Code: '+row.code+
+  '</p></div><div class="col-md-3"><p>Status: '+row.remark+
+  '</p></div><div class="col-md-3"><p>Source: '+row.source+
+  '</p></div></div>';
 }
 
 function formatNormal (row) {
@@ -681,50 +674,57 @@ function formatNormal (row) {
   '</p></div><div class="col-md-3"><p>% Variance: '+row.variancePerc+
   '</p></div><div class="col-md-3"><p>Transporter: '+row.transporter_name+
   '</p></div></div>';
-  ;
 }
 
 function edit(id) {
   $('#spinnerLoading').show();
-  $.post('php/getReturn.php', {userID: id}, function(data){
+  $.post('php/getTask.php', {userID: id}, function(data){
     var obj = JSON.parse(data);
     
     if(obj.status === 'success'){
       $('#extendModal').find('#id').val(obj.message.id);
-      $('#extendModal').find('#return_date').val(obj.message.return_date);
+      $('#extendModal').find('#taskType').val(obj.message.type);
       $('#extendModal').find('#customerNo').val(obj.message.customer);
-      $('#extendModal').find('#lorry').val(obj.message.vehicle);
-      $('#extendModal').find('#driver').val(obj.message.driver);
-      $('#extendModal').find('#collection_date').val(obj.message.collection_date);
-      $('#extendModal').find('#collectionType').val(obj.message.collection_type);
-      $('#pricingTable').html('');
-      pricingCount = 0;
-      $('#totalCarton').val(obj.message.total_carton);
-      $('#totalAmount').val(obj.message.total_amount);
+      $('#extendModal').find('#driver').val(obj.message.driver_name);
+      $('#extendModal').find('#lorry').val(obj.message.vehicle_no);
+      $('#extendModal').find('#hypermarket').val(obj.message.hypermarket);
+      $('#extendModal').find('#states').val(obj.message.states);
+      $('#zones').empty();
+      var dataIndexToMatch = obj.message.states;
 
-      var details = obj.message.return_details;
-      for(var i=0; i<details.length; i++){
-        var $addContents = $("#pricingDetails").clone();
-        $("#pricingTable").append($addContents.html());
+      $('#zoneHidden option').each(function() {
+        var dataIndex = $(this).data('index');
 
-        $("#pricingTable").find('.details:last').attr("id", "detail" + pricingCount);
-        $("#pricingTable").find('.details:last').attr("data-index", pricingCount);
-        $("#pricingTable").find('#remove:last').attr("id", "remove" + pricingCount);
+        if (dataIndex == dataIndexToMatch) {
+          $('#extendModal').find('#zones').append($(this).clone());
+          $('#extendModal').find('#zones').val(obj.message.zone);
+          $('#extendModal').find('#zones').trigger('change');
+        }
+      });
 
-        $("#pricingTable").find('#grn_no:last').attr('name', 'grn_no['+pricingCount+']').attr("id", "grn_no" + pricingCount).val(details[i].grn_no);
-        $("#pricingTable").find('#hypermarket:last').attr('name', 'hypermarket['+pricingCount+']').attr("id", "hypermarket" + pricingCount).val(details[i].hypermarket);
-        $("#pricingTable").find('#location:last').attr('name', 'location['+pricingCount+']').attr("id", "location" + pricingCount).val(details[i].location);
-        $("#pricingTable").find('#carton:last').attr('name', 'carton['+pricingCount+']').attr("id", "carton" + pricingCount).val(details[i].carton);
-        $("#pricingTable").find('#reason:last').attr('name', 'reason['+pricingCount+']').attr("id", "reason" + pricingCount).val(details[i].reason);
-        $("#pricingTable").find('#other_reason').attr('name', 'other_reason['+pricingCount+']').attr("id", "other_reason" + pricingCount).val(details[i].other_reason);
-        $("#pricingTable").find('#warehouse:last').attr('name', 'warehouse['+pricingCount+']').attr("id", "warehouse" + pricingCount).val(details[i].warehouse);
-        $("#pricingTable").find('#price:last').attr('name', 'price['+pricingCount+']').attr("id", "price" + pricingCount).val(details[i].price);
+      $('#extendModal').find('#hypermarket').trigger('change');
+      $('#extendModal').find('#booking_date').val(formatDate2(new Date(obj.message.booking_date)));
+      $('#extendModal').find('#rtvgrn').val(obj.message.code);
+      $('#extendModal').find('#description').val(obj.message.remark);
 
-        $("#other_reason" + pricingCount).hide();
-        pricingCount++;
+      if(obj.message.hypermarket == '0'){
+        $('#extendModal').find('#hypermarket').trigger('change');
+        $('#extendModal').find('#outlets').empty().val(obj.message.outlet);
+        $('#extendModal').find('#direct_store').val(obj.message.direct_store);
+        $('#extendModal').find('#outlets').hide();
+        $('#extendModal').find("#direct_store").show();
+      }
+      else{
+        $('#extendModal').find('#hypermarket').trigger('change');
+        $('#extendModal').find('#outlets').val(obj.message.outlet);
+        $('#extendModal').find('#outlets').show();
+        $('#extendModal').find('#direct_store').val('');
+        $('#extendModal').find("#direct_store").hide();
       }
 
+
       $('#extendModal').modal('show');
+
       $('#extendForm').validate({
         errorElement: 'span',
         errorPlacement: function (error, element) {

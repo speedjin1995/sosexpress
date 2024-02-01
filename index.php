@@ -159,11 +159,11 @@ $blog = $db->query("SELECT * FROM blog WHERE deleted = '0'");
             </div-->
           </div>
         </div>
-        <div class="col-lg-6 col-md-12 col-12">
+        <!--div class="col-lg-6 col-md-12 col-12">
           <div class="header-image">
             <img src="assets/images/header/hero-image.jpg" alt="#" />
           </div>
-        </div>
+        </div-->
       </div>
     </div>
   </section>
