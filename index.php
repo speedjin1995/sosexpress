@@ -1,678 +1,959 @@
-<?php
-require_once 'php/db_connect.php';
-
-session_start();
-
-if(!isset($_SESSION['userID'])){
-  echo '<script type="text/javascript">';
-  echo 'window.location.href = "login.html";</script>';
-}
-else{
-  $user = $_SESSION['userID'];
-  $stmt = $db->prepare("SELECT * from users where id = ?");
-	$stmt->bind_param('s', $user);
-	$stmt->execute();
-	$result = $stmt->get_result();
-  $role = 'NORMAL';
-  $name = '';
-	
-	if(($row = $result->fetch_assoc()) !== null){
-    $role = $row['role_code'];
-    $name = $row['name'];
-  }
-}
-?>
-
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta http-equiv="x-ua-compatible" content="ie=edge">
 
+<head>
+  <!--====== Required meta tags ======-->
+  <meta charset="utf-8" />
+  <meta http-equiv="x-ua-compatible" content="ie=edge" />
+  <meta name="description" content="" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+
+  <!--====== Title ======-->
   <title>Pengangkutan SOS</title>
 
+  <!--====== Favicon Icon ======-->
   <link rel="icon" href="assets/logo.png" type="image">
-  <!-- Font Awesome Icons -->
-  <link rel="stylesheet" href="plugins/fontawesome-free/css/all.min.css">
-  <!-- IonIcons -->
-  <link rel="stylesheet" href="http://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
-  <!-- Theme style -->
-  <link rel="stylesheet" href="dist/css/adminlte.min.css">
-  <!-- Google Font: Source Sans Pro -->
-  <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700" rel="stylesheet">
-  <!-- daterange picker -->
-  <link rel="stylesheet" href="plugins/daterangepicker/daterangepicker.css">
-  <link rel="stylesheet" href="plugins/tempusdominus-bootstrap-4/css/tempusdominus-bootstrap-4.min.css">
-  <!-- iCheck for checkboxes and radio inputs -->
-  
-  <link rel="stylesheet" href="plugins/icheck-bootstrap/icheck-bootstrap.min.css">
-  <!-- Bootstrap Color Picker -->
-  <link rel="stylesheet" href="plugins/bootstrap-colorpicker/css/bootstrap-colorpicker.min.css">
-  <!-- Select2 -->
-  <link rel="stylesheet" href="plugins/select2/css/select2.min.css">
-  <link rel="stylesheet" href="plugins/select2-bootstrap4-theme/select2-bootstrap4.min.css">
-  <!-- Bootstrap4 Duallistbox -->
-  <link rel="stylesheet" href="plugins/bootstrap4-duallistbox/bootstrap-duallistbox.min.css">
-  <!-- Toastr -->
-  <link rel="stylesheet" href="plugins/toastr/toastr.min.css">
-  <link rel="stylesheet" href="dist/css/adminlte.min.css?v=3.2.0">
-  
-  <style>
-    body {
-      background: #eee;
-      font-family: Assistant, sans-serif
-    }
-  
-    .cell-1 {
-      border-collapse: separate;
-      border-spacing: 0 4em;
-      background: #ffffff;
-      border-bottom: 5px solid transparent;
-      background-clip: padding-box;
-      cursor: pointer
-    }
-  
-    thead {
-      /* background: #dddcdc */
-      background-color: #007bff; 
-      color:white;
-    }
-  
-    .table-elipse {
-      cursor: pointer
-    }
-  
-    .expand-body {
-      -webkit-transition: all 0.3s ease-in-out;
-      -moz-transition: all 0.3s ease-in-out;
-      -o-transition: all 0.3s 0.1s ease-in-out;
-      transition: all 0.3s ease-in-out
-    }
-  
-    .row-child {
-      background-color: #000;
-    }
 
-    /*.hidden {
-      display: none !important;
-    }*/
+  <!--====== Bootstrap css ======-->
+  <link rel="stylesheet" href="assets/css/bootstrap.min.css" />
 
-    div.loading{
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background-color: rgba(16, 16, 16, 0.5);
-      z-index: 5;
-    }
+  <!--====== Line Icons css ======-->
+  <link rel="stylesheet" href="assets/css/lineicons.css" />
 
-    @-webkit-keyframes uil-ring-anim {
-      0% {
-        -ms-transform: rotate(0deg);
-        -moz-transform: rotate(0deg);
-        -webkit-transform: rotate(0deg);
-        -o-transform: rotate(0deg);
-        transform: rotate(0deg);
-      }
-      100% {
-        -ms-transform: rotate(360deg);
-        -moz-transform: rotate(360deg);
-        -webkit-transform: rotate(360deg);
-        -o-transform: rotate(360deg);
-        transform: rotate(360deg);
-      }
-    }
+  <!--====== Tiny Slider css ======-->
+  <link rel="stylesheet" href="assets/css/tiny-slider.css" />
 
-    @-webkit-keyframes uil-ring-anim {
-      0% {
-        -ms-transform: rotate(0deg);
-        -moz-transform: rotate(0deg);
-        -webkit-transform: rotate(0deg);
-        -o-transform: rotate(0deg);
-        transform: rotate(0deg);
-      }
-      100% {
-        -ms-transform: rotate(360deg);
-        -moz-transform: rotate(360deg);
-        -webkit-transform: rotate(360deg);
-        -o-transform: rotate(360deg);
-        transform: rotate(360deg);
-      }
-    }
+  <!--====== gLightBox css ======-->
+  <link rel="stylesheet" href="assets/css/glightbox.min.css" />
 
-    @-moz-keyframes uil-ring-anim {
-      0% {
-        -ms-transform: rotate(0deg);
-        -moz-transform: rotate(0deg);
-        -webkit-transform: rotate(0deg);
-        -o-transform: rotate(0deg);
-        transform: rotate(0deg);
-      }
-      100% {
-        -ms-transform: rotate(360deg);
-        -moz-transform: rotate(360deg);
-        -webkit-transform: rotate(360deg);
-        -o-transform: rotate(360deg);
-        transform: rotate(360deg);
-      }
-    }
-
-    @-ms-keyframes uil-ring-anim {
-      0% {
-        -ms-transform: rotate(0deg);
-        -moz-transform: rotate(0deg);
-        -webkit-transform: rotate(0deg);
-        -o-transform: rotate(0deg);
-        transform: rotate(0deg);
-      }
-      100% {
-        -ms-transform: rotate(360deg);
-        -moz-transform: rotate(360deg);
-        -webkit-transform: rotate(360deg);
-        -o-transform: rotate(360deg);
-        transform: rotate(360deg);
-      }
-    }
-
-    @-moz-keyframes uil-ring-anim {
-      0% {
-        -ms-transform: rotate(0deg);
-        -moz-transform: rotate(0deg);
-        -webkit-transform: rotate(0deg);
-        -o-transform: rotate(0deg);
-        transform: rotate(0deg);
-      }
-      100% {
-        -ms-transform: rotate(360deg);
-        -moz-transform: rotate(360deg);
-        -webkit-transform: rotate(360deg);
-        -o-transform: rotate(360deg);
-        transform: rotate(360deg);
-      }
-    }
-
-    @-webkit-keyframes uil-ring-anim {
-      0% {
-        -ms-transform: rotate(0deg);
-        -moz-transform: rotate(0deg);
-        -webkit-transform: rotate(0deg);
-        -o-transform: rotate(0deg);
-        transform: rotate(0deg);
-      }
-      100% {
-        -ms-transform: rotate(360deg);
-        -moz-transform: rotate(360deg);
-        -webkit-transform: rotate(360deg);
-        -o-transform: rotate(360deg);
-        transform: rotate(360deg);
-      }
-    }
-
-    @-o-keyframes uil-ring-anim {
-      0% {
-        -ms-transform: rotate(0deg);
-        -moz-transform: rotate(0deg);
-        -webkit-transform: rotate(0deg);
-        -o-transform: rotate(0deg);
-        transform: rotate(0deg);
-      }
-      100% {
-        -ms-transform: rotate(360deg);
-        -moz-transform: rotate(360deg);
-        -webkit-transform: rotate(360deg);
-        -o-transform: rotate(360deg);
-        transform: rotate(360deg);
-      }
-    }
-
-    @keyframes uil-ring-anim {
-      0% {
-        -ms-transform: rotate(0deg);
-        -moz-transform: rotate(0deg);
-        -webkit-transform: rotate(0deg);
-        -o-transform: rotate(0deg);
-        transform: rotate(0deg);
-      }
-      100% {
-        -ms-transform: rotate(360deg);
-        -moz-transform: rotate(360deg);
-        -webkit-transform: rotate(360deg);
-        -o-transform: rotate(360deg);
-        transform: rotate(360deg);
-      }
-    }
-
-    .uil-ring-css {
-      margin: auto;
-      position: absolute;
-      top: 0;
-      left: 0;
-      bottom: 0;
-      right: 0;
-      width: 200px;
-      height: 200px;
-    }
-
-    .uil-ring-css > div {
-      position: absolute;
-      display: block;
-      width: 160px;
-      height: 160px;
-      top: 20px;
-      left: 20px;
-      border-radius: 80px;
-      box-shadow: 0 6px 0 0 #ffffff;
-      -ms-animation: uil-ring-anim 1s linear infinite;
-      -moz-animation: uil-ring-anim 1s linear infinite;
-      -webkit-animation: uil-ring-anim 1s linear infinite;
-      -o-animation: uil-ring-anim 1s linear infinite;
-      animation: uil-ring-anim 1s linear infinite;
-    }
-  </style>
+  <link rel="stylesheet" href="style.css" />
 </head>
-<!--
-BODY TAG OPTIONS:
-=================
-Apply one or more of the following classes to to the body tag
-to get the desired effect
-|---------------------------------------------------------|
-|LAYOUT OPTIONS | sidebar-collapse                        |
-|               | sidebar-mini                            |
-|---------------------------------------------------------|
--->
-<body class="hold-transition sidebar-mini">
-<div class="loading" id="spinnerLoading">
-  <div class='uil-ring-css' style='transform:scale(0.79);'>
-    <div></div>
-  </div>
-</div>
 
-<div class="wrapper">
-  <!-- Navbar -->
-  <nav class="main-header navbar navbar-expand navbar-primary navbar-light" >
-    <!-- Left navbar links -->
-    <ul class="navbar-nav">
-      <li class="nav-item">
-        <a class="nav-link" data-widget="pushmenu" href="#" role="button"><i class="fas fa-bars bg-primary"></i></a>
-      </li>
-    </ul>
-  </nav>
-  <!-- Main Sidebar Container -->
-  <aside class="main-sidebar sidebar-dark-primary elevation-4" style="background-color: #3d44c1;">
-    <!-- Brand Logo -->
-    <a href="#" class="brand-link logo-switch">
-      <img src="assets/logo.png" alt="Sneakercube Logo" class="brand-image-xl logo-xs">
-      <img src="assets/logo.png" alt="Sneakercube Logo" class="brand-image-xl logo-xl">
-    </a>
+<body>
 
-    <!-- Sidebar -->
-    <div class="sidebar">
-      <!-- Sidebar user panel (optional) -->
-      <div class="user-panel mt-3 pb-3 mb-3 d-flex">
-          <div class="image" style="align-self: center;">
-            <img src="assets/user-avatar.png" class="img-circle elevation-2" alt="User Image">
-          </div>
-          <div class="info" style="white-space: nowrap;">
-            <p style="font-size:0.75rem; color:#E3E3E3; margin-bottom:0rem; color:#1888CA">Welcome</p>
-            <a href="#myprofile" data-file="myprofile.php" id="goToProfile" class="d-block"><?=$name ?></a>
-          </div>
+  <!--====== NAVBAR NINE PART START ======-->
+
+  <section class="navbar-area navbar-nine">
+    <div class="container">
+      <div class="row">
+        <div class="col-lg-12">
+          <nav class="navbar navbar-expand-lg">
+            <a class="navbar-brand" href="index.html">
+              <img src="assets/logo.png" alt="Logo" />
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNine"
+              aria-controls="navbarNine" aria-expanded="false" aria-label="Toggle navigation">
+              <span class="toggler-icon"></span>
+              <span class="toggler-icon"></span>
+              <span class="toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse sub-menu-bar" id="navbarNine">
+              <ul class="navbar-nav me-auto">
+                <li class="nav-item">
+                  <a class="page-scroll active" href="#hero-area">Home</a>
+                </li>
+                <li class="nav-item">
+                  <a class="page-scroll" href="#services">Services</a>
+                </li>
+                <!--li class="nav-item">
+                  <a class="page-scroll" href="#pricing">Pricing</a>
+                </li-->
+                <li class="nav-item">
+                  <a class="page-scroll" href="#contact">Contact</a>
+                </li>
+              </ul>
+            </div>
+
+            <div class="navbar-btn d-none d-lg-inline-block">
+              <a class="menu-bar" href="#side-menu-left"><i class="lni lni-menu"></i></a>
+            </div>
+          </nav>
+          <!-- navbar -->
+        </div>
       </div>
+      <!-- row -->
+    </div>
+    <!-- container -->
+  </section>
 
-      <!-- Sidebar Menu -->
-      <nav class="mt-2">
-        <ul class="nav nav-pills nav-sidebar flex-column" id="sideMenu" data-widget="treeview" role="menu" data-accordion="false">
-          <!-- Add icons to the links using the .nav-icon class
-            with font-awesome or any other icon font library -->
-          <!--li class="nav-item">
-            <a href="#weight" data-file="weightPage.php" class="nav-link link">
-              <i class="nav-icon fas fa-tachometer-alt"></i>
-              <p>Weight Weighing</p>
-            </a>
-          </li-->
-          <!--li class="nav-item">
-            <a href="#dashboard" data-file="dashboard.php" class="nav-link link">
-              <i class="nav-icon fas fa-chart-bar"></i>
-              <p>Dashboard</p>
-            </a>
-          </li-->
-          <li class="nav-item has-treeview menu-open">
-            <a href="#" class="nav-link">
-              <i class="nav-icon fas fa-users"></i>
-              <p>Customer Requests<i class="fas fa-angle-left right"></i></p>
-            </a>
-            <ul class="nav nav-treeview" style="display: block;">
-              <li class="nav-item">
-                <a href="#booking" data-file="booking.php" class="nav-link link">
-                  <i class="nav-icon fas fa-map"></i>
-                  <p>Booking Request</p>
-                </a>
-              </li>
-              <li class="nav-item">
-                <a href="#dorequest" data-file="dorequest.php" class="nav-link link">
-                  <i class="nav-icon fas fa-newspaper"></i>
-                  <p>DO Request</p>
-                </a>
-              </li>
-              <li class="nav-item">
-                <a href="#loading" data-file="loading.php" class="nav-link link">
-                  <i class="nav-icon fas fa-truck"></i>
-                  <p>Loading</p>
-                </a>
-              </li>
-            </ul>
+  <!--====== NAVBAR NINE PART ENDS ======-->
+
+  <!--====== SIDEBAR PART START ======-->
+
+  <div class="sidebar-left">
+    <div class="sidebar-close">
+      <a class="close" href="#close"><i class="lni lni-close"></i></a>
+    </div>
+    <div class="sidebar-content">
+      <div class="sidebar-logo">
+        <a href="index.html"><img src="assets/logo.png" alt="Logo" /></a>
+      </div>
+      <p class="text">Lorem ipsum dolor sit amet adipisicing elit. Sapiente fuga nisi rerum iusto intro.</p>
+      <!-- logo -->
+      <div class="sidebar-menu">
+        <h5 class="menu-title">Quick Links</h5>
+        <ul>
+          <li><a href="javascript:void(0)">About Us</a></li>
+          <li><a href="javascript:void(0)">Our Team</a></li>
+          <li><a href="javascript:void(0)">Latest News</a></li>
+          <li><a href="javascript:void(0)">Contact Us</a></li>
+        </ul>
+      </div>
+      <!-- menu -->
+      <div class="sidebar-social align-items-center justify-content-center">
+        <h5 class="social-title">Follow Us On</h5>
+        <ul>
+          <li>
+            <a href="javascript:void(0)"><i class="lni lni-facebook-filled"></i></a>
           </li>
-          <li class="nav-item">
-            <a href="#return" data-file="return.php" class="nav-link link">
-              <i class="nav-icon fas fa-undo"></i>
-              <p>Good Return</p>
-            </a>
+          <li>
+            <a href="javascript:void(0)"><i class="lni lni-twitter-original"></i></a>
           </li>
-          <li class="nav-item">
-            <a href="#task" data-file="task.php" class="nav-link link">
-              <i class="nav-icon fas fa-file-alt"></i>
-              <p>Task</p>
-            </a>
+          <li>
+            <a href="javascript:void(0)"><i class="lni lni-linkedin-original"></i></a>
           </li>
-          <li class="nav-item has-treeview">
-            <a href="#" class="nav-link">
-              <i class="nav-icon fas fa-book"></i>
-              <p>Accounting<i class="fas fa-angle-left right"></i></p>
-            </a>
-            <ul class="nav nav-treeview">
-              <li class="nav-item">
-                <a href="#invoice" data-file="invoice.php" class="nav-link link">
-                  <i class="nav-icon fas fa-file-invoice"></i>
-                  <p>Invoice</p>
-                </a>
-              </li>
-            </ul>
-          </li>
-          <!--li class="nav-item">
-            <a href="#tasks" data-file="tasks.php" class="nav-link link">
-            <i class="nav-icon fas fa-receipt"></i>
-              <p>Tasks</p>
-            </a>
-          </li-->
-          <?php 
-              if($role == "ADMIN"){
-                echo '<li class="nav-item has-treeview">
-                <a href="#" class="nav-link">
-                  <i class="nav-icon fas fa-users"></i>
-                  <p>User Managements<i class="fas fa-angle-left right"></i></p>
-                </a>
-                <ul class="nav nav-treeview" style="display: none;">
-                  <li class="nav-item">
-                    <a href="#roles" data-file="roles.php" class="nav-link link">
-                      <i class="nav-icon fas fa-user-tag"></i>
-                      <p>Roles</p>
-                    </a>
-                  </li>
-                  <li class="nav-item">
-                    <a href="#users" data-file="users.php" class="nav-link link">
-                      <i class="nav-icon fas fa-user"></i>
-                      <p>Staffs</p>
-                    </a>
-                  </li>
-                </ul>
-              </li>
-              <li class="nav-item has-treeview">
-                <a href="#" class="nav-link">
-                  <i class="nav-icon fas fa-users"></i>
-                  <p>Driver Management<i class="fas fa-angle-left right"></i></p>
-                </a>
-                <ul class="nav nav-treeview" style="display: none;">
-                  <li class="nav-item">
-                    <a href="#drivers" data-file="drivers.php" class="nav-link link">
-                      <i class="nav-icon fas fa-user"></i>
-                      <p>Drivers</p>
-                    </a>
-                  </li>
-                </ul>
-              </li>
-              <li class="nav-item has-treeview">
-                <a href="#" class="nav-link">
-                  <i class="nav-icon fas fa-database"></i>
-                  <p>Master Data<i class="fas fa-angle-left right"></i></p>
-                </a>
-                <ul class="nav nav-treeview" style="display: none;">
-                  <li class="nav-item">
-                    <a href="#customers" data-file="customers.php" class="nav-link link">
-                      <i class="nav-icon fas fa-book"></i>
-                      <p>Customers</p>
-                    </a>
-                  </li>
-                  <li class="nav-item">
-                    <a href="#outlet" data-file="outlet.php" class="nav-link link">
-                      <i class="nav-icon fas fa-building"></i>
-                      <p>Outlets</p>
-                    </a>
-                  </li>
-                  <li class="nav-item">
-                    <a href="#hypermarket" data-file="hypermarket.php" class="nav-link link">
-                      <i class="nav-icon fas fa-shopping-cart"></i>
-                      <p>Hypermarket</p>
-                    </a>
-                  </li>
-                  <li class="nav-item">
-                    <a href="#states" data-file="states.php" class="nav-link link">
-                      <i class="nav-icon fas fa-city"></i>
-                      <p>States</p>
-                    </a>
-                  </li>
-                  <li class="nav-item">
-                    <a href="#zones" data-file="zones.php" class="nav-link link">
-                      <i class="nav-icon fas fa-chart-area"></i>
-                      <p>Zone</p>
-                    </a>
-                  </li>
-                  <li class="nav-item">
-                    <a href="#pricing" data-file="pricing.php" class="nav-link link">
-                      <i class="nav-icon fas fa-dollar-sign"></i>
-                      <p>Pricing Type</p>
-                    </a>
-                  </li>
-                  <li class="nav-item">
-                    <a href="#dotype" data-file="dotype.php" class="nav-link link">
-                      <i class="nav-icon fas fa-newspaper"></i>
-                      <p>DO Type</p>
-                    </a>
-                  </li>
-                  <li class="nav-item">
-                    <a href="#reason" data-file="reason.php" class="nav-link link">
-                      <i class="nav-icon fas fa-comments"></i>
-                      <p>Reason</p>
-                    </a>
-                  </li>
-                  <li class="nav-item">
-                    <a href="#vehicles" data-file="vehicles.php" class="nav-link link">
-                      <i class="nav-icon fas fa-car"></i>
-                      <p>Vehicles</p>
-                    </a>
-                  </li>
-                  <li class="nav-item">
-                    <a href="#documents" data-file="documents.php" class="nav-link link">
-                      <i class="nav-icon fas fa-file"></i>
-                      <p>Documents</p>
-                    </a>
-                  </li>
-                </ul>
-              </li>
-              <li class="nav-item has-treeview">
-                <a href="#" class="nav-link">
-                  <i class="nav-icon fas fa-desktop"></i>
-                  <p>Content Management<i class="fas fa-angle-left right"></i></p>
-                </a>
-                <ul class="nav nav-treeview" style="display: none;">
-                  <li class="nav-item">
-                    <a href="#anouncement" data-file="anouncement.php" class="nav-link link">
-                      <i class="nav-icon fas fa-bullhorn"></i>
-                      <p>Announcement</p>
-                    </a>
-                  </li>
-                </ul>
-              </li>';
-              }
-          ?>
-          <li class="nav-item has-treeview">
-            <a href="#" class="nav-link">
-              <i class="nav-icon fas fa-cogs"></i>
-              <p>Settings<i class="fas fa-angle-left right"></i></p>
-            </a>
-        
-            <ul class="nav nav-treeview" style="display: none;">
-              <?php 
-                if($role == "ADMIN"){
-                  echo '<li class="nav-item">
-                  <a href="#company" data-file="company.php" class="nav-link link">
-                    <i class="nav-icon fas fa-building"></i>
-                    <p>Company Profile</p>
-                  </a>
-                </li>';
-                }
-              ?>
-              <li class="nav-item">
-                <a href="#myprofile" data-file="myprofile.php" class="nav-link link">
-                  <i class="nav-icon fas fa-id-badge"></i>
-                  <p>Profile</p>
-                </a>
-              </li>
-              <li class="nav-item">
-                <a href="#changepassword" data-file="changePassword.php" class="nav-link link">
-                  <i class="nav-icon fas fa-key"></i>
-                  <p>Change Password</p>
-                </a>
-              </li>
-            </ul>
-          </li>
-          <li class="nav-item">
-            <a href="php/logout.php" class="nav-link">
-              <i class="nav-icon fas fa-sign-out-alt"></i>
-              <p>Logout</p>
-            </a>
+          <li>
+            <a href="javascript:void(0)"><i class="lni lni-youtube"></i></a>
           </li>
         </ul>
-      </nav>
-      <!-- /.sidebar-menu -->
+      </div>
+      <!-- sidebar social -->
     </div>
-    <!-- /.sidebar -->
-  </aside>
-
-  <!-- Content Wrapper. Contains page content -->
-  <div class="content-wrapper" id="mainContents">
-    
+    <!-- content -->
   </div>
-  <!-- /.content-wrapper -->
+  <div class="overlay-left"></div>
 
-  <!-- Control Sidebar -->
-  <aside class="control-sidebar control-sidebar-dark">
-    <!-- Control sidebar content goes here -->
-  </aside>
-  <!-- /.control-sidebar -->
+  <!--====== SIDEBAR PART ENDS ======-->
 
-  <!-- Main Footer -->
-  <footer class="main-footer">
-    <strong>Copyright &copy; 2022 <a href="#">DQ IT Solutions</a>.</strong>All rights reserved.<div class="float-right d-none d-sm-inline-block"><b>Version</b> 1.0.0 </div>
+  <!-- Start header Area -->
+  <section id="hero-area" class="header-area header-eight">
+    <div class="container">
+      <div class="row align-items-center">
+        <div class="col-lg-6 col-md-12 col-12">
+          <div class="header-content">
+            <h1>Corporate & Business Site Template by Ayro UI.</h1>
+            <p>
+              We are a digital agency that helps brands to achieve their
+              business outcomes. We see technology as a tool to create amazing
+              things.
+            </p>
+            <!--div class="button">
+              <a href="javascript:void(0)" class="btn primary-btn">Get Started</a>
+              <a href="https://www.youtube.com/watch?v=r44RKWyfcFw&fbclid=IwAR21beSJORalzmzokxDRcGfkZA1AtRTE__l5N4r09HcGS5Y6vOluyouM9EM"
+                class="glightbox video-button">
+                <span class="btn icon-btn rounded-full">
+                  <i class="lni lni-play"></i>
+                </span>
+                <span class="text">Watch Intro</span>
+              </a>
+            </div-->
+          </div>
+        </div>
+        <div class="col-lg-6 col-md-12 col-12">
+          <div class="header-image">
+            <img src="assets/images/header/hero-image.jpg" alt="#" />
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  <!-- End header Area -->
+
+  <!--====== ABOUT FIVE PART START ======-->
+
+  <section class="about-area about-five">
+    <div class="container">
+      <div class="row align-items-center">
+        <div class="col-lg-6 col-12">
+          <div class="about-image-five">
+            <svg class="shape" width="106" height="134" viewBox="0 0 106 134" fill="none"
+              xmlns="http://www.w3.org/2000/svg">
+              <circle cx="1.66654" cy="1.66679" r="1.66667" fill="#DADADA" />
+              <circle cx="1.66654" cy="16.3335" r="1.66667" fill="#DADADA" />
+              <circle cx="1.66654" cy="31.0001" r="1.66667" fill="#DADADA" />
+              <circle cx="1.66654" cy="45.6668" r="1.66667" fill="#DADADA" />
+              <circle cx="1.66654" cy="60.3335" r="1.66667" fill="#DADADA" />
+              <circle cx="1.66654" cy="88.6668" r="1.66667" fill="#DADADA" />
+              <circle cx="1.66654" cy="117.667" r="1.66667" fill="#DADADA" />
+              <circle cx="1.66654" cy="74.6668" r="1.66667" fill="#DADADA" />
+              <circle cx="1.66654" cy="103" r="1.66667" fill="#DADADA" />
+              <circle cx="1.66654" cy="132" r="1.66667" fill="#DADADA" />
+              <circle cx="16.3333" cy="1.66679" r="1.66667" fill="#DADADA" />
+              <circle cx="16.3333" cy="16.3335" r="1.66667" fill="#DADADA" />
+              <circle cx="16.3333" cy="31.0001" r="1.66667" fill="#DADADA" />
+              <circle cx="16.3333" cy="45.6668" r="1.66667" fill="#DADADA" />
+              <circle cx="16.333" cy="60.3335" r="1.66667" fill="#DADADA" />
+              <circle cx="16.333" cy="88.6668" r="1.66667" fill="#DADADA" />
+              <circle cx="16.333" cy="117.667" r="1.66667" fill="#DADADA" />
+              <circle cx="16.333" cy="74.6668" r="1.66667" fill="#DADADA" />
+              <circle cx="16.333" cy="103" r="1.66667" fill="#DADADA" />
+              <circle cx="16.333" cy="132" r="1.66667" fill="#DADADA" />
+              <circle cx="30.9998" cy="1.66679" r="1.66667" fill="#DADADA" />
+              <circle cx="74.6665" cy="1.66679" r="1.66667" fill="#DADADA" />
+              <circle cx="30.9998" cy="16.3335" r="1.66667" fill="#DADADA" />
+              <circle cx="74.6665" cy="16.3335" r="1.66667" fill="#DADADA" />
+              <circle cx="30.9998" cy="31.0001" r="1.66667" fill="#DADADA" />
+              <circle cx="74.6665" cy="31.0001" r="1.66667" fill="#DADADA" />
+              <circle cx="30.9998" cy="45.6668" r="1.66667" fill="#DADADA" />
+              <circle cx="74.6665" cy="45.6668" r="1.66667" fill="#DADADA" />
+              <circle cx="31" cy="60.3335" r="1.66667" fill="#DADADA" />
+              <circle cx="74.6668" cy="60.3335" r="1.66667" fill="#DADADA" />
+              <circle cx="31" cy="88.6668" r="1.66667" fill="#DADADA" />
+              <circle cx="74.6668" cy="88.6668" r="1.66667" fill="#DADADA" />
+              <circle cx="31" cy="117.667" r="1.66667" fill="#DADADA" />
+              <circle cx="74.6668" cy="117.667" r="1.66667" fill="#DADADA" />
+              <circle cx="31" cy="74.6668" r="1.66667" fill="#DADADA" />
+              <circle cx="74.6668" cy="74.6668" r="1.66667" fill="#DADADA" />
+              <circle cx="31" cy="103" r="1.66667" fill="#DADADA" />
+              <circle cx="74.6668" cy="103" r="1.66667" fill="#DADADA" />
+              <circle cx="31" cy="132" r="1.66667" fill="#DADADA" />
+              <circle cx="74.6668" cy="132" r="1.66667" fill="#DADADA" />
+              <circle cx="45.6665" cy="1.66679" r="1.66667" fill="#DADADA" />
+              <circle cx="89.3333" cy="1.66679" r="1.66667" fill="#DADADA" />
+              <circle cx="45.6665" cy="16.3335" r="1.66667" fill="#DADADA" />
+              <circle cx="89.3333" cy="16.3335" r="1.66667" fill="#DADADA" />
+              <circle cx="45.6665" cy="31.0001" r="1.66667" fill="#DADADA" />
+              <circle cx="89.3333" cy="31.0001" r="1.66667" fill="#DADADA" />
+              <circle cx="45.6665" cy="45.6668" r="1.66667" fill="#DADADA" />
+              <circle cx="89.3333" cy="45.6668" r="1.66667" fill="#DADADA" />
+              <circle cx="45.6665" cy="60.3335" r="1.66667" fill="#DADADA" />
+              <circle cx="89.3333" cy="60.3335" r="1.66667" fill="#DADADA" />
+              <circle cx="45.6665" cy="88.6668" r="1.66667" fill="#DADADA" />
+              <circle cx="89.3333" cy="88.6668" r="1.66667" fill="#DADADA" />
+              <circle cx="45.6665" cy="117.667" r="1.66667" fill="#DADADA" />
+              <circle cx="89.3333" cy="117.667" r="1.66667" fill="#DADADA" />
+              <circle cx="45.6665" cy="74.6668" r="1.66667" fill="#DADADA" />
+              <circle cx="89.3333" cy="74.6668" r="1.66667" fill="#DADADA" />
+              <circle cx="45.6665" cy="103" r="1.66667" fill="#DADADA" />
+              <circle cx="89.3333" cy="103" r="1.66667" fill="#DADADA" />
+              <circle cx="45.6665" cy="132" r="1.66667" fill="#DADADA" />
+              <circle cx="89.3333" cy="132" r="1.66667" fill="#DADADA" />
+              <circle cx="60.3333" cy="1.66679" r="1.66667" fill="#DADADA" />
+              <circle cx="104" cy="1.66679" r="1.66667" fill="#DADADA" />
+              <circle cx="60.3333" cy="16.3335" r="1.66667" fill="#DADADA" />
+              <circle cx="104" cy="16.3335" r="1.66667" fill="#DADADA" />
+              <circle cx="60.3333" cy="31.0001" r="1.66667" fill="#DADADA" />
+              <circle cx="104" cy="31.0001" r="1.66667" fill="#DADADA" />
+              <circle cx="60.3333" cy="45.6668" r="1.66667" fill="#DADADA" />
+              <circle cx="104" cy="45.6668" r="1.66667" fill="#DADADA" />
+              <circle cx="60.333" cy="60.3335" r="1.66667" fill="#DADADA" />
+              <circle cx="104" cy="60.3335" r="1.66667" fill="#DADADA" />
+              <circle cx="60.333" cy="88.6668" r="1.66667" fill="#DADADA" />
+              <circle cx="104" cy="88.6668" r="1.66667" fill="#DADADA" />
+              <circle cx="60.333" cy="117.667" r="1.66667" fill="#DADADA" />
+              <circle cx="104" cy="117.667" r="1.66667" fill="#DADADA" />
+              <circle cx="60.333" cy="74.6668" r="1.66667" fill="#DADADA" />
+              <circle cx="104" cy="74.6668" r="1.66667" fill="#DADADA" />
+              <circle cx="60.333" cy="103" r="1.66667" fill="#DADADA" />
+              <circle cx="104" cy="103" r="1.66667" fill="#DADADA" />
+              <circle cx="60.333" cy="132" r="1.66667" fill="#DADADA" />
+              <circle cx="104" cy="132" r="1.66667" fill="#DADADA" />
+            </svg>
+            <img src="assets/images/about/about-img1.jpg" alt="about" />
+          </div>
+        </div>
+        <div class="col-lg-6 col-12">
+          <div class="about-five-content">
+            <h6 class="small-title text-lg">OUR STORY</h6>
+            <h2 class="main-title fw-bold">Our team comes with the experience and knowledge</h2>
+            <div class="about-five-tab">
+              <nav>
+                <div class="nav nav-tabs" id="nav-tab" role="tablist">
+                  <button class="nav-link active" id="nav-who-tab" data-bs-toggle="tab" data-bs-target="#nav-who"
+                    type="button" role="tab" aria-controls="nav-who" aria-selected="true">Who We Are</button>
+                  <button class="nav-link" id="nav-vision-tab" data-bs-toggle="tab" data-bs-target="#nav-vision"
+                    type="button" role="tab" aria-controls="nav-vision" aria-selected="false">our Vision</button>
+                  <button class="nav-link" id="nav-history-tab" data-bs-toggle="tab" data-bs-target="#nav-history"
+                    type="button" role="tab" aria-controls="nav-history" aria-selected="false">our History</button>
+                </div>
+              </nav>
+              <div class="tab-content" id="nav-tabContent">
+                <div class="tab-pane fade show active" id="nav-who" role="tabpanel" aria-labelledby="nav-who-tab">
+                  <p>It is a long established fact that a reader will be distracted by the readable content of a page
+                    when
+                    looking at its layout. The point of using Lorem Ipsum is that it has a more-or-less normal
+                    distribution of letters, look like readable English.</p>
+                  <p>There are many variations of passages of Lorem Ipsum available, but the majority have in some
+                    form,
+                    by injected humour.</p>
+                </div>
+                <div class="tab-pane fade" id="nav-vision" role="tabpanel" aria-labelledby="nav-vision-tab">
+                  <p>It is a long established fact that a reader will be distracted by the readable content of a page
+                    when
+                    looking at its layout. The point of using Lorem Ipsum is that it has a more-or-less normal
+                    distribution of letters, look like readable English.</p>
+                  <p>There are many variations of passages of Lorem Ipsum available, but the majority have in some
+                    form,
+                    by injected humour.</p>
+                </div>
+                <div class="tab-pane fade" id="nav-history" role="tabpanel" aria-labelledby="nav-history-tab">
+                  <p>It is a long established fact that a reader will be distracted by the readable content of a page
+                    when
+                    looking at its layout. The point of using Lorem Ipsum is that it has a more-or-less normal
+                    distribution of letters, look like readable English.</p>
+                  <p>There are many variations of passages of Lorem Ipsum available, but the majority have in some
+                    form,
+                    by injected humour.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- container -->
+  </section>
+
+  <!--====== ABOUT FIVE PART ENDS ======-->
+
+  <!-- ===== service-area start ===== -->
+  <section id="services" class="services-area services-eight">
+    <!--======  Start Section Title Five ======-->
+    <div class="section-title-five">
+      <div class="container">
+        <div class="row">
+          <div class="col-12">
+            <div class="content">
+              <h6>Services</h6>
+              <h2 class="fw-bold">Our Best Services</h2>
+              <p>
+                There are many variations of passages of Lorem Ipsum available,
+                but the majority have suffered alteration in some form.
+              </p>
+            </div>
+          </div>
+        </div>
+        <!-- row -->
+      </div>
+      <!-- container -->
+    </div>
+    <!--======  End Section Title Five ======-->
+    <div class="container">
+      <div class="row">
+        <div class="col-lg-4 col-md-6">
+          <div class="single-services">
+            <div class="service-icon">
+              <i class="lni lni-capsule"></i>
+            </div>
+            <div class="service-content">
+              <h4>Refreshing Design</h4>
+              <p>
+                Lorem ipsum dolor sit amet, adipscing elitr, sed diam nonumy
+                eirmod tempor ividunt labor dolore magna.
+              </p>
+            </div>
+          </div>
+        </div>
+        <div class="col-lg-4 col-md-6">
+          <div class="single-services">
+            <div class="service-icon">
+              <i class="lni lni-bootstrap"></i>
+            </div>
+            <div class="service-content">
+              <h4>Solid Bootstrap 5</h4>
+              <p>
+                Lorem ipsum dolor sit amet, adipscing elitr, sed diam nonumy
+                eirmod tempor ividunt labor dolore magna.
+              </p>
+            </div>
+          </div>
+        </div>
+        <div class="col-lg-4 col-md-6">
+          <div class="single-services">
+            <div class="service-icon">
+              <i class="lni lni-shortcode"></i>
+            </div>
+            <div class="service-content">
+              <h4>100+ Components</h4>
+              <p>
+                Lorem ipsum dolor sit amet, adipscing elitr, sed diam nonumy
+                eirmod tempor ividunt labor dolore magna.
+              </p>
+            </div>
+          </div>
+        </div>
+        <div class="col-lg-4 col-md-6">
+          <div class="single-services">
+            <div class="service-icon">
+              <i class="lni lni-dashboard"></i>
+            </div>
+            <div class="service-content">
+              <h4>Speed Optimized</h4>
+              <p>
+                Lorem ipsum dolor sit amet, adipscing elitr, sed diam nonumy
+                eirmod tempor ividunt labor dolore magna.
+              </p>
+            </div>
+          </div>
+        </div>
+        <div class="col-lg-4 col-md-6">
+          <div class="single-services">
+            <div class="service-icon">
+              <i class="lni lni-layers"></i>
+            </div>
+            <div class="service-content">
+              <h4>Fully Customizable</h4>
+              <p>
+                Lorem ipsum dolor sit amet, adipscing elitr, sed diam nonumy
+                eirmod tempor ividunt labor dolore magna.
+              </p>
+            </div>
+          </div>
+        </div>
+        <div class="col-lg-4 col-md-6">
+          <div class="single-services">
+            <div class="service-icon">
+              <i class="lni lni-reload"></i>
+            </div>
+            <div class="service-content">
+              <h4>Regular Updates</h4>
+              <p>
+                Lorem ipsum dolor sit amet, adipscing elitr, sed diam nonumy
+                eirmod tempor ividunt labor dolore magna.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  <!-- ===== service-area end ===== -->
+
+
+  <!-- Start Pricing  Area -->
+  <section id="pricing" class="pricing-area pricing-fourteen">
+    <!--======  Start Section Title Five ======-->
+    <div class="section-title-five">
+      <div class="container">
+        <div class="row">
+          <div class="col-12">
+            <div class="content">
+              <h6>Pricing</h6>
+              <h2 class="fw-bold">Pricing & Plans</h2>
+              <p>
+                There are many variations of passages of Lorem Ipsum available,
+                but the majority have suffered alteration in some form.
+              </p>
+            </div>
+          </div>
+        </div>
+        <!-- row -->
+      </div>
+      <!-- container -->
+    </div>
+    <!--======  End Section Title Five ======-->
+    <div class="container">
+      <div class="row">
+        <div class="col-lg-4 col-md-6 col-12">
+          <div class="pricing-style-fourteen">
+            <div class="table-head">
+              <h6 class="title">Starter</h4>
+                <p>Lorem Ipsum is simply dummy text of the printing and industry.</p>
+                <div class="price">
+                  <h2 class="amount">
+                    <span class="currency">$</span>0<span class="duration">/mo </span>
+                  </h2>
+                </div>
+            </div>
+
+            <div class="light-rounded-buttons">
+              <a href="javascript:void(0)" class="btn primary-btn-outline">
+                Start free trial
+              </a>
+            </div>
+
+            <div class="table-content">
+              <ul class="table-list">
+                <li> <i class="lni lni-checkmark-circle"></i> Cras justo odio.</li>
+                <li> <i class="lni lni-checkmark-circle"></i> Dapibus ac facilisis in.</li>
+                <li> <i class="lni lni-checkmark-circle deactive"></i> Morbi leo risus.</li>
+                <li> <i class="lni lni-checkmark-circle deactive"></i> Excepteur sint occaecat velit.</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+        <div class="col-lg-4 col-md-6 col-12">
+          <div class="pricing-style-fourteen middle">
+            <div class="table-head">
+              <h6 class="title">Exclusive</h4>
+                <p>Lorem Ipsum is simply dummy text of the printing and industry.</p>
+                <div class="price">
+                  <h2 class="amount">
+                    <span class="currency">$</span>99<span class="duration">/mo </span>
+                  </h2>
+                </div>
+            </div>
+
+            <div class="light-rounded-buttons">
+              <a href="javascript:void(0)" class="btn primary-btn">
+                Start free trial
+              </a>
+            </div>
+
+            <div class="table-content">
+              <ul class="table-list">
+                <li> <i class="lni lni-checkmark-circle"></i> Cras justo odio.</li>
+                <li> <i class="lni lni-checkmark-circle"></i> Dapibus ac facilisis in.</li>
+                <li> <i class="lni lni-checkmark-circle"></i> Morbi leo risus.</li>
+                <li> <i class="lni lni-checkmark-circle deactive"></i> Excepteur sint occaecat velit.</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+        <div class="col-lg-4 col-md-6 col-12">
+          <div class="pricing-style-fourteen">
+            <div class="table-head">
+              <h6 class="title">Premium</h4>
+                <p>Lorem Ipsum is simply dummy text of the printing and industry.</p>
+                <div class="price">
+                  <h2 class="amount">
+                    <span class="currency">$</span>150<span class="duration">/mo </span>
+                  </h2>
+                </div>
+            </div>
+
+            <div class="light-rounded-buttons">
+              <a href="javascript:void(0)" class="btn primary-btn-outline">
+                Start free trial
+              </a>
+            </div>
+
+            <div class="table-content">
+              <ul class="table-list">
+                <li> <i class="lni lni-checkmark-circle"></i> Cras justo odio.</li>
+                <li> <i class="lni lni-checkmark-circle"></i> Dapibus ac facilisis in.</li>
+                <li> <i class="lni lni-checkmark-circle"></i> Morbi leo risus.</li>
+                <li> <i class="lni lni-checkmark-circle"></i> Excepteur sint occaecat velit.</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  <!--/ End Pricing  Area -->
+
+
+
+  <!-- Start Cta Area -->
+  <section id="call-action" class="call-action">
+    <div class="container">
+      <div class="row justify-content-center">
+        <div class="col-xxl-6 col-xl-7 col-lg-8 col-md-9">
+          <div class="inner-content">
+            <h2>We love to make perfect <br />solutions for your business</h2>
+            <p>
+              Why I say old chap that is, spiffing off his nut cor blimey
+              guvnords geeza<br />
+              bloke knees up bobby, sloshed arse William cack Richard. Bloke
+              fanny around chesed of bum bag old lost the pilot say there
+              spiffing off his nut.
+            </p>
+            <div class="light-rounded-buttons">
+              <a href="javascript:void(0)" class="btn primary-btn-outline">Get Started</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  <!-- End Cta Area -->
+
+
+
+  <!-- Start Latest News Area -->
+  <div id="blog" class="latest-news-area section">
+    <!--======  Start Section Title Five ======-->
+    <div class="section-title-five">
+      <div class="container">
+        <div class="row">
+          <div class="col-12">
+            <div class="content">
+              <h6>latest news</h6>
+              <h2 class="fw-bold">Latest News & Blog</h2>
+              <p>
+                There are many variations of passages of Lorem Ipsum available,
+                but the majority have suffered alteration in some form.
+              </p>
+            </div>
+          </div>
+        </div>
+        <!-- row -->
+      </div>
+      <!-- container -->
+    </div>
+    <!--======  End Section Title Five ======-->
+    <div class="container">
+      <div class="row">
+        <div class="col-lg-4 col-md-6 col-12">
+          <!-- Single News -->
+          <div class="single-news">
+            <div class="image">
+              <a href="javascript:void(0)"><img class="thumb" src="assets/images/blog/1.jpg" alt="Blog" /></a>
+              <div class="meta-details">
+                <img class="thumb" src="assets/images/blog/b6.jpg" alt="Author" />
+                <span>BY TIM NORTON</span>
+              </div>
+            </div>
+            <div class="content-body">
+              <h4 class="title">
+                <a href="javascript:void(0)"> Make your team a Design driven company </a>
+              </h4>
+              <p>
+                Lorem Ipsum is simply dummy text of the printing and
+                typesetting industry. Lorem Ipsum has been the industry's
+                standard.
+              </p>
+            </div>
+          </div>
+          <!-- End Single News -->
+        </div>
+        <div class="col-lg-4 col-md-6 col-12">
+          <!-- Single News -->
+          <div class="single-news">
+            <div class="image">
+              <a href="javascript:void(0)"><img class="thumb" src="assets/images/blog/2.jpg" alt="Blog" /></a>
+              <div class="meta-details">
+                <img class="thumb" src="assets/images/blog/b6.jpg" alt="Author" />
+                <span>BY TIM NORTON</span>
+              </div>
+            </div>
+            <div class="content-body">
+              <h4 class="title">
+                <a href="javascript:void(0)">
+                  The newest web framework that changed the world
+                </a>
+              </h4>
+              <p>
+                Lorem Ipsum is simply dummy text of the printing and
+                typesetting industry. Lorem Ipsum has been the industry's
+                standard.
+              </p>
+            </div>
+          </div>
+          <!-- End Single News -->
+        </div>
+        <div class="col-lg-4 col-md-6 col-12">
+          <!-- Single News -->
+          <div class="single-news">
+            <div class="image">
+              <a href="javascript:void(0)"><img class="thumb" src="assets/images/blog/3.jpg" alt="Blog" /></a>
+              <div class="meta-details">
+                <img class="thumb" src="assets/images/blog/b6.jpg" alt="Author" />
+                <span>BY TIM NORTON</span>
+              </div>
+            </div>
+            <div class="content-body">
+              <h4 class="title">
+                <a href="javascript:void(0)">
+                  5 ways to improve user retention for your startup
+                </a>
+              </h4>
+              <p>
+                Lorem Ipsum is simply dummy text of the printing and
+                typesetting industry. Lorem Ipsum has been the industry's
+                standard.
+              </p>
+            </div>
+          </div>
+          <!-- End Single News -->
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- End Latest News Area -->
+
+  <!-- Start Brand Area -->
+  <div id="clients" class="brand-area section">
+    <!--======  Start Section Title Five ======-->
+    <div class="section-title-five">
+      <div class="container">
+        <div class="row">
+          <div class="col-12">
+            <div class="content">
+              <h6>Meet our Clients</h6>
+              <h2 class="fw-bold">Our Awesome Clients</h2>
+              <p>
+                There are many variations of passages of Lorem Ipsum available,
+                but the majority have suffered alteration in some form.
+              </p>
+            </div>
+          </div>
+        </div>
+        <!-- row -->
+      </div>
+      <!-- container -->
+    </div>
+    <!--======  End Section Title Five ======-->
+    <div class="container">
+      <div class="row">
+        <div class="col-lg-8 offset-lg-2 col-12">
+          <div class="clients-logos">
+            <div class="single-image">
+              <img src="assets/images/client-logo/graygrids.svg" alt="Brand Logo Images" />
+            </div>
+            <div class="single-image">
+              <img src="assets/images/client-logo/uideck.svg" alt="Brand Logo Images" />
+            </div>
+            <div class="single-image">
+              <img src="assets/images/client-logo/ayroui.svg" alt="Brand Logo Images" />
+            </div>
+            <div class="single-image">
+              <img src="assets/images/client-logo/lineicons.svg" alt="Brand Logo Images" />
+            </div>
+            <div class="single-image">
+              <img src="assets/images/client-logo/tailwindtemplates.svg" alt="Brand Logo Images" />
+            </div>
+            <div class="single-image">
+              <img src="assets/images/client-logo/ecomhtml.svg" alt="Brand Logo Images" />
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- End Brand Area -->
+
+  <!-- ========================= contact-section start ========================= -->
+  <section id="contact" class="contact-section">
+    <div class="container">
+      <div class="row">
+        <div class="col-xl-4">
+          <div class="contact-item-wrapper">
+            <div class="row">
+              <div class="col-12 col-md-6 col-xl-12">
+                <div class="contact-item">
+                  <div class="contact-icon">
+                    <i class="lni lni-phone"></i>
+                  </div>
+                  <div class="contact-content">
+                    <h4>Contact</h4>
+                    <p>0984537278623</p>
+                    <p>yourmail@gmail.com</p>
+                  </div>
+                </div>
+              </div>
+              <div class="col-12 col-md-6 col-xl-12">
+                <div class="contact-item">
+                  <div class="contact-icon">
+                    <i class="lni lni-map-marker"></i>
+                  </div>
+                  <div class="contact-content">
+                    <h4>Address</h4>
+                    <p>175 5th Ave, New York, NY 10010</p>
+                    <p>United States</p>
+                  </div>
+                </div>
+              </div>
+              <div class="col-12 col-md-6 col-xl-12">
+                <div class="contact-item">
+                  <div class="contact-icon">
+                    <i class="lni lni-alarm-clock"></i>
+                  </div>
+                  <div class="contact-content">
+                    <h4>Schedule</h4>
+                    <p>24 Hours / 7 Days Open</p>
+                    <p>Office time: 10 AM - 5:30 PM</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-xl-8">
+          <div class="contact-form-wrapper">
+            <div class="row">
+              <div class="col-xl-10 col-lg-8 mx-auto">
+                <div class="section-title text-center">
+                  <span> Get in Touch </span>
+                  <h2>
+                    Ready to Get Started
+                  </h2>
+                  <p>
+                    At vero eos et accusamus et iusto odio dignissimos ducimus
+                    quiblanditiis praesentium
+                  </p>
+                </div>
+              </div>
+            </div>
+            <form action="#" class="contact-form">
+              <div class="row">
+                <div class="col-md-6">
+                  <input type="text" name="name" id="name" placeholder="Name" required />
+                </div>
+                <div class="col-md-6">
+                  <input type="email" name="email" id="email" placeholder="Email" required />
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-6">
+                  <input type="text" name="phone" id="phone" placeholder="Phone" required />
+                </div>
+                <div class="col-md-6">
+                  <input type="text" name="subject" id="email" placeholder="Subject" required />
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-12">
+                  <textarea name="message" id="message" placeholder="Type Message" rows="5"></textarea>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-12">
+                  <div class="button text-center rounded-buttons">
+                    <button type="submit" class="btn primary-btn rounded-full">
+                      Send Message
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  <!-- ========================= contact-section end ========================= -->
+
+  <!-- ========================= map-section end ========================= -->
+  <section class="map-section map-style-9">
+    <div class="map-container">
+      <object style="border:0; height: 500px; width: 100%;"
+        data="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3102.7887109309127!2d-77.44196278417968!3d38.95165507956235!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMzjCsDU3JzA2LjAiTiA3N8KwMjYnMjMuMiJX!5e0!3m2!1sen!2sbd!4v1545420879707"></object>
+    </div>
+    </div>
+  </section>
+  <!-- ========================= map-section end ========================= -->
+
+  <!-- Start Footer Area -->
+  <footer class="footer-area footer-eleven">
+    <!-- Start Footer Top -->
+    <div class="footer-top">
+      <div class="container">
+        <div class="inner-content">
+          <div class="row">
+            <div class="col-lg-4 col-md-6 col-12">
+              <!-- Single Widget -->
+              <div class="footer-widget f-about">
+                <div class="logo">
+                  <a href="index.html">
+                    <img src="assets/images/logo.svg" alt="#" class="img-fluid" />
+                  </a>
+                </div>
+                <p>
+                  Making the world a better place through constructing elegant
+                  hierarchies.
+                </p>
+                <p class="copyright-text">
+                  <span>© 2024 Ayro UI.</span>Designed and Developed by
+                  <a href="javascript:void(0)" rel="nofollow"> Ayro UI </a>
+                </p>
+              </div>
+              <!-- End Single Widget -->
+            </div>
+            <div class="col-lg-2 col-md-6 col-12">
+              <!-- Single Widget -->
+              <div class="footer-widget f-link">
+                <h5>Solutions</h5>
+                <ul>
+                  <li><a href="javascript:void(0)">Marketing</a></li>
+                  <li><a href="javascript:void(0)">Analytics</a></li>
+                  <li><a href="javascript:void(0)">Commerce</a></li>
+                  <li><a href="javascript:void(0)">Insights</a></li>
+                </ul>
+              </div>
+              <!-- End Single Widget -->
+            </div>
+            <div class="col-lg-2 col-md-6 col-12">
+              <!-- Single Widget -->
+              <div class="footer-widget f-link">
+                <h5>Support</h5>
+                <ul>
+                  <li><a href="javascript:void(0)">Pricing</a></li>
+                  <li><a href="javascript:void(0)">Documentation</a></li>
+                  <li><a href="javascript:void(0)">Guides</a></li>
+                  <li><a href="javascript:void(0)">API Status</a></li>
+                </ul>
+              </div>
+              <!-- End Single Widget -->
+            </div>
+            <div class="col-lg-4 col-md-6 col-12">
+              <!-- Single Widget -->
+              <div class="footer-widget newsletter">
+                <h5>Subscribe</h5>
+                <p>Subscribe to our newsletter for the latest updates</p>
+                <form action="#" method="get" target="_blank" class="newsletter-form">
+                  <input name="EMAIL" placeholder="Email address" required="required" type="email" />
+                  <div class="button">
+                    <button class="sub-btn">
+                      <i class="lni lni-envelope"></i>
+                    </button>
+                  </div>
+                </form>
+              </div>
+              <!-- End Single Widget -->
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!--/ End Footer Top -->
   </footer>
-</div>
-<!-- ./wrapper -->
-<!-- jQuery -->
-<script src="plugins/jquery/jquery.min.js"></script>
-<script src="plugins/jquery-validation/jquery.validate.min.js"></script>
-<!-- Bootstrap -->
-<script src="plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
-<!-- AdminLTE -->
-<script src="dist/js/adminlte.js"></script>
-<!-- OPTIONAL SCRIPTS -->
-<script src="plugins/select2/js/select2.full.min.js"></script>
-<script src="plugins/bootstrap4-duallistbox/jquery.bootstrap-duallistbox.min.js"></script>
-<script src="plugins/moment/moment.min.js"></script>
-<script src="plugins/inputmask/jquery.inputmask.min.js"></script>
-<script src="plugins/datatables/jquery.dataTables.min.js"></script>
-<script src="plugins/datatables-bs4/js/dataTables.bootstrap4.min.js"></script>
-<script src="plugins/datatables-responsive/js/dataTables.responsive.min.js"></script>
-<script src="plugins/datatables-responsive/js/responsive.bootstrap4.min.js"></script>
-<script src="plugins/toastr/toastr.min.js"></script>
-<script src="plugins/daterangepicker/daterangepicker.js"></script>
-<script src="plugins/tempusdominus-bootstrap-4/js/tempusdominus-bootstrap-4.min.js"></script>
-<script src="plugins/bootstrap-switch/js/bootstrap-switch.min.js"></script>
-<script src="plugins/chart.js/Chart.min.js"></script>
-<script src="plugins/daterangepicker/daterangepicker.js"></script>
-<script src="plugins/summernote/summernote-bs4.min.js"></script>
+  <!--/ End Footer Area -->
 
-<script>
-$(function () {
-  toastr.options = {
-    "closeButton": false,
-    "debug": false,
-    "newestOnTop": false,
-    "progressBar": false,
-    "positionClass": "toast-top-right",
-    "preventDuplicates": false,
-    "onclick": null,
-    "showDuration": "300",
-    "hideDuration": "1000",
-    "timeOut": "5000",
-    "extendedTimeOut": "1000",
-    "showEasing": "swing",
-    "hideEasing": "linear",
-    "showMethod": "fadeIn",
-    "hideMethod": "fadeOut"
-  }
-  
-  $('#sideMenu').on('click', '.link', function(){
-      $('#spinnerLoading').hide();
-      var files = $(this).attr('data-file');
-      $('#sideMenu').find('.active').removeClass('active');
-      $(this).addClass('active');
-      
-      $.get(files, function(data) {
-        $('#mainContents').html(data);
-        $('#spinnerLoading').hide();
-      });
-  });
+  <a href="#" class="scroll-top btn-hover">
+    <i class="lni lni-chevron-up"></i>
+  </a>
 
-  $('#goToProfile').on('click', function(){
-      $('#spinnerLoading').show();
-      var files = $(this).attr('data-file');
-      $('#sideMenu').find('.active').removeClass('active');
-      $(this).addClass('active');
-      
-      $.get(files, function(data) {
-          $('#mainContents').html(data);
-          $('#spinnerLoading').hide();
-      });
-  });
-  
-  $("a[href='#booking']").click();
-});
+  <!--====== js ======-->
+  <script src="assets/js/bootstrap.bundle.min.js"></script>
+  <script src="assets/js/glightbox.min.js"></script>
+  <script src="assets/js/main.js"></script>
+  <script src="assets/js/tiny-slider.js"></script>
 
-function formatDate(date) {
-  const day = ('0' + date.getDate()).slice(-2);
-  const month = ('0' + (date.getMonth() + 1)).slice(-2);
-  const year = date.getFullYear();
-  const hours = ('0' + date.getHours()).slice(-2);
-  const minutes = ('0' + date.getMinutes()).slice(-2);
-  const seconds = ('0' + date.getSeconds()).slice(-2);
-  const ampm = date.getHours() >= 12 ? 'PM' : 'AM';
+  <script>
 
-  //return `${day}/${month}/${year} ${hours}:${minutes}:${seconds} ${ampm}`;
-  return `${year}-${month}-${day}`;
-}
+    //===== close navbar-collapse when a  clicked
+    let navbarTogglerNine = document.querySelector(
+      ".navbar-nine .navbar-toggler"
+    );
+    navbarTogglerNine.addEventListener("click", function () {
+      navbarTogglerNine.classList.toggle("active");
+    });
 
-function formatDate2(date) {
-  const day = ('0' + date.getDate()).slice(-2);
-  const month = ('0' + (date.getMonth() + 1)).slice(-2);
-  const year = date.getFullYear();
-  const hours = ('0' + date.getHours()).slice(-2);
-  const minutes = ('0' + date.getMinutes()).slice(-2);
-  const seconds = ('0' + date.getSeconds()).slice(-2);
-  const ampm = date.getHours() >= 12 ? 'PM' : 'AM';
+    // ==== left sidebar toggle
+    let sidebarLeft = document.querySelector(".sidebar-left");
+    let overlayLeft = document.querySelector(".overlay-left");
+    let sidebarClose = document.querySelector(".sidebar-close .close");
 
-  //return `${day}/${month}/${year} ${hours}:${minutes}:${seconds} ${ampm}`;
-  return `${day}/${month}/${year}`;
-}
-</script>
+    overlayLeft.addEventListener("click", function () {
+      sidebarLeft.classList.toggle("open");
+      overlayLeft.classList.toggle("open");
+    });
+    sidebarClose.addEventListener("click", function () {
+      sidebarLeft.classList.remove("open");
+      overlayLeft.classList.remove("open");
+    });
+
+    // ===== navbar nine sideMenu
+    let sideMenuLeftNine = document.querySelector(".navbar-nine .menu-bar");
+
+    sideMenuLeftNine.addEventListener("click", function () {
+      sidebarLeft.classList.add("open");
+      overlayLeft.classList.add("open");
+    });
+
+    //========= glightbox
+    GLightbox({
+      'href': 'https://www.youtube.com/watch?v=r44RKWyfcFw&fbclid=IwAR21beSJORalzmzokxDRcGfkZA1AtRTE__l5N4r09HcGS5Y6vOluyouM9EM',
+      'type': 'video',
+      'source': 'youtube', //vimeo, youtube or local
+      'width': 900,
+      'autoplayVideos': true,
+    });
+
+  </script>
 </body>
+
 </html>

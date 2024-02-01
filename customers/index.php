@@ -30,31 +30,31 @@ else{
 
   <title>Pengangkutan SOS</title>
 
-  <link rel="icon" href="../assets/logo.png" type="image">
+  <link rel="icon" href="assets/logo.png" type="image">
   <!-- Font Awesome Icons -->
-  <link rel="stylesheet" href="../plugins/fontawesome-free/css/all.min.css">
+  <link rel="stylesheet" href="plugins/fontawesome-free/css/all.min.css">
   <!-- IonIcons -->
   <link rel="stylesheet" href="http://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
   <!-- Theme style -->
-  <link rel="stylesheet" href="../dist/css/adminlte.min.css">
+  <link rel="stylesheet" href="dist/css/adminlte.min.css">
   <!-- Google Font: Source Sans Pro -->
   <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700" rel="stylesheet">
   <!-- daterange picker -->
-  <link rel="stylesheet" href="../plugins/daterangepicker/daterangepicker.css">
-  <link rel="stylesheet" href="../plugins/tempusdominus-bootstrap-4/css/tempusdominus-bootstrap-4.min.css">
+  <link rel="stylesheet" href="plugins/daterangepicker/daterangepicker.css">
+  <link rel="stylesheet" href="plugins/tempusdominus-bootstrap-4/css/tempusdominus-bootstrap-4.min.css">
   <!-- iCheck for checkboxes and radio inputs -->
   
-  <link rel="stylesheet" href="../plugins/icheck-bootstrap/icheck-bootstrap.min.css">
+  <link rel="stylesheet" href="plugins/icheck-bootstrap/icheck-bootstrap.min.css">
   <!-- Bootstrap Color Picker -->
-  <link rel="stylesheet" href="../plugins/bootstrap-colorpicker/css/bootstrap-colorpicker.min.css">
+  <link rel="stylesheet" href="plugins/bootstrap-colorpicker/css/bootstrap-colorpicker.min.css">
   <!-- Select2 -->
-  <link rel="stylesheet" href="../plugins/select2/css/select2.min.css">
-  <link rel="stylesheet" href="../plugins/select2-bootstrap4-theme/select2-bootstrap4.min.css">
+  <link rel="stylesheet" href="plugins/select2/css/select2.min.css">
+  <link rel="stylesheet" href="plugins/select2-bootstrap4-theme/select2-bootstrap4.min.css">
   <!-- Bootstrap4 Duallistbox -->
-  <link rel="stylesheet" href="../plugins/bootstrap4-duallistbox/bootstrap-duallistbox.min.css">
+  <link rel="stylesheet" href="plugins/bootstrap4-duallistbox/bootstrap-duallistbox.min.css">
   <!-- Toastr -->
-  <link rel="stylesheet" href="../plugins/toastr/toastr.min.css">
-  <link rel="stylesheet" href="../dist/css/adminlte.min.css?v=3.2.0">
+  <link rel="stylesheet" href="plugins/toastr/toastr.min.css">
+  <link rel="stylesheet" href="dist/css/adminlte.min.css?v=3.2.0">
   
   <style>
     body {
@@ -301,8 +301,8 @@ to get the desired effect
   <aside class="main-sidebar sidebar-dark-primary elevation-4" style="background-color: #3d44c1;">
     <!-- Brand Logo -->
     <a href="#" class="brand-link logo-switch">
-      <img src="../assets/logo.png" alt="Sneakercube Logo" class="brand-image-xl logo-xs">
-      <img src="../assets/logo.png" alt="Sneakercube Logo" class="brand-image-xl logo-xl">
+      <img src="assets/logo.png" alt="Sneakercube Logo" class="brand-image-xl logo-xs">
+      <img src="assets/logo.png" alt="Sneakercube Logo" class="brand-image-xl logo-xl">
     </a>
 
     <!-- Sidebar -->
@@ -434,27 +434,27 @@ to get the desired effect
 </div>
 <!-- ./wrapper -->
 <!-- jQuery -->
-<script src="../plugins/jquery/jquery.min.js"></script>
-<script src="../plugins/jquery-validation/jquery.validate.min.js"></script>
+<script src="plugins/jquery/jquery.min.js"></script>
+<script src="plugins/jquery-validation/jquery.validate.min.js"></script>
 <!-- Bootstrap -->
-<script src="../plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
+<script src="plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
 <!-- AdminLTE -->
-<script src="../dist/js/adminlte.js"></script>
+<script src="dist/js/adminlte.js"></script>
 <!-- OPTIONAL SCRIPTS -->
-<script src="../plugins/select2/js/select2.full.min.js"></script>
-<script src="../plugins/bootstrap4-duallistbox/jquery.bootstrap-duallistbox.min.js"></script>
-<script src="../plugins/moment/moment.min.js"></script>
-<script src="../plugins/inputmask/jquery.inputmask.min.js"></script>
-<script src="../plugins/datatables/jquery.dataTables.min.js"></script>
-<script src="../plugins/datatables-bs4/js/dataTables.bootstrap4.min.js"></script>
-<script src="../plugins/datatables-responsive/js/dataTables.responsive.min.js"></script>
-<script src="../plugins/datatables-responsive/js/responsive.bootstrap4.min.js"></script>
-<script src="../plugins/toastr/toastr.min.js"></script>
-<script src="../plugins/daterangepicker/daterangepicker.js"></script>
-<script src="../plugins/tempusdominus-bootstrap-4/js/tempusdominus-bootstrap-4.min.js"></script>
-<script src="../plugins/bootstrap-switch/js/bootstrap-switch.min.js"></script>
-<script src="../plugins/chart.js/Chart.min.js"></script>
-<script src="../plugins/daterangepicker/daterangepicker.js"></script>
+<script src="plugins/select2/js/select2.full.min.js"></script>
+<script src="plugins/bootstrap4-duallistbox/jquery.bootstrap-duallistbox.min.js"></script>
+<script src="plugins/moment/moment.min.js"></script>
+<script src="plugins/inputmask/jquery.inputmask.min.js"></script>
+<script src="plugins/datatables/jquery.dataTables.min.js"></script>
+<script src="plugins/datatables-bs4/js/dataTables.bootstrap4.min.js"></script>
+<script src="plugins/datatables-responsive/js/dataTables.responsive.min.js"></script>
+<script src="plugins/datatables-responsive/js/responsive.bootstrap4.min.js"></script>
+<script src="plugins/toastr/toastr.min.js"></script>
+<script src="plugins/daterangepicker/daterangepicker.js"></script>
+<script src="plugins/tempusdominus-bootstrap-4/js/tempusdominus-bootstrap-4.min.js"></script>
+<script src="plugins/bootstrap-switch/js/bootstrap-switch.min.js"></script>
+<script src="plugins/chart.js/Chart.min.js"></script>
+<script src="plugins/daterangepicker/daterangepicker.js"></script>
 
 <script>
 $(function () {
