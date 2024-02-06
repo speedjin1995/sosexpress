@@ -14,6 +14,13 @@ if(isset($_POST['id'], $_POST['totalAmount'])){
     $pricing_details = array();
     $pricing = '';
 
+    $particular = $_POST['particular'];
+    $quantity_in = $_POST['quantity_in'];
+    $quantity_delivered = $_POST['quantity_delivered'];
+    $size = $_POST['size'];
+    $unit_price = $_POST['unit_price'];
+    $price = $_POST['price'];
+
     for($i=0; $i<count($particular); $i++){
 		$pricing_details[] = array(
 			"particular" => $particular[$i],

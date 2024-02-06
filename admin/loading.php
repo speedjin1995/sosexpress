@@ -956,8 +956,8 @@ $(function () {
 
     if($('#states').val() && $('#zones').val() && $('#hypermarket').val() && $('#hypermarket').val() != '0'){
       $('#extendModal').find('#outlets').empty();
-      $('#extendModal').find("#direct_store").attr('required', false);
-      $('#extendModal').find('#outlets').attr('required', true);
+      //$('#extendModal').find("#direct_store").attr('required', false);
+      //$('#extendModal').find('#outlets').attr('required', true);
       $('#extendModal').find('#outlets').show();
       $('#extendModal').find("#direct_store").hide();
 
@@ -982,7 +982,7 @@ $(function () {
       $('#extendModal').find('#outlets').attr('required', false);
       $('#extendModal').find('#outlets').hide();
       $('#extendModal').find("#direct_store").show();
-      $('#extendModal').find("#direct_store").attr('required', true);
+      //$('#extendModal').find("#direct_store").attr('required', true);
       $('#extendModal').find("#direct_store").val('');
     }
   });
@@ -991,7 +991,7 @@ $(function () {
     if($('#states').val() && $('#zones').val() && $('#hypermarket').val() && $('#hypermarket').val() != '0'){
       $('#extendModal').find('#outlets').empty();
       $('#extendModal').find("#direct_store").attr('required', false);
-      $('#extendModal').find('#outlets').attr('required', true);
+      //$('#extendModal').find('#outlets').attr('required', true);
       $('#extendModal').find('#outlets').show();
       $('#extendModal').find("#direct_store").hide();
 
@@ -1016,7 +1016,7 @@ $(function () {
       $('#extendModal').find('#outlets').attr('required', false);
       $('#extendModal').find('#outlets').hide();
       $('#extendModal').find("#direct_store").show();
-      $('#extendModal').find("#direct_store").attr('required', true);
+      //$('#extendModal').find("#direct_store").attr('required', true);
       $('#extendModal').find("#direct_store").val('');
     }
   });
@@ -1025,7 +1025,7 @@ $(function () {
     if($('#states').val() && $('#zones').val() && $('#hypermarket').val() && $('#hypermarket').val() != '0'){
       $('#extendModal').find('#outlets').empty();
       $('#extendModal').find("#direct_store").attr('required', false);
-      $('#extendModal').find('#outlets').attr('required', true);
+      //$('#extendModal').find('#outlets').attr('required', true);
       $('#extendModal').find('#outlets').show();
       $('#extendModal').find("#direct_store").hide();
 
@@ -1050,7 +1050,7 @@ $(function () {
       $('#extendModal').find('#outlets').attr('required', false);
       $('#extendModal').find('#outlets').hide();
       $('#extendModal').find("#direct_store").show();
-      $('#extendModal').find("#direct_store").attr('required', true);
+      //$('#extendModal').find("#direct_store").attr('required', true);
       $('#extendModal').find("#direct_store").val('');
     }
   });
@@ -1342,7 +1342,7 @@ function edit(id) {
         $('#extendModal').find('#hypermarket').trigger('change');
         $('#extendModal').find('#outlets').empty().val(obj.message.outlet);
         $('#extendModal').find('#outlets').attr('required', false);
-        $('#extendModal').find('#direct_store').attr('required', true);
+        //$('#extendModal').find('#direct_store').attr('required', true);
         $('#extendModal').find('#direct_store').val(obj.message.direct_store);
         $('#extendModal').find('#outlets').hide();
         $('#extendModal').find("#direct_store").show();
@@ -1351,7 +1351,7 @@ function edit(id) {
       else{
         $('#extendModal').find('#hypermarket').trigger('change');
         //$('#extendModal').find('#zones').empty().val(obj.message.zone);
-        $('#extendModal').find('#outlets').attr('required', true);
+        //$('#extendModal').find('#outlets').attr('required', true);
         $('#extendModal').find('#outlets').show();
         $('#extendModal').find('#direct_store').val('');
         $('#extendModal').find("#direct_store").hide();
