@@ -37,6 +37,7 @@ else{
   $vehicles3 = $db->query("SELECT * FROM vehicles WHERE deleted = '0'");
   $drivers = $db->query("SELECT * FROM drivers WHERE deleted = '0'");
   $drivers2 = $db->query("SELECT * FROM drivers WHERE deleted = '0'");
+  $users = $db->query("SELECT * FROM users WHERE deleted = '0'");
 }
 ?>
 
@@ -480,6 +481,15 @@ else{
                   <?php } ?>
                 </select>
               </div>
+              <div class="form-group">
+                <label>Checker *</label>
+                <select class="form-control" id="checker" name="checker" required>
+                  <option value="" selected disabled hidden>Please Select</option>
+                  <?php while($rowUser=mysqli_fetch_assoc($users)){ ?>
+                    <option value="<?=$rowUser['id'] ?>"><?=$rowUser['name'] ?></option>
+                  <?php } ?>
+                </select>
+              </div>
             </div>
           </div>  
         </div>
@@ -510,8 +520,8 @@ else{
           <div class="row">
             <div class="col-6">
               <div class="form-group">
-                <label>Driver Name *</label>
-                <select class="form-control" id="driver" name="driver" required>
+                <label>Driver Name </label>
+                <select class="form-control" id="driver" name="driver" >
                   <option value="" selected disabled hidden>Please Select</option>
                   <?php while($rowdrivers=mysqli_fetch_assoc($drivers2)){ ?>
                     <option value="<?=$rowdrivers['id'] ?>"><?=$rowdrivers['name'] ?></option>
@@ -519,8 +529,8 @@ else{
                 </select>
               </div>
               <div class="form-group">
-                <label>Lorry No *</label>
-                <select class="form-control" id="lorry" name="lorry" required>
+                <label>Lorry No </label>
+                <select class="form-control" id="lorry" name="lorry" >
                   <option value="" selected disabled hidden>Please Select</option>
                   <?php while($rowvehicles=mysqli_fetch_assoc($vehicles)){ ?>
                     <option value="<?=$rowvehicles['veh_number'] ?>"><?=$rowvehicles['veh_number'] ?></option>
@@ -725,6 +735,8 @@ $(function () {
         var obj = JSON.parse(data);
         
         if(obj.status === 'success'){
+          $('#outletsFilter').html('');
+          $('#outletsFilter').append('<option selected="selected">-</option>');
           for(var i=0; i<obj.message.length; i++){
             $('#outletsFilter').append('<option value="'+obj.message[i].id+'">'+obj.message[i].name+'</option>')
           }
@@ -748,6 +760,8 @@ $(function () {
         var obj = JSON.parse(data);
         
         if(obj.status === 'success'){
+          $('#outletsFilter').html('');
+          $('#outletsFilter').append('<option selected="selected">-</option>');
           for(var i=0; i<obj.message.length; i++){
             $('#outletsFilter').append('<option value="'+obj.message[i].id+'">'+obj.message[i].name+'</option>')
           }
@@ -771,6 +785,8 @@ $(function () {
         var obj = JSON.parse(data);
         
         if(obj.status === 'success'){
+          $('#outletsFilter').html('');
+          $('#outletsFilter').append('<option selected="selected">-</option>');
           for(var i=0; i<obj.message.length; i++){
             $('#outletsFilter').append('<option value="'+obj.message[i].id+'">'+obj.message[i].name+'</option>')
           }

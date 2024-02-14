@@ -594,8 +594,10 @@ $(function () {
         var obj = JSON.parse(data);
         
         if(obj.status === 'success'){
+          $('#outletsFilter').html('');
+          $('#outletsFilter').append('<option selected="selected">-</option>');
           for(var i=0; i<obj.message.length; i++){
-            $('#outletsFilter').append('<option value="'+obj.message[i].id+'">'+obj.message[i].name+'</option>')
+            $('#outletsFilter').append('<option value="'+obj.message[i].id+'">'+obj.message[i].name+'</option>');
           }
         }
         else if(obj.status === 'failed'){
@@ -617,6 +619,8 @@ $(function () {
         var obj = JSON.parse(data);
         
         if(obj.status === 'success'){
+          $('#outletsFilter').html('');
+          $('#outletsFilter').append('<option selected="selected">-</option>');
           for(var i=0; i<obj.message.length; i++){
             $('#outletsFilter').append('<option value="'+obj.message[i].id+'">'+obj.message[i].name+'</option>')
           }
@@ -640,6 +644,8 @@ $(function () {
         var obj = JSON.parse(data);
         
         if(obj.status === 'success'){
+          $('#outletsFilter').html('');
+          $('#outletsFilter').append('<option selected="selected">-</option>');
           for(var i=0; i<obj.message.length; i++){
             $('#outletsFilter').append('<option value="'+obj.message[i].id+'">'+obj.message[i].name+'</option>')
           }
@@ -1062,21 +1068,21 @@ function format (row) {
   '</p></div><div class="col-md-3">';
   
   if(row.status == 'Created'){
-    returnString += '<div class="row"><div class="col-3"><button type="button" class="btn btn-warning btn-sm" onclick="edit('+row.id+
-  ')"><i class="fas fa-pen"></i></button></div><div class="col-3"><button type="button" class="btn btn-danger btn-sm" onclick="deactivate('+row.id+
-  ')"><i class="fas fa-trash"></i></button></div><div class="col-3"><button type="button" class="btn btn-info btn-sm" onclick="picked('+row.id+
+    returnString += '<div class="row"><div class="col-3"><button type="button" class="btn btn-warning btn-sm" title="Edit" onclick="edit('+row.id+
+  ')"><i class="fas fa-pen"></i></button></div><div class="col-3"><button type="button" class="btn btn-danger btn-sm" title="Delete" onclick="deactivate('+row.id+
+  ')"><i class="fas fa-trash"></i></button></div><div class="col-3"><button type="button" class="btn btn-info btn-sm" title="Post to Loading" onclick="picked('+row.id+
   ')"><i class="fas fa-pallet"></i></button></div></div></div></div>';
   }
   else if(row.status == 'Posted'){
-    returnString +='<div class="row"><div class="col-3"><button type="button" class="btn btn-info btn-sm" onclick="delivered('+row.id+
+    returnString +='<div class="row"><div class="col-3"><button type="button" class="btn btn-info btn-sm" title="Delivered" onclick="delivered('+row.id+
   ')"><i class="fas fa-truck"></i></button></div></div></div></div>';
   }
   else if(row.status == 'Confirmed'){
-    returnString +='<div class="row"><div class="col-3"><button type="button" class="btn btn-info btn-sm" onclick="delivered('+row.id+
+    returnString +='<div class="row"><div class="col-3"><button type="button" class="btn btn-info btn-sm" title="Delivered" onclick="delivered('+row.id+
   ')"><i class="fas fa-truck"></i></button></div></div></div></div>';
   }
   else if(row.status == 'Delivered'){
-    returnString +='<div class="row"><div class="col-3"><button type="button" class="btn btn-info btn-sm" onclick="invoice('+row.id+
+    returnString +='<div class="row"><div class="col-3"><button type="button" class="btn btn-info btn-sm" title="Invoice" onclick="invoice('+row.id+
   ')"><i class="fas fa-receipt"></i></button></div></div></div></div>';
   }
   

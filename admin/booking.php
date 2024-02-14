@@ -577,11 +577,10 @@ $(function () {
   });
 
   $('#bookingDate').datetimepicker({
-    icons: { time: 'far fa-clock' },
-    format: 'DD/MM/YYYY',
-    defaultDate: tomorrow,
-    minDate: tomorrow
-  });
+      icons: { time: 'far fa-clock' },
+      format: 'DD/MM/YYYY',
+      minDate: new Date
+    });
 
   $.validator.setDefaults({
     submitHandler: function () {
@@ -910,13 +909,13 @@ function format (row) {
   '</p></div><div class="col-md-3">';
   
   if(row.status == 'Created'){
-    returnString += '<div class="row"><div class="col-3"><button type="button" class="btn btn-warning btn-sm" onclick="edit('+row.id+
-  ')"><i class="fas fa-pen"></i></button></div><div class="col-3"><button type="button" class="btn btn-danger btn-sm" onclick="deactivate('+row.id+
-  ')"><i class="fas fa-trash"></i></button></div><div class="col-3"><button type="button" class="btn btn-info btn-sm" onclick="picked('+row.id+
+    returnString += '<div class="row"><div class="col-3"><button type="button" class="btn btn-warning btn-sm" title="Edit" onclick="edit('+row.id+
+  ')"><i class="fas fa-pen"></i></button></div><div class="col-3"><button type="button" class="btn btn-danger btn-sm" title="Delete" onclick="deactivate('+row.id+
+  ')"><i class="fas fa-trash"></i></button></div><div class="col-3"><button type="button" class="btn btn-info btn-sm" title="Picked" onclick="picked('+row.id+
   ')"><i class="fas fa-truck"></i></button></div></div></div></div>';
   }
   else if(row.status == 'Picked'){
-    returnString +='<div class="row"><div class="col-3"><button type="button" class="btn btn-info btn-sm" onclick="invoice('+row.id+
+    returnString +='<div class="row"><div class="col-3"><button type="button" class="btn btn-info btn-sm" title="Invoice" onclick="invoice('+row.id+
   ')"><i class="fas fa-receipt"></i></button></div></div></div></div>';
   }
   

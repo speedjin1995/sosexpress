@@ -17,12 +17,14 @@ else{
 	$address = '';
 	$phone = '';
 	$email = '';
+    $description  = '';
 	
 	if(($row = $result->fetch_assoc()) !== null){
         $name = $row['name'];
         $address = $row['address'];
         $phone = $row['phone'];
         $email = $row['email'];
+        $description = $row['description'];
     }
 }
 ?>
@@ -59,6 +61,11 @@ else{
                 <div class="form-group">
 					<label for="name">Company Email </label>
 					<input type="email" class="form-control" id="email" name="email" value="<?=$email ?>" placeholder="Enter Email">
+				</div>
+
+                <div class="form-group">
+					<label for="name">Company Email </label>
+                    <textarea class="form-control" id="description" name="description" placeholder="Enter your description"><?=$description ?></textarea>
 				</div>
 			</div>
 			

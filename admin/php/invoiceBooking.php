@@ -49,7 +49,7 @@ if(isset($_POST['userID'])){
 				else{
 					$result = $select_stmt->get_result();
 					$count = 1;
-					$firstChar = 'I'.date("Ymd");
+					$firstChar = 'I-'.date("ym")."-";
 					
 					if ($row = $result->fetch_assoc()) {
 						$count = (int)$row['COUNT(*)'] + 1;
@@ -58,7 +58,7 @@ if(isset($_POST['userID'])){
 	
 					$charSize = strlen(strval($count));
 	
-					for($i=0; $i<(4-(int)$charSize); $i++){
+					for($i=0; $i<(3-(int)$charSize); $i++){
 						$firstChar.='0';
 					}
 			

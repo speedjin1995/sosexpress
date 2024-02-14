@@ -13,7 +13,7 @@ if(isset($_POST['userID'])){
 	$uid = $_SESSION['userID'];
 	$totalDiscount = "0.00";
 
-	if ($update_stmt = $db->prepare("SELECT * FROM do_request WHERE id=?")) {
+	if ($update_stmt = $db->prepare("SELECT * FROM goods_return WHERE id=?")) {
 		$update_stmt->bind_param('s', $id);
         
         // Execute the prepared query.
@@ -22,7 +22,7 @@ if(isset($_POST['userID'])){
             
             if ($row2 = $result2->fetch_assoc()) {
                 $customer = $row2['customer'];
-				$totalDiscount = $row2['total_price'];
+				$totalDiscount = $row2['total_amount'];
             }
         }
 	}
@@ -30,7 +30,7 @@ if(isset($_POST['userID'])){
 	$del = "Invoiced";
 	$today = date("Y-m-d 00:00:00");
 
-	if ($stmt2 = $db->prepare("UPDATE do_request SET status=? WHERE id=?")) {
+	if ($stmt2 = $db->prepare("UPDATE goods_return SET status=? WHERE id=?")) {
 		$stmt2->bind_param('ss', $del, $id);
 		
 		if($stmt2->execute()){
@@ -79,7 +79,7 @@ if(isset($_POST['userID'])){
 						else{
 							$invid = $insert_stmt->insert_id;;
                         	$insert_stmt->close();
-							$item = "Delivery Fees";
+							$item = "Pickup Fees (Return)";
 
 							if ($insert_stmt2 = $db->prepare("INSERT INTO invoice_cart (invoice_id, items, amount) VALUES (?, ?, ?)")) {
 								$insert_stmt2->bind_param('sss', $invid, $item, $totalDiscount);

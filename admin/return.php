@@ -341,6 +341,39 @@ $(function () {
       {
         data: 'id',
         render: function (data, type, row) {
+          var showPrintedOption = true;  // Add your condition to determine whether to show "Printed" or not
+          var showInvoiceOption = row.collection_date !== '';
+          var invoiceOption = showInvoiceOption ? '<option value="invoice">Invoice</option>' : '';
+
+          // Check if 'warehouse' or 'price' is present in return_details
+          if (row.return_details && Array.isArray(row.return_details)) {
+            for (var i = 0; i < row.return_details.length; i++) {
+              if (row.return_details[i].warehouse == null || row.return_details[i].warehouse == '' 
+              || row.return_details[i].price == null || row.return_details[i].price == '') {
+                // Don't show "Printed" option if 'warehouse' or 'price' is present
+                showPrintedOption = false;
+                break;  // No need to continue checking once condition is met
+              }
+            }
+          }
+
+          if(row.status == 'Invoiced'){
+            return '';
+          }
+          else{
+            return '<select id="actions' + data + '" class="form-select form-select-sm" onchange="performAction(' + data + ', this.value)">' +
+            '<option value="" selected disabled>Action</option>' +
+            '<option value="edit">Edit</option>' +
+            '<option value="print" ' + (showPrintedOption ? '' : 'style="display:none;"') + '>Print</option>' +
+            '<option value="deactivate">Deactivate</option>' +
+            invoiceOption +
+            '</select>';
+          }
+        }
+      },
+      /*{
+        data: 'id',
+        render: function (data, type, row) {
           return '<select id="actions' + data + '" class="form-select form-select-sm" onchange="performAction(' + data + ', this.value)">' +
               '<option value="" selected disabled>Action</option>' +
               '<option value="edit">Edit</option>' +
@@ -348,7 +381,7 @@ $(function () {
               '<option value="deactivate">Deactivate</option>' +
               '</select>';
         }
-      },
+      },*/
       { 
         className: 'dt-control',
         orderable: false,
@@ -390,12 +423,13 @@ $(function () {
 
   $('#returnDate').datetimepicker({
     icons: { time: 'far fa-calendar' },
-    defaultDate: tomorrow,
-    minDate: tomorrow
+    format: 'YYYY-MM-DD',
+    defaultDate: tomorrow
   });
 
   $('#collectionDate').datetimepicker({
     icons: { time: 'far fa-calendar' },
+    format: 'YYYY-MM-DD',
     minDate: tomorrow
   });
 
@@ -640,46 +674,7 @@ $(function () {
             return '<td class="table-elipse" data-toggle="collapse" data-target="#demo'+row.serialNo+'"><i class="fas fa-angle-down"></i></td>';
           }
         }
-      ],
-      "rowCallback": function( row, data, index ) {
-        //$('td', row).css('background-color', '#E6E6FA');
-        //$('#spinnerLoading').hide();
-      },
-      // "footerCallback": function ( row, data, start, end, display ) {
-      //   var api = this.api();
-
-      //   // Remove the formatting to get integer data for summation
-      //   var intVal = function (i) {
-      //     return typeof i === 'string' ? i.replace(/[\$,]/g, '')*1 : typeof i === 'number' ? i : 0;
-      //   };
-
-      //   // Total over all pages
-      //   total = api.column(3).data().reduce( function (a, b) { return intVal(a) + intVal(b); }, 0 );
-      //   total2 = api.column(4).data().reduce( function (a, b) { return intVal(a) + intVal(b); }, 0 );
-      //   total3 = api.column(5).data().reduce( function (a, b) { return intVal(a) + intVal(b); }, 0 );
-      //   total4 = api.column(6).data().reduce( function (a, b) { return intVal(a) + intVal(b); }, 0 );
-      //   total5 = api.column(7).data().reduce( function (a, b) { return intVal(a) + intVal(b); }, 0 );
-      //   total6 = api.column(8).data().reduce( function (a, b) { return intVal(a) + intVal(b); }, 0 );
-      //   total7 = api.column(9).data().reduce( function (a, b) { return intVal(a) + intVal(b); }, 0 );
-
-      //   // Total over this page
-      //   pageTotal = api.column(3, {page: 'current'}).data().reduce( function (a, b) {return intVal(a) + intVal(b);}, 0 );
-      //   pageTotal2 = api.column(4, {page: 'current'}).data().reduce( function (a, b) {return intVal(a) + intVal(b);}, 0 );
-      //   pageTotal3 = api.column(5, {page: 'current'}).data().reduce( function (a, b) {return intVal(a) + intVal(b);}, 0 );
-      //   pageTotal4 = api.column(6, {page: 'current'}).data().reduce( function (a, b) {return intVal(a) + intVal(b);}, 0 );
-      //   pageTotal5 = api.column(7, {page: 'current'}).data().reduce( function (a, b) {return intVal(a) + intVal(b);}, 0 );
-      //   pageTotal6 = api.column(8, {page: 'current'}).data().reduce( function (a, b) {return intVal(a) + intVal(b);}, 0 );
-      //   pageTotal7 = api.column(9, {page: 'current'}).data().reduce( function (a, b) {return intVal(a) + intVal(b);}, 0 );
-
-      //   // Update footer
-      //   $(api.column(3).footer()).html(pageTotal +' kg ( '+ total +' kg)');
-      //   $(api.column(4).footer()).html(pageTotal2 +' kg ( '+ total2 +' kg)');
-      //   $(api.column(5).footer()).html(pageTotal3 +' kg ( '+ total3 +' kg)');
-      //   $(api.column(6).footer()).html(pageTotal4 +' kg ( '+ total4 +' kg)');
-      //   $(api.column(7).footer()).html(pageTotal5 +' ('+ total5 +')');
-      //   $(api.column(8).footer()).html('RM'+pageTotal6 +' ( RM'+ total6 +' total)');
-      //   $(api.column(9).footer()).html('RM'+pageTotal7 +' ( RM'+ total7 +' total)');
-      // }
+      ]
     });
   });
 });
@@ -748,11 +743,13 @@ function performAction(data, selectedValue) {
     case 'deactivate':
       deactivate(data);
       break;
+    case 'invoice':
+      invoice(data);
+      break;
     default:
       break;
   }
 }
-
 
 function edit(id) {
   $('#spinnerLoading').show();
@@ -901,7 +898,7 @@ function picked(id) {
 }
 
 function invoice(id) {
-  $.post('php/invoiceBooking.php', {userID: id}, function(data){
+  $.post('php/invoiceReturn.php', {userID: id}, function(data){
     var obj = JSON.parse(data);
 
     if(obj.status === 'success'){

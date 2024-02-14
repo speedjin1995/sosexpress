@@ -5,25 +5,33 @@ require_once 'db_connect.php';
 if(isset($_POST['id'], $_POST['driver'], $_POST['lorry'])){
     $selectedIds = $_POST['id'];
     $arrayOfId = explode(",", $selectedIds);
-    $driver = filter_input(INPUT_POST, 'driver', FILTER_SANITIZE_STRING);
-    $lorry = filter_input(INPUT_POST, 'lorry', FILTER_SANITIZE_STRING);
+    $driver = "";
+    $lorry = "";
     $todayDate = date('Y-m-d');
 
     $driverName = '';
     $todayDate = date('d/m/Y');
     $today = date("Y-m-d 00:00:00");
 
-    if ($update_stmt = $db->prepare("SELECT * FROM drivers WHERE id=?")) {
-        $update_stmt->bind_param('s', $driver);
+    if(isset($_POST['driver']) && $_POST['driver'] != null && $_POST['driver'] != ""){
+        $driver = filter_input(INPUT_POST, 'driver', FILTER_SANITIZE_STRING);
         
-        if ($update_stmt->execute()) {
-            $result = $update_stmt->get_result();
-            $message = array();
+        if ($update_stmt = $db->prepare("SELECT * FROM drivers WHERE id=?")) {
+            $update_stmt->bind_param('s', $driver);
             
-            if ($row = $result->fetch_assoc()) {
-                $driverName = $row['name'];
-            }  
+            if ($update_stmt->execute()) {
+                $result = $update_stmt->get_result();
+                $message = array();
+                
+                if ($row = $result->fetch_assoc()) {
+                    $driverName = $row['name'];
+                }  
+            }
         }
+    }
+
+    if(isset($_POST['lorry']) && $_POST['lorry'] != null && $_POST['lorry'] != ""){
+        $lorry = filter_input(INPUT_POST, 'lorry', FILTER_SANITIZE_STRING);
     }
 
     $placeholders = implode(',', array_fill(0, count($arrayOfId), '?'));

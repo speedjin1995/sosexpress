@@ -6,6 +6,7 @@ if(isset($_POST['name'], $_POST['address'])){
 	$address = filter_input(INPUT_POST, 'address', FILTER_SANITIZE_STRING);
 	$phone = null;
 	$email = null;
+	$description = null;
 	$id = '1';
 
 	if($_POST['phone'] != null && $_POST['phone'] != ""){
@@ -16,8 +17,12 @@ if(isset($_POST['name'], $_POST['address'])){
 		$email = filter_input(INPUT_POST, 'email', FILTER_SANITIZE_STRING);
 	}
 
-	if ($stmt2 = $db->prepare("UPDATE companies SET name=?, address=?, phone=?, email=? WHERE id=?")) {
-		$stmt2->bind_param('sssss', $name, $address, $phone, $email, $id);
+	if($_POST['description'] != null && $_POST['description'] != ""){
+		$description = $_POST['description'];
+	}
+
+	if ($stmt2 = $db->prepare("UPDATE companies SET name=?, address=?, phone=?, email=?, description=? WHERE id=?")) {
+		$stmt2->bind_param('ssssss', $name, $address, $phone, $email, $description, $id);
 		
 		if($stmt2->execute()){
 			$stmt2->close();

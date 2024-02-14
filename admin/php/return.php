@@ -69,13 +69,10 @@ if(isset($_POST['returnDate'], $_POST['customerNo'], $_POST['totalCarton'], $_PO
 		$collectionDate = filter_input(INPUT_POST, 'collectionDate', FILTER_SANITIZE_STRING);
 	}
 
-	
-	
-	
-
 	if(isset($_POST['id']) && $_POST['id'] != null && $_POST['id'] != ''){
 		if ($update_stmt = $db->prepare("UPDATE goods_return SET return_date=?, customer=?, vehicle=?, driver=?, return_details=?, total_carton=?, total_amount=?, collection_date=?, collection_type=?
 		, return_type=? WHERE id=?")){
+			$data = json_encode($return_details);
 			$update_stmt->bind_param('sssssssssss', $returnDate, $customerNo, $lorry, $driver, $data, $totalCarton, $totalAmount, $collectionDate, $collectionType, $return_type, $_POST['id']);
 		
 			// Execute the prepared query.

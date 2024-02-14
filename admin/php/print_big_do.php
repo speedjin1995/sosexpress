@@ -2,11 +2,12 @@
 
 require_once 'db_connect.php';
  
-if(isset($_POST['id'], $_POST['driver'], $_POST['lorry'])){
+if(isset($_POST['id'], $_POST['driver'], $_POST['lorry'], $_POST['checker'])){
     $selectedIds = $_POST['id'];
     $arrayOfId = explode(",", $selectedIds);
     $driver = filter_input(INPUT_POST, 'driver', FILTER_SANITIZE_STRING);
     $lorry = filter_input(INPUT_POST, 'lorry', FILTER_SANITIZE_STRING);
+    $checker = filter_input(INPUT_POST, 'checker', FILTER_SANITIZE_STRING);
     $driverName = '';
     $driverIc = '';
     $driverPhone = '';
@@ -55,7 +56,7 @@ if(isset($_POST['id'], $_POST['driver'], $_POST['lorry'])){
     }
 
     $placeholders = implode(',', array_fill(0, count($arrayOfId), '?'));
-    $select_stmt = $db->prepare("SELECT outlet.name, do_request.do_number, do_request.do_details, do_request.po_number, 
+    $select_stmt = $db->prepare("SELECT do_request.id, outlet.name, do_request.do_number, do_request.do_details, do_request.po_number, 
     do_request.note, do_request.actual_carton FROM outlet, do_request WHERE do_request.outlet = outlet.id AND 
     do_request.id IN ($placeholders)");
 
@@ -65,7 +66,7 @@ if(isset($_POST['id'], $_POST['driver'], $_POST['lorry'])){
         $types = str_repeat('i', count($arrayOfId)); // Assuming the IDs are integers
         $select_stmt->bind_param($types, ...$arrayOfId);
         $select_stmt->execute();
-        $select_stmt->bind_result($outlet_name, $do_number, $do_details, $po_number, $note, $actual_carton);
+        $select_stmt->bind_result($id, $outlet_name, $do_number, $do_details, $po_number, $note, $actual_carton);
         $results = array();
         $index = 1;
 
@@ -98,6 +99,11 @@ if(isset($_POST['id'], $_POST['driver'], $_POST['lorry'])){
                     $index++;
                 }
             }
+
+            $update_stmt = $mysqli->prepare("UPDATE do_request SET checker = ?, status = 'Printed' WHERE id = ?");
+            $update_stmt->bind_param("si", $checker, $id);
+            $update_stmt->execute();
+            $update_stmt->close();
         }
 
         $message = '<html>

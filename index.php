@@ -2,6 +2,24 @@
 require_once 'php/db_connect.php';
 
 $blog = $db->query("SELECT * FROM blog WHERE deleted = '0'");
+$id = '1';
+$stmt = $db->prepare("SELECT * from companies where id = ?");
+$stmt->bind_param('s', $id);
+$stmt->execute();
+$result = $stmt->get_result();
+$name = '';
+$address = '';
+$phone = '';
+$email = '';
+$description  = '';
+
+if(($row = $result->fetch_assoc()) !== null){
+  $name = $row['name'];
+  $address = $row['address'];
+  $phone = $row['phone'];
+  $email = $row['email'];
+  $description = $row['description'];
+}
 ?>
 
 <!DOCTYPE html>
@@ -660,8 +678,8 @@ $blog = $db->query("SELECT * FROM blog WHERE deleted = '0'");
                   </div>
                   <div class="contact-content">
                     <h4>Contact</h4>
-                    <p>603 - 6186 4844</p>
-                    <p>han@sosexpress.com.my</p>
+                    <p><?=$phone ?></p>
+                    <p><?=$email ?></p>
                   </div>
                 </div>
               </div>
@@ -672,8 +690,7 @@ $blog = $db->query("SELECT * FROM blog WHERE deleted = '0'");
                   </div>
                   <div class="contact-content">
                     <h4>Address</h4>
-                    <p>No.7,9,11,13,15,17,19, Jalan SBC 10, Taman Sri Batu Caves,</p>
-                    <p>68100 Batu Caves, Selangor Darul Ehsan.</p>
+                    <p><?=$address ?></p>
                   </div>
                 </div>
               </div>
@@ -684,8 +701,7 @@ $blog = $db->query("SELECT * FROM blog WHERE deleted = '0'");
                   </div>
                   <div class="contact-content">
                     <h4>Schedule</h4>
-                    <p>6 Days Open</p>
-                    <p>Office time: 10 AM - 5:30 PM</p>
+                    <p><?=$description ?></p>
                   </div>
                 </div>
               </div>
