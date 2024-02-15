@@ -45,8 +45,8 @@ if(isset($_POST['customerNo'], $_POST['totalCarton'], $_POST['totalAmount2'], $_
 			"hypermarket" => $hypermarket,
 			"location" => $outlets,
 			"carton" => $carton[$i],
-			"warehouse" => $warehouse[$i],
-			"price" => $price[$i],
+			"warehouse" => $warehouse[$i] ?? "",
+			"price" => $warehouse[$i] ?? "",
 			"reason" => $res,
 			"other_reason" => $others
 		);

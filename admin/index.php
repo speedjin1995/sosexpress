@@ -410,6 +410,12 @@ to get the desired effect
                     </a>
                   </li>
                   <li class="nav-item">
+                    <a href="#modules" data-file="modules.php" class="nav-link link">
+                      <i class="nav-icon fas fa-list-alt"></i>
+                      <p>Modules</p>
+                    </a>
+                  </li>
+                  <li class="nav-item">
                     <a href="#users" data-file="users.php" class="nav-link link">
                       <i class="nav-icon fas fa-user"></i>
                       <p>Staffs</p>
@@ -672,6 +678,16 @@ function formatDate2(date) {
 
   //return `${day}/${month}/${year} ${hours}:${minutes}:${seconds} ${ampm}`;
   return `${day}/${month}/${year}`;
+}
+
+function updateParentCheckboxes(checkbox) {
+  var isChecked = checkbox.prop('checked');
+  var parentCheckbox = checkbox.closest('tr').prev('tr').find(':checkbox');
+
+  if (parentCheckbox.length > 0) {
+    parentCheckbox.prop('checked', isChecked);
+    updateParentCheckboxes(parentCheckbox);
+  }
 }
 </script>
 </body>

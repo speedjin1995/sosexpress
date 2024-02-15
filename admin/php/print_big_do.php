@@ -56,8 +56,8 @@ if(isset($_POST['id'], $_POST['driver'], $_POST['lorry'], $_POST['checker'])){
     }
 
     $placeholders = implode(',', array_fill(0, count($arrayOfId), '?'));
-    $select_stmt = $db->prepare("SELECT do_request.id, outlet.name, do_request.do_number, do_request.do_details, do_request.po_number, 
-    do_request.note, do_request.actual_carton FROM outlet, do_request WHERE do_request.outlet = outlet.id AND 
+    $select_stmt = $db->prepare("SELECT do_request.id, outlet.name, do_request.do_number, do_request.do_details, do_request.po_number, customers.short_name, 
+    do_request.note, do_request.actual_carton FROM outlet, do_request, customers WHERE do_request.outlet = outlet.id AND do_request.customer = customers.id AND
     do_request.id IN ($placeholders)");
 
     // Check if the statement is prepared successfully
@@ -66,7 +66,7 @@ if(isset($_POST['id'], $_POST['driver'], $_POST['lorry'], $_POST['checker'])){
         $types = str_repeat('i', count($arrayOfId)); // Assuming the IDs are integers
         $select_stmt->bind_param($types, ...$arrayOfId);
         $select_stmt->execute();
-        $select_stmt->bind_result($id, $outlet_name, $do_number, $do_details, $po_number, $note, $actual_carton);
+        $select_stmt->bind_result($id, $outlet_name, $do_number, $do_details, $po_number, $customer, $note, $actual_carton);
         $results = array();
         $index = 1;
 
@@ -78,7 +78,9 @@ if(isset($_POST['id'], $_POST['driver'], $_POST['lorry'], $_POST['checker'])){
                     'po' => $po_number,
                     'do' => $do_number,
                     'carton' => $actual_carton,
-                    'outlet' => $outlet_name
+                    'outlet' => $outlet_name,
+                    'id' => $id,
+                    'customer' => $customer
                 );
 
                 $index++;
@@ -93,17 +95,14 @@ if(isset($_POST['id'], $_POST['driver'], $_POST['lorry'], $_POST['checker'])){
                         'po' => $poList[$i]['poNumber'],
                         'do' => $poList[$i]['doNumber'],
                         'carton' => $actual_carton,
-                        'outlet' => $outlet_name
+                        'outlet' => $outlet_name,
+                        'id' => $id,
+                        'customer' => $customer
                     );
 
                     $index++;
                 }
             }
-
-            $update_stmt = $mysqli->prepare("UPDATE do_request SET checker = ?, status = 'Printed' WHERE id = ?");
-            $update_stmt->bind_param("si", $checker, $id);
-            $update_stmt->execute();
-            $update_stmt->close();
         }
 
         $message = '<html>
@@ -157,6 +156,12 @@ if(isset($_POST['id'], $_POST['driver'], $_POST['lorry'], $_POST['checker'])){
                         position: relative;
                         width: 33.333333%;
                     }
+
+                    .bottom-table {
+                        position: fixed;
+                        bottom: 0;
+                        width: 100%;
+                    }
                 </style>
             </head>
             <body>
@@ -196,17 +201,22 @@ if(isset($_POST['id'], $_POST['driver'], $_POST['lorry'], $_POST['checker'])){
 
         $count = 0;
         for($j=0; $j<count($results); $j++) {
-            $message .= '<tr><td>'.$results[$j]['index'].'</td><td>'.$results[$j]['notes'].'</td><td>'.$results[$j]['po'].'</td><td>'.$results[$j]['do'].'</td><td style="text-align: center;">'.$results[$j]['carton'].'</td></tr>';
+            $message .= '<tr><td>'.$results[$j]['index'].'</td><td>'.$results[$j]['customer'].'</td><td>'.$results[$j]['notes'].'</td><td>'.$results[$j]['po'].'</td><td>'.$results[$j]['do'].'</td><td style="text-align: center;">'.$results[$j]['carton'].'</td></tr>';
             $count += (int)$results[$j]['carton'];
+
+            $update_stmt = $db->prepare("UPDATE do_request SET checker = ?, status = 'Printed' WHERE id = ?");
+            $update_stmt->bind_param("si", $checker, $results[$j]['id']);
+            $update_stmt->execute();
+            $update_stmt->close();
         }
 
         $message .= '</tbody><tfoot>
         <tr>
-            <th colspan="4"></th>
-            <th>'.$count.'</th>
+            <th colspan="5" style="text-align: right;">Total: </th>
+            <th style="border-top: 1px solid #ccc;border-bottom: 1px solid #ccc;">'.$count.'</th>
         </tr>
     </tfoot></table><br><br><br>
-    <table style="width:100%">
+    <table class="bottom-table" style="width:100%">
         <tbody>
             <tr>
                 <td style="width:60%"></td>

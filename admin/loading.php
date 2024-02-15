@@ -591,10 +591,10 @@ else{
       <input class="form-control" type="text" placeholder="Other Reasons" id="other_reason">
     </td>
     <td>
-      <input type="text" class="form-control" id="warehouse"  placeholder="Enter ..." required>
+      <input type="text" class="form-control" id="warehouse"  placeholder="Enter ...">
     </td>
     <td>
-      <input type="number" class="form-control" id="price" placeholder="Enter ..." required>
+      <input type="number" class="form-control" id="price" placeholder="Enter ...">
     </td>
     <td><button class="btn btn-danger btn-sm" id="remove"><i class="fa fa-times"></i></button></td>
   </tr>

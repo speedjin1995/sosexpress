@@ -286,8 +286,8 @@ else{
               <div class="form-group">
                 <label for="rate">Outlet *</label>
                 <select class="form-control" style="width: 100%;" id="outlets" name="outlets"></select>
-                <!--select class="js-data-example-ajax" id="direct_store" name="direct_store"></select-->
-                <input class="form-control" type="text" placeholder="Outlet" id="direct_store" name="direct_store">
+                <select id="direct_store" name="direct_store"></select>
+                <!--input class="form-control" type="text" placeholder="Outlet" id="direct_store" name="direct_store"-->
               </div>
             </div>
             <div class="col-4">
@@ -432,8 +432,7 @@ var rowCounter = 0;
 $(function () {
   $("#zoneHidden").hide();
   $("#branchHidden").hide();
-  $('#direct_store').hide();
-  //$('.select2-container').hide();
+  
   const today = new Date();
   const tomorrow = new Date(today);
   tomorrow.setDate(tomorrow.getDate() + 1);
@@ -771,6 +770,55 @@ $(function () {
     }
   });
 
+  $('#direct_store').select2({
+    ajax: {
+      url: 'php/getDirectStore.php',
+      dataType: 'json',
+      data: function (params) {
+        var query = {
+          search: params.term,
+          states: $('#states').val(),
+          zones: $('#zones').val(),
+          type: 'public'
+        };
+        return query;
+      },
+      delay: 250,
+      processResults: function (data) {
+        var resultsArray = [];
+
+        // Assuming data.message is an object
+        for (var key in data.message) {
+          if (data.message.hasOwnProperty(key)) {
+            resultsArray.push({
+              id: data.message[key].name, // Use the property key as the id
+              text: data.message[key].name // Use the name property as the text
+            });
+          }
+        }
+
+        return {
+          results: resultsArray
+        };
+      },
+      cache: true,
+    },
+    minimumInputLength: 1,
+    placeholder: 'Search for options...',
+    tags: true,
+    createTag: function (params) {
+      if ($.trim(params.term) === '') {
+        return null;
+      }
+      return {
+        id: params.term,
+        text: params.term
+      };
+    },
+  });
+
+  $('#direct_store').data('select2').$container.hide();
+
   $("#updateStatus").on("click", function () {
     var selectedIds = []; // An array to store the selected 'id' values
 
@@ -826,7 +874,7 @@ $(function () {
     $('#extendModal').find('#direct_store').val("");
     $('#extendModal').find('#outlets').attr('required', true);
     $('#extendModal').find('#outlets').show();
-    $('#extendModal').find("#direct_store").hide();
+    $('#extendModal').find('#direct_store').data('select2').$container.hide();
     $('#doPoTable tbody').empty();
     //$('#extendModal').find('.select2-container').hide();
     $('#extendModal').modal('show');
@@ -864,8 +912,7 @@ $(function () {
       $('#extendModal').find("#direct_store").attr('required', false);
       $('#extendModal').find('#outlets').attr('required', true);
       $('#extendModal').find('#outlets').show();
-      $('#extendModal').find("#direct_store").hide();
-      //$('#extendModal').find('.select2-container').hide();
+      $('#extendModal').find('#direct_store').data('select2').$container.hide();
 
       $.post('php/listOutlets.php', {states: $('#states').val(), zones: $('#zones').val(), hypermarket: $('#hypermarket').val()}, function(data){
         var obj = JSON.parse(data);
@@ -887,7 +934,7 @@ $(function () {
     else{
       $('#extendModal').find('#outlets').attr('required', false);
       $('#extendModal').find('#outlets').hide();
-      $('#extendModal').find("#direct_store").show();
+      $('#extendModal').find('#direct_store').data('select2').$container.show();
       $('#extendModal').find("#direct_store").attr('required', true);
       $('#extendModal').find("#direct_store").val('');
       //$('#extendModal').find('.select2-container').show();
@@ -900,7 +947,7 @@ $(function () {
       $('#extendModal').find("#direct_store").attr('required', false);
       $('#extendModal').find('#outlets').attr('required', true);
       $('#extendModal').find('#outlets').show();
-      $('#extendModal').find("#direct_store").hide();
+      $('#extendModal').find('#direct_store').data('select2').$container.hide();
       //$('#extendModal').find('.select2-container').hide();
 
       $.post('php/listOutlets.php', {states: $('#states').val(), zones: $('#zones').val(), hypermarket: $('#hypermarket').val()}, function(data){
@@ -923,7 +970,7 @@ $(function () {
     else{
       $('#extendModal').find('#outlets').attr('required', false);
       $('#extendModal').find('#outlets').hide();
-      $('#extendModal').find("#direct_store").show();
+      $('#extendModal').find('#direct_store').data('select2').$container.show();
       $('#extendModal').find("#direct_store").attr('required', true);
       $('#extendModal').find("#direct_store").val('');
       //$('#extendModal').find('.select2-container').show();
@@ -936,7 +983,7 @@ $(function () {
       $('#extendModal').find("#direct_store").attr('required', false);
       $('#extendModal').find('#outlets').attr('required', true);
       $('#extendModal').find('#outlets').show();
-      $('#extendModal').find("#direct_store").hide();
+      $('#extendModal').find('#direct_store').data('select2').$container.hide();
       //$('#extendModal').find('.select2-container').hide();
 
       $.post('php/listOutlets.php', {states: $('#states').val(), zones: $('#zones').val(), hypermarket: $('#hypermarket').val()}, function(data){
@@ -959,7 +1006,7 @@ $(function () {
     else{
       $('#extendModal').find('#outlets').attr('required', false);
       $('#extendModal').find('#outlets').hide();
-      $('#extendModal').find("#direct_store").show();
+      $('#extendModal').find('#direct_store').data('select2').$container.show();
       $('#extendModal').find("#direct_store").attr('required', true);
       //$('#extendModal').find('.select2-container').show();
       $('#extendModal').find("#direct_store").val('');
@@ -1162,7 +1209,7 @@ function edit(id) {
         $('#extendModal').find('#direct_store').attr('required', true);
         $('#extendModal').find('#direct_store').val(obj.message.direct_store);
         $('#extendModal').find('#outlets').hide();
-        $('#extendModal').find("#direct_store").show();
+        $('#extendModal').find('#direct_store').data('select2').$container.show();
         //$('#extendModal').find('.select2-container').show();
       }
       else{
@@ -1171,7 +1218,7 @@ function edit(id) {
         $('#extendModal').find('#outlets').attr('required', true);
         $('#extendModal').find('#outlets').show();
         $('#extendModal').find('#direct_store').val('');
-        $('#extendModal').find("#direct_store").hide();
+        $('#extendModal').find('#direct_store').data('select2').$container.hide();
         //$('#extendModal').find('.select2-container').hide();
       }
 
