@@ -37,44 +37,48 @@ $data = array();
 $counter = 1;
 
 while($row = mysqli_fetch_assoc($empRecords)) {
-  $details = json_decode($row['return_details'], true);
+  $details = array();
   $locations = array();
 
-  for($i=0; $i<count($details); $i++){
-    $hypermarket = '';
-    $outlets = '';
+  if($row['return_details'] != null){
+    $details = json_decode($row['return_details'], true);
 
-    if ($update_stmt = $db->prepare("SELECT name FROM hypermarket WHERE id=?")) {
-      $update_stmt->bind_param('s', $details[$i]['hypermarket']);
-      
-      // Execute the prepared query.
-      if ($update_stmt->execute()) {
-        $result1 = $update_stmt->get_result();
+    for($i=0; $i<count($details); $i++){
+      $hypermarket = '';
+      $outlets = '';
+  
+      if ($update_stmt = $db->prepare("SELECT name FROM hypermarket WHERE id=?")) {
+        $update_stmt->bind_param('s', $details[$i]['hypermarket']);
         
-        if ($row1 = $result1->fetch_assoc()) {
-          $hypermarket = $row1['name'];
+        // Execute the prepared query.
+        if ($update_stmt->execute()) {
+          $result1 = $update_stmt->get_result();
+          
+          if ($row1 = $result1->fetch_assoc()) {
+            $hypermarket = $row1['name'];
+          }
         }
       }
-    }
-
-    if ($update_stmt2 = $db->prepare("SELECT name FROM outlet WHERE id=?")) {
-      $update_stmt2->bind_param('s', $details[$i]['location']);
-      
-      // Execute the prepared query.
-      if ($update_stmt2->execute()) {
-        $result2 = $update_stmt2->get_result();
+  
+      if ($update_stmt2 = $db->prepare("SELECT name FROM outlet WHERE id=?")) {
+        $update_stmt2->bind_param('s', $details[$i]['location']);
         
-        if ($row2 = $result2->fetch_assoc()) {
-          $outlets = $row2['name'];
+        // Execute the prepared query.
+        if ($update_stmt2->execute()) {
+          $result2 = $update_stmt2->get_result();
+          
+          if ($row2 = $result2->fetch_assoc()) {
+            $outlets = $row2['name'];
+          }
         }
       }
+  
+      $details[$i]['hypermarket'] = $hypermarket;
+      $details[$i]['location'] = $outlets;
+      array_push($locations, $outlets);
     }
-
-    $details[$i]['hypermarket'] = $hypermarket;
-    $details[$i]['location'] = $outlets;
-    array_push($locations, $outlets);
   }
-
+  
   $data[] = array( 
     "no"=>$counter,
     "id"=>$row['id'],

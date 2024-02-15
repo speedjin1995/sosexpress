@@ -137,7 +137,7 @@ else{
                   <th>Collection <br>Date</th>
                   <th>Collection <br>Type</th>
                   <th>Total <br>Carton</th>
-                  <th>Type</th>
+                  <th>Locations</th>
                   <th></th>
                   <th></th>
                 </tr>
