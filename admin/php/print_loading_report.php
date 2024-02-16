@@ -62,7 +62,7 @@ if(isset($_POST['id'])){
 
             $key = array_search($outlet_name, $outletList);
 
-            if($do_details == null || $do_details == ''){
+            if($do_details == null || $do_details == '' || $do_details == '[]'){
                 $dateTime = new DateTime($delivery_date);
                 $formattedDate = date_format($dateTime, 'd/m');
 
@@ -199,23 +199,23 @@ if(isset($_POST['id'])){
                         </td>
                     </tr>
                 </tbody>
-            </table><br><br><br><br>';
+            </table><br><br><br><br><br>';
 
             for($k=0; $k<count($results); $k++) {
                 $message .= '<table style="width:100%">
-                <tbody><tr><td colspan="3"><td><td>'.$results[0]['outlet'].'<td><td></td></tr><tr><td><td>&nbsp;&nbsp;&nbsp;&nbsp;<td><td><td></td></tr>';
+                <tbody><tr><td colspan="3"><td><td>'.$results[$k]['outlet'].'<td><td></td></tr><tr><td><td>&nbsp;&nbsp;&nbsp;&nbsp;<td><td><td></td></tr>';
 
-                $results2 = $results[0]['items'];
+                $results2 = $results[$k]['items'];
 
                 for($j=0; $j<count($results2); $j++) {
                     $pring = '';
                     foreach ($results2[$j]['pricing'] as $item) {
-                        $pring.= '<td><tr>';
-                        $pring.= '<td>' . $item['size'] . '<br>' . $item['price'] . '</td>';
-                        $pring.= '</tr></td>';
+                        $pring.= '<td>';
+                        $pring.= $item['size'] . '<br>' . $item['price'];
+                        $pring.= '</td>';
                     }
 
-                    $message .= '<tr><td>'.$results2[$j]['delivery'].'</td><td>'.$results2[$j]['cancellation'].'</td><td>'.$results2[$j]['customer'].'</td><td>'.$results2[$j]['status'].'</td><td>'.$results2[$j]['po'].'</td><td>'.$results2[$j]['do'].'</td><td>'.$results2[$j]['carton'].'</td><td>'.$results2[$j]['hold'].'</td><td>'.$pring.'</td><td>'.$results2[$j]['notes'].'</td></tr>';
+                    $message .= '<tr height=""><td>'.$results2[$j]['delivery'].'</td><td>'.$results2[$j]['cancellation'].'</td><td>'.$results2[$j]['customer'].'</td><td>'.$results2[$j]['status'].'</td><td>'.$results2[$j]['po'].'</td><td>'.$results2[$j]['do'].'</td><td>'.$results2[$j]['carton'].'</td><td>'.$results2[$j]['hold'].'</td>'.$pring.'<td>'.$results2[$j]['notes'].'</td></tr>';
                 }
 
                 $message .= '</tbody></table><br><br><br>';
