@@ -43,7 +43,11 @@ if($_POST['hypermarket'] != null && $_POST['hypermarket'] != '' && $_POST['hyper
 }
 
 if($_POST['outlets'] != null && $_POST['outlets'] != '' && $_POST['outlets'] != '-'){
-  $searchQuery = " and do_request.batchNo like '%".$_POST['outlets']."%'";
+  $searchQuery = " and do_request.outlet like '%".$_POST['outlets']."%'";
+}
+
+if($_POST['status'] != null && $_POST['status'] != '' && $_POST['status'] != '-'){
+  $searchQuery = " and do_request.status = '".$_POST['status']."'";
 }
 
 if($searchValue != ''){

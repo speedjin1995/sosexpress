@@ -36,10 +36,21 @@ $_POST['email'], $_POST['payment_term'], $_POST['pickupaddress'])){
     $note = null;
 
     // Pricing
-    $type = $_POST['type'];
-    $size = $_POST['size'];
-    $description = $_POST['description'];
-    $price = $_POST['price'];
+    if(isset($_POST['type'])){
+        $type = $_POST['type'];
+    }
+
+    if(isset($_POST['size'])){
+        $size = $_POST['size'];
+    }
+
+    if(isset($_POST['description'])){
+        $description = $_POST['description'];
+    }
+
+    if(isset($_POST['price'])){
+        $price = $_POST['price'];
+    }
 
     if(isset($_POST['phone2']) && $_POST['phone2'] != null && $_POST['phone2'] != ''){
         $phone2 = filter_input(INPUT_POST, 'phone2', FILTER_SANITIZE_STRING);
@@ -89,7 +100,7 @@ $_POST['email'], $_POST['payment_term'], $_POST['pickupaddress'])){
         if(isset($_POST['id']) && $_POST['id'] != null && $_POST['id'] != ''){
             $pricing = array();
 
-            if($type != null && count($type) > 0){
+            if(isset($type) && $type != null && count($type) > 0){
                 for($i=0; $i<count($type); $i++){
                     $notes = null;
 
@@ -134,11 +145,11 @@ $_POST['email'], $_POST['payment_term'], $_POST['pickupaddress'])){
         }
         else{
             $random_salt = hash('sha512', uniqid(openssl_random_pseudo_bytes(16), TRUE));
-            $password = '123456';
+            $password = $username;
             $password = hash('sha512', $password . $random_salt);
             $pricing = array();
 
-            if($type != null && count($type) > 0){
+            if(isset($type) && $type != null && count($type) > 0){
                 for($i=0; $i<count($type); $i++){
                     $notes = null;
 

@@ -139,6 +139,17 @@ else{
                 <label>Outlets</label>
                 <select class="form-control" id="outletsFilter" name="outletsFilter" style="width: 100%;"></select>
               </div>
+
+              <div class="form-group col-3">
+                <label>Status</label>
+                <select class="form-control" id="statusFilter" name="statusFilter" style="width: 100%;">
+                  <option selected="selected">-</option>
+                  <option value="Posted">Posted</option>
+                  <option value="Confirmed">Confirmed</option>
+                  <option value="Printed">Printed</option>
+                  <option value="Delivered">Delivered</option>
+                </select>
+              </div>
             </div>
 
             <div class="row">
@@ -180,7 +191,7 @@ else{
             <table id="weightTable" class="table table-bordered table-striped display">
               <thead>
                 <tr>
-                  <th></th>
+                  <th><button id="selectAllBtn" class="btn btn-primary">Select All</button></th>
                   <!--th>No</th-->
                   <th>Customer</th>
                   <th>Hypermarket</th>
@@ -609,6 +620,11 @@ $(function () {
   $("#branchHidden").hide();
   $('#direct_store').hide();
 
+  $('#selectAllBtn').on('click', function() {
+    var checkboxes = $('#weightTable tbody input[type="checkbox"]');
+    checkboxes.prop('checked', !checkboxes.prop('checked')).trigger('change');
+  });
+
   var table = $("#weightTable").DataTable({
     "responsive": true,
     "autoWidth": false,
@@ -810,7 +826,8 @@ $(function () {
     var customerNoFilter = $('#customerNoFilter').val() ? $('#customerNoFilter').val() : '';
     var zonesFilter = $('#zonesFilter').val() ? $('#zonesFilter').val() : '';
     var hypermarketFilter = $('#hypermarketFilter').val() ? $('#hypermarketFilter').val() : '';
-    var outletsFilter = $('#batchFilter').val() ? $('#outletsFilter').val() : '';
+    var outletsFilter = $('#outletsFilter').val() ? $('#outletsFilter').val() : '';
+    var statusFilter = $('#statusFilter').val() ? $('#statusFilter').val() : '';
 
     //Destroy the old Datatable
     $("#weightTable").DataTable().clear().destroy();
@@ -835,7 +852,8 @@ $(function () {
           customer: customerNoFilter,
           zones: zonesFilter,
           hypermarket: hypermarketFilter,
-          outlets: outletsFilter
+          outlets: outletsFilter,
+          status: statusFilter
         } 
       },
       'columns': [
@@ -1269,20 +1287,34 @@ function format (row) {
   '</p></div><div class="col-md-3">';
   
   if(row.status == 'Created'){
-    returnString += '<div class="row"><div class="col-3"><button type="button" class="btn btn-warning btn-sm" onclick="edit('+row.id+
-  ')"><i class="fas fa-pen"></i></button></div><div class="col-3"><button type="button" class="btn btn-danger btn-sm" onclick="deactivate('+row.id+
-  ')"><i class="fas fa-trash"></i></button></div><div class="col-3"><button type="button" class="btn btn-info btn-sm" onclick="picked('+row.id+
+    returnString += '<div class="row"><div class="col-3"><button type="button" class="btn btn-warning btn-sm" title="Edit" onclick="edit('+row.id+
+  ')"><i class="fas fa-pen"></i></button></div><div class="col-3"><button type="button" class="btn btn-danger btn-sm" title="Delete" onclick="deactivate('+row.id+
+  ')"><i class="fas fa-trash"></i></button></div><div class="col-3"><button type="button" class="btn btn-info btn-sm" title="Post for loading" onclick="picked('+row.id+
   ')"><i class="fas fa-pallet"></i></button></div></div></div></div>';
   }
   else if(row.status == 'Posted'){
-    returnString +='<div class="row"><div class="col-3"><button type="button" class="btn btn-warning btn-sm" onclick="edit('+row.id+
+    returnString +='<div class="row"><div class="col-3"><button type="button" class="btn btn-warning btn-sm" title="Edit" onclick="edit('+row.id+
+  ')"><i class="fas fa-pen"></i></button></div><div class="col-3"><button type="button" class="btn btn-danger btn-sm" title="Delete" onclick="deactivate('+row.id+
+  ')"><i class="fas fa-trash"></i></button></div></div></div></div>';
+  }
+  else if(row.status == 'Confirmed'){
+    returnString +='<div class="row"><div class="col-3"><button type="button" class="btn btn-warning btn-sm" title="Edit" onclick="edit('+row.id+
+  ')"><i class="fas fa-pen"></i></button></div><div class="col-3"><button type="button" class="btn btn-danger btn-sm" title="Delete" onclick="deactivate('+row.id+
+  ')"><i class="fas fa-trash"></i></button></div></div></div></div>';
+  }
+  else if(row.status == 'Printed'){
+    returnString +='<div class="row"><div class="col-3"><button type="button" class="btn btn-warning btn-sm" title="Edit" onclick="edit('+row.id+
   ')"><i class="fas fa-pen"></i></button></div><div class="col-3"><button type="button" class="btn btn-danger btn-sm" onclick="reject('+row.id+
-  ')"><i class="fas fa-times"></i></button></div><div class="col-3"><button type="button" class="btn btn-info btn-sm" onclick="delivered('+row.id+
+  ')"><i class="fas fa-times"></i></button></div><div class="col-3"><button type="button" class="btn btn-danger btn-sm" title="Delete" onclick="deactivate('+row.id+
+  ')"><i class="fas fa-trash"></i></button></div><div class="col-3"><button type="button" class="btn btn-info btn-sm" title="Delivered" onclick="delivered('+row.id+
   ')"><i class="fas fa-truck"></i></button></div></div></div></div>';
   }
   else if(row.status == 'Delivered'){
-    returnString +='<div class="row"><div class="col-3"><button type="button" class="btn btn-info btn-sm" onclick="invoice('+row.id+
+    returnString +='<div class="row"><div class="col-3"><button type="button" class="btn btn-info btn-sm" title="Incoiving" onclick="invoice('+row.id+
   ')"><i class="fas fa-receipt"></i></button></div></div></div></div>';
+  }
+  else if(row.status == 'Invoiced'){
+    returnString +='<div class="row"><div class="col-3"></div><div class="col-3"></div><div class="col-3"></div></div></div></div>';
   }
   
   return returnString;

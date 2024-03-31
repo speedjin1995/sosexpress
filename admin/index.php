@@ -503,6 +503,12 @@ to get the desired effect
                       <p>Documents</p>
                     </a>
                   </li>
+                  <li class="nav-item">
+                    <a href="#holidays" data-file="holidays.php" class="nav-link link">
+                      <i class="nav-icon fas fa-calendar"></i>
+                      <p>Holidays</p>
+                    </a>
+                  </li>
                 </ul>
               </li>
               <li class="nav-item has-treeview">

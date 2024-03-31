@@ -28,16 +28,41 @@ else{
 <section class="content">
 	<div class="container-fluid">
         <div class="row">
+            <div class="col-lg-12">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="form-group col-3">
+                                <label>Status</label>
+                                <select class="form-control" id="statusFilter" name="statusFilter" style="width: 100%;">
+                                    <option selected="selected">-</option>
+                                    <option value="0">Active</option>
+                                    <option value="1">Inactive</option>
+                                </select>
+                            </div>
+                            <div class="col-3">
+                                <button type="button" class="btn btn-block bg-gradient-warning btn-sm"  id="filterSearch">
+                                    <i class="fas fa-search"></i>
+                                    Search
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
 			<div class="col-12">
 				<div class="card">
 					<div class="card-header">
-              <div class="row">
-                  <div class="col-9"></div>
-                  <div class="col-3">
-                      <button type="button" class="btn btn-block bg-gradient-warning btn-sm" id="addCustomers">Add Customers</button>
-                  </div>
-              </div>
-          </div>
+                        <div class="row">
+                            <div class="col-9"></div>
+                            <div class="col-3">
+                                <button type="button" class="btn btn-block bg-gradient-warning btn-sm" id="addCustomers">Add Customers</button>
+                            </div>
+                        </div>
+                    </div>
 					<div class="card-body">
 						<table id="customerTable" class="table table-bordered table-striped">
 							<thead>
@@ -260,6 +285,50 @@ $(function () {
         else {
             row.child( format(row.data()) ).show();tr.addClass("shown");
         }
+    });
+
+    $('#filterSearch').on('click', function(){
+        var statusFilter = $('#statusFilter').val() ? $('#statusFilter').val() : '';
+
+        //Destroy the old Datatable
+        $("#weightTable").DataTable().clear().destroy();
+
+        //Create new Datatable
+        table = $("#weightTable").DataTable({
+            "responsive": true,
+            "autoWidth": false,
+            'processing': true,
+            'serverSide': true,
+            'serverMethod': 'post',
+            'searching': false,
+            'order': [[ 1, 'asc' ]],
+            'columnDefs': [ { orderable: false, targets: [0] }],
+            'ajax': {
+                'type': 'POST',
+                'url':'php/filterCustomers.php',
+                'data': {
+                    status: statusFilter
+                } 
+            },
+            'columns': [
+                { data: 'customer_code' },
+                { data: 'customer_name' },
+                { data: 'customer_address' },
+                { data: 'customer_phone' },
+                { data: 'customer_email' },
+                { 
+                    className: 'dt-control',
+                    orderable: false,
+                    data: null,
+                    render: function ( data, type, row ) {
+                        return '<td class="table-elipse" data-toggle="collapse" data-target="#demo'+row.serialNo+'"><i class="fas fa-angle-down"></i></td>';
+                    }
+                }
+            ],
+            "rowCallback": function( row, data, index ) {
+                //$('td', row).css('background-color', '#E6E6FA');
+            }
+        });
     });
     
     $.validator.setDefaults({

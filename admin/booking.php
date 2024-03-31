@@ -196,12 +196,12 @@ else{
             <div class="col-4">
               <div class="form-group">
                 <label>Booking Date *</label>
-                  <div class='input-group date' id="bookingDate" data-target-input="nearest">
-                    <input type='text' class="form-control datetimepicker-input" data-target="#bookingDate" id="booking_date" name="bookingDate" required/>
-                    <div class="input-group-append" data-target="#bookingDate" data-toggle="datetimepicker">
-                      <div class="input-group-text"><i class="fa fa-calendar"></i></div>
-                    </div>
+                <div class='input-group date' id="bookingDate" data-target-input="nearest">
+                  <input type='text' class="form-control datetimepicker-input" data-target="#bookingDate" id="booking_date" name="bookingDate" required/>
+                  <div class="input-group-append" data-target="#bookingDate" data-toggle="datetimepicker">
+                    <div class="input-group-text"><i class="fa fa-calendar"></i></div>
                   </div>
+                </div>
               </div>
             </div>
             <div class="col-4">
@@ -577,10 +577,10 @@ $(function () {
   });
 
   $('#bookingDate').datetimepicker({
-      icons: { time: 'far fa-clock' },
-      format: 'DD/MM/YYYY',
-      minDate: new Date
-    });
+    icons: { time: 'far fa-clock' },
+    format: 'DD/MM/YYYY',
+    minDate: new Date
+  });
 
   $.validator.setDefaults({
     submitHandler: function () {

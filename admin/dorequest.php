@@ -130,6 +130,19 @@ else{
                 <label>Outlets</label>
                 <select class="form-control" id="outletsFilter" name="outletsFilter" style="width: 100%;"></select>
               </div>
+
+              <div class="form-group col-3">
+                <label>Status</label>
+                <select class="form-control" id="statusFilter" name="statusFilter" style="width: 100%;">
+                  <option selected="selected">-</option>
+                  <option value="Created">Created</option>
+                  <option value="Posted">Posted</option>
+                  <option value="Confirmed">Confirmed</option>
+                  <option value="Printed">Printed</option>
+                  <option value="Delivered">Delivered</option>
+                  <option value="Invoiced">Invoiced</option>
+                </select>
+              </div>
             </div>
 
             <div class="row">
@@ -533,7 +546,7 @@ $(function () {
     minDate: tomorrow
   });
 
-  $('#bookingDate').on('dp.change', function (e) {
+  $('#booking_date').on('blur', function (e) {
     if($('#booking_date').val() && $('#customerNo').val()){
       $.post('php/checkBooking.php', {bookingDate: $(booking_date).val(), customerNo: $('#customerNo').val()}, function(data){
         var obj = JSON.parse(data);
@@ -668,7 +681,8 @@ $(function () {
     var customerNoFilter = $('#customerNoFilter').val() ? $('#customerNoFilter').val() : '';
     var zonesFilter = $('#zonesFilter').val() ? $('#zonesFilter').val() : '';
     var hypermarketFilter = $('#hypermarketFilter').val() ? $('#hypermarketFilter').val() : '';
-    var outletsFilter = $('#batchFilter').val() ? $('#outletsFilter').val() : '';
+    var outletsFilter = $('#outletsFilter').val() ? $('#outletsFilter').val() : '';
+    var statusFilter = $('#statusFilter').val() ? $('#statusFilter').val() : '';
 
     //Destroy the old Datatable
     $("#weightTable").DataTable().clear().destroy();
@@ -693,7 +707,8 @@ $(function () {
           customer: customerNoFilter,
           zones: zonesFilter,
           hypermarket: hypermarketFilter,
-          outlets: outletsFilter
+          outlets: outletsFilter,
+          status: statusFilter
         } 
       },
       'columns': [
@@ -1022,25 +1037,6 @@ $(function () {
     }
   });
 
-  /*$('.js-data-example-ajax').select2({
-    ajax: {
-      url: 'php/searchOutlets.php',
-      data: function (params) {
-        var query = {
-          search: params.term
-        }
-
-        return query;
-      },
-      processResults: function (data) {
-        // Transforms the top-level key of the response object from 'items' to 'results'
-        return {
-          results: data.results
-        };
-      }
-    }
-  });*/
-
   $('#openModalBtn').on('click', function () {
     $('#doPoTable tbody').empty();
     addRow2($('#do_no').val(), $('#po_no').val()); // Pass default values to the addRow function
@@ -1121,16 +1117,27 @@ function format (row) {
   ')"><i class="fas fa-pallet"></i></button></div></div></div></div>';
   }
   else if(row.status == 'Posted'){
-    returnString +='<div class="row"><div class="col-3"><button type="button" class="btn btn-info btn-sm" title="Delivered" onclick="delivered('+row.id+
-  ')"><i class="fas fa-truck"></i></button></div></div></div></div>';
+    returnString +='<div class="row"><div class="col-3"><button type="button" class="btn btn-warning btn-sm" title="Edit" onclick="edit('+row.id+
+  ')"><i class="fas fa-pen"></i></button></div><div class="col-3"><button type="button" class="btn btn-danger btn-sm" title="Delete" onclick="deactivate('+row.id+
+  ')"><i class="fas fa-trash"></i></button></div></div></div></div>';
   }
   else if(row.status == 'Confirmed'){
-    returnString +='<div class="row"><div class="col-3"><button type="button" class="btn btn-info btn-sm" title="Delivered" onclick="delivered('+row.id+
+    returnString +='<div class="row"><<div class="col-3"><button type="button" class="btn btn-warning btn-sm" title="Edit" onclick="edit('+row.id+
+  ')"><i class="fas fa-pen"></i></button></div><div class="col-3"><button type="button" class="btn btn-danger btn-sm" title="Delete" onclick="deactivate('+row.id+
+  ')"><i class="fas fa-trash"></i></button></div></div></div></div>';
+  }
+  else if(row.status == 'Printed'){
+    returnString +='<div class="row"><div class="col-3"><button type="button" class="btn btn-warning btn-sm" title="Edit" onclick="edit('+row.id+
+  ')"><i class="fas fa-pen"></i></button></div><div class="col-3"><button type="button" class="btn btn-danger btn-sm" title="Delete" onclick="deactivate('+row.id+
+  ')"><i class="fas fa-trash"></i></button></div><div class="col-3"><button type="button" class="btn btn-info btn-sm" title="Delivered" onclick="delivered('+row.id+
   ')"><i class="fas fa-truck"></i></button></div></div></div></div>';
   }
   else if(row.status == 'Delivered'){
     returnString +='<div class="row"><div class="col-3"><button type="button" class="btn btn-info btn-sm" title="Invoice" onclick="invoice('+row.id+
   ')"><i class="fas fa-receipt"></i></button></div></div></div></div>';
+  }
+  else if(row.status == 'Invoiced'){
+    returnString +='<div class="row"><div class="col-3"></div><div class="col-3"></div><div class="col-3"></div></div></div></div>';
   }
   
   return returnString;

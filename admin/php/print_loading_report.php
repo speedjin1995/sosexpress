@@ -35,7 +35,7 @@ if(isset($_POST['id'])){
     }
 
     $placeholders = implode(',', array_fill(0, count($arrayOfId), '?'));
-    $select_stmt = $db->prepare("SELECT customers.short_name, customers.pricing, outlet.name, do_request.do_number, do_request.do_details, do_request.hold, 
+    $select_stmt = $db->prepare("SELECT customers.short_name, customers.pricing, customers.payment_term, outlet.name, do_request.do_number, do_request.do_details, do_request.hold, 
     do_request.po_number, do_request.note, do_request.actual_carton, do_request.status, do_request.delivery_date, do_request.cancellation_date FROM customers, outlet, do_request WHERE 
     do_request.outlet = outlet.id AND do_request.customer = customers.id AND do_request.id IN ($placeholders)");
 
@@ -45,7 +45,7 @@ if(isset($_POST['id'])){
         $types = str_repeat('i', count($arrayOfId)); // Assuming the IDs are integers
         $select_stmt->bind_param($types, ...$arrayOfId);
         $select_stmt->execute();
-        $select_stmt->bind_result($customer_name, $pricing, $outlet_name, $do_number, $do_details, $hold, $po_number, $note, $actual_carton, $status, $delivery_date, $cancellation_date);
+        $select_stmt->bind_result($customer_name, $pricing, $term, $outlet_name, $do_number, $do_details, $hold, $po_number, $note, $actual_carton, $status, $delivery_date, $cancellation_date);
         $results = array();
         $outletList = array();
         $index = 1;
@@ -72,6 +72,7 @@ if(isset($_POST['id'])){
                 array_push($results[$key]['items'], array(
                     'index' => $index,
                     'customer' => $customer_name,
+                    'term' => $term,
                     'notes' => $note,
                     'po' => $po_number,
                     'do' => $do_number,
@@ -99,6 +100,7 @@ if(isset($_POST['id'])){
                     array_push($results[$key]['items'], array(
                         'index' => $index,
                         'customer' => $customer_name,
+                        'term' => $term,
                         'notes' => $note,
                         'po' => $poList[$i]['poNumber'],
                         'do' => $poList[$i]['doNumber'],
@@ -209,13 +211,20 @@ if(isset($_POST['id'])){
 
                 for($j=0; $j<count($results2); $j++) {
                     $pring = '';
-                    foreach ($results2[$j]['pricing'] as $item) {
-                        $pring.= '<td>';
-                        $pring.= $item['size'] . '<br>' . $item['price'];
-                        $pring.= '</td>';
-                    }
 
-                    $message .= '<tr height=""><td>'.$results2[$j]['delivery'].'</td><td>'.$results2[$j]['cancellation'].'</td><td>'.$results2[$j]['customer'].'</td><td>'.$results2[$j]['status'].'</td><td>'.$results2[$j]['po'].'</td><td>'.$results2[$j]['do'].'</td><td>'.$results2[$j]['carton'].'</td><td>'.$results2[$j]['hold'].'</td>'.$pring.'<td>'.$results2[$j]['notes'].'</td></tr>';
+                    if($results2[$j]['term'] == 'Cash'){
+                        $message .= '<tr height=""><td>'.$results2[$j]['delivery'].'</td><td>'.$results2[$j]['cancellation'].'</td><td>'.$results2[$j]['customer'].'</td><td>'.$results2[$j]['status'].'</td><td>'.$results2[$j]['po'].'</td><td>'.$results2[$j]['do'].'</td><td>'.$results2[$j]['carton'].'</td><td>'.$results2[$j]['hold'].'</td><td>'.$results2[$j]['notes'].'</td></tr>';
+                    }
+                    else{
+                        foreach ($results2[$j]['pricing'] as $item) {
+                            $pring.= '<td>';
+                            $pring.= $item['size'] . '<br>' . $item['price'];
+                            $pring.= '</td>';
+                        }
+    
+                        $message .= '<tr height=""><td>'.$results2[$j]['delivery'].'</td><td>'.$results2[$j]['cancellation'].'</td><td>'.$results2[$j]['customer'].'</td><td>'.$results2[$j]['status'].'</td><td>'.$results2[$j]['po'].'</td><td>'.$results2[$j]['do'].'</td><td>'.$results2[$j]['carton'].'</td><td>'.$results2[$j]['hold'].'</td>'.$pring.'<td>'.$results2[$j]['notes'].'</td></tr>';
+                    }
+                    
                 }
 
                 $message .= '</tbody></table><br><br><br>';
