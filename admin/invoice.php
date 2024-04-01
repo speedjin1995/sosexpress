@@ -343,9 +343,9 @@ function simplyShowCreatedDatetime(row) {
 
   returnString += '<p><small>Action:</small></p>';
 
-  returnString += '<div class="row"><div class="col-3"><button type="button" class="btn btn-info btn-sm" onclick="printQuote('+row.id+
+  returnString += '<div class="row"><div class="col-3"><button type="button" class="btn btn-info btn-sm" onclick="printQuote('+row.invoice_id+
   ')"><i class="fas fa-print"></i></button></div><div class="col-3"><button type="button" onclick="cancel('+
-  row.id+')" class="btn btn-danger btn-sm"><i class="fas fa fa-times"></i></button></div></div>';
+  row.invoice_id+')" class="btn btn-danger btn-sm"><i class="fas fa fa-times"></i></button></div></div>';
 
   return returnString;
 }
@@ -356,7 +356,7 @@ function simplyShowCreatedDatetime2(row) {
 
   returnString += '<p><small>Action:</small></p>';
 
-  returnString += '<div class="row"><div class="col-3"><button type="button" class="btn btn-info btn-sm" onclick="printQuote('+row.id+
+  returnString += '<div class="row"><div class="col-3"><button type="button" class="btn btn-info btn-sm" onclick="printQuote('+row.invoice_id+
   ')"><i class="fas fa-print"></i></button></div></div>';
 
   return returnString;

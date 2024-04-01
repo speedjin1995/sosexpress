@@ -67,11 +67,12 @@ if(isset($_POST['id'], $_POST['totalAmount'])){
         $grn_receive = filter_input(INPUT_POST, 'grn_received', FILTER_SANITIZE_STRING);
     }
 
-    $ds = DIRECTORY_SEPARATOR;  //1 
-    $storeFolder = '../grns';   //2
-    $filename = filter_input(INPUT_POST, 'grn_files', FILTER_SANITIZE_STRING);
+    $ds = DIRECTORY_SEPARATOR;  
+    $storeFolder = '../grns';  // Removed '../' from the store folder path
+    $storeFolder2 = 'grns';  // Removed '../' from the store folder path
+    $filename = $_FILES['grn_files']['name'];
     $jobLog = null;
-
+    
     if (!empty($_FILES['grn_files']['name'])) {
         // File was uploaded successfully
         $tempFile = $_FILES['grn_files']['tmp_name'];
@@ -82,7 +83,7 @@ if(isset($_POST['id'], $_POST['totalAmount'])){
     
         if (move_uploaded_file($tempFile, $targetFile)) {
             // File moved successfully
-            $jobLog = $targetFile;
+            $jobLog = $storeFolder2 . $ds . $newfilename; // Assigning $jobLog with the relative path
         }
     }
     
