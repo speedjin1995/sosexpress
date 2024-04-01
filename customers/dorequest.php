@@ -9,6 +9,7 @@ if(!isset($_SESSION['userID'])){
 }
 else{
   $user = $_SESSION['userID'];
+  $todayStart = date('Y-m-d 00:00:00', strtotime('today'));
   $stmt = $db->prepare("SELECT * from users where id = ?");
 	$stmt->bind_param('s', $user);
 	$stmt->execute();
@@ -28,6 +29,7 @@ else{
   $zones = $db->query("SELECT * FROM zones WHERE deleted = '0'");
   $zones2 = $db->query("SELECT * FROM zones WHERE deleted = '0'");
   $outlet = $db->query("SELECT * FROM outlet WHERE deleted = '0'");
+  $holiday = $db->query("SELECT * FROM holidays WHERE start_date <= '".$todayStart."' AND end_date >= '".$todayStart."' AND deleted = '0'");
 }
 ?>
 
@@ -321,6 +323,12 @@ $(function () {
   $("#zoneHidden").hide();
   $("#branchHidden").hide();
   $('#direct_store').hide();
+
+  <?php
+    if($rowH=mysqli_fetch_assoc($holiday)){
+      echo "$('#newBooking').hide();";
+    }
+  ?>
 
   var table = $("#weightTable").DataTable({
     "responsive": true,

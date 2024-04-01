@@ -10,11 +10,10 @@ else{
 	$userId = $_SESSION['userID'];
 }
 
-if(isset($_POST['bookingDate'], $_POST['branch'], $_POST['address'], $_POST['extimated_ctn'])){
+if(isset($_POST['bookingDate'], $_POST['address'], $_POST['extimated_ctn'])){
 	// START Booking
 	$booking_date = filter_input(INPUT_POST, 'bookingDate', FILTER_SANITIZE_STRING);
 	$booking_date = DateTime::createFromFormat('d/m/Y H:i:s A', $booking_date)->format('Y-m-d H:i:s');
-	$branch = filter_input(INPUT_POST, 'branch', FILTER_SANITIZE_STRING);
 	$address = filter_input(INPUT_POST, 'address', FILTER_SANITIZE_STRING);
 	$extimated_ctn = filter_input(INPUT_POST, 'extimated_ctn', FILTER_SANITIZE_STRING);
 	$descriptionB = null;
@@ -23,8 +22,8 @@ if(isset($_POST['bookingDate'], $_POST['branch'], $_POST['address'], $_POST['ext
 		$description = filter_input(INPUT_POST, 'description', FILTER_SANITIZE_STRING);
 	}
 
-	if ($insert_stmt2 = $db->prepare("INSERT INTO booking (booking_date, customer, branch, pickup_location, description, estimated_ctn) VALUES (?, ?, ?, ?, ?, ?)")){
-		$insert_stmt2->bind_param('ssssss', $booking_date, $userId, $branch, $address, $descriptionB, $extimated_ctn);		
+	if ($insert_stmt2 = $db->prepare("INSERT INTO booking (booking_date, customer, pickup_location, description, estimated_ctn) VALUES (?, ?, ?, ?, ?)")){
+		$insert_stmt2->bind_param('sssss', $booking_date, $userId, $address, $descriptionB, $extimated_ctn);		
 		$insert_stmt2->execute();
 		$insert_stmt2->close();
 	}

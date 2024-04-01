@@ -14,23 +14,42 @@ if(isset($_POST['id'], $_POST['totalAmount'])){
     $pricing_details = array();
     $pricing = '';
 
-    $particular = $_POST['particular'];
-    $quantity_in = $_POST['quantity_in'];
-    $quantity_delivered = $_POST['quantity_delivered'];
-    $size = $_POST['size'];
-    $unit_price = $_POST['unit_price'];
-    $price = $_POST['price'];
+    if(isset($_POST['particular'])){
+        $particular = $_POST['particular'];
+    }
 
-    for($i=0; $i<count($particular); $i++){
-		$pricing_details[] = array(
-			"particular" => $particular[$i],
-			"quantity_in" => $quantity_in[$i],
-			"quantity_delivered" => $quantity_delivered[$i],
-			"size" => $size[$i],
-			"unit_price" => $unit_price[$i],
-			"price" => $price[$i],
-		);
-	}
+    if(isset($_POST['quantity_in'])){
+        $quantity_in = $_POST['quantity_in'];
+    }
+
+    if(isset($_POST['quantity_delivered'])){
+        $quantity_delivered = $_POST['quantity_delivered'];
+    }
+
+    if(isset($_POST['size'])){
+        $size = $_POST['size'];
+    }
+
+    if(isset($_POST['unit_price'])){
+        $unit_price = $_POST['unit_price'];
+    }
+    
+    if(isset($_POST['price'])){
+        $price = $_POST['price'];
+    }
+
+    if(isset($particular) && $particular != null && count($particular) > 0){
+        for($i=0; $i<count($particular); $i++){
+            $pricing_details[] = array(
+                "particular" => $particular[$i],
+                "quantity_in" => $quantity_in[$i],
+                "quantity_delivered" => $quantity_delivered[$i],
+                "size" => $size[$i],
+                "unit_price" => $unit_price[$i],
+                "price" => $price[$i],
+            );
+        }
+    }
 
     $pricing = json_encode($pricing_details);
 
@@ -47,9 +66,28 @@ if(isset($_POST['id'], $_POST['totalAmount'])){
     if(isset($_POST['grn_received']) && $_POST['grn_received'] != null && $_POST['grn_received'] != ''){
         $grn_receive = filter_input(INPUT_POST, 'grn_received', FILTER_SANITIZE_STRING);
     }
+
+    $ds = DIRECTORY_SEPARATOR;  //1 
+    $storeFolder = '../grns';   //2
+    $filename = filter_input(INPUT_POST, 'grn_files', FILTER_SANITIZE_STRING);
+    $jobLog = null;
+
+    if (!empty($_FILES['grn_files']['name'])) {
+        // File was uploaded successfully
+        $tempFile = $_FILES['grn_files']['tmp_name'];
+        $temp = explode(".", $_FILES["grn_files"]["name"]);
+        $newfilename = $filename . '.' . end($temp);
+        $targetPath = dirname(__FILE__) . $ds . $storeFolder . $ds;
+        $targetFile = $targetPath . $newfilename;
     
-    if ($update_stmt = $db->prepare("UPDATE do_request SET sent_date=?, back_date=?, grn_receive=?, pricing_details=?, total_price=? WHERE id=?")){
-        $update_stmt->bind_param('ssssss', $sent_date, $back_date, $grn_receive, $pricing, $totalAmount, $id);
+        if (move_uploaded_file($tempFile, $targetFile)) {
+            // File moved successfully
+            $jobLog = $targetFile;
+        }
+    }
+    
+    if ($update_stmt = $db->prepare("UPDATE do_request SET grn_upload=?, sent_date=?, back_date=?, grn_receive=?, pricing_details=?, total_price=? WHERE id=?")){
+        $update_stmt->bind_param('sssssss', $jobLog, $sent_date, $back_date, $grn_receive, $pricing, $totalAmount, $id);
         
         // Execute the prepared query.
         if (! $update_stmt->execute()){

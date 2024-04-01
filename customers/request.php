@@ -8,13 +8,16 @@ if(!isset($_SESSION['userID'])){
     echo 'window.location.href = "login.html";</script>';
 }
 else{
-    $user = $_SESSION['userID'];
-    $branch = $db->query("SELECT * FROM branch WHERE customer_id = '".$user."' AND deleted = '0'");
-    $hypermarket = $db->query("SELECT * FROM hypermarket WHERE deleted = '0'");
-    $states = $db->query("SELECT * FROM states WHERE deleted = '0'");
-    $zones = $db->query("SELECT * FROM zones WHERE deleted = '0'");
-    $zones2 = $db->query("SELECT * FROM zones WHERE deleted = '0'");
-    $outlet = $db->query("SELECT * FROM outlet WHERE deleted = '0'");
+  $todayStart = date('Y-m-d 00:00:00', strtotime('today'));
+  $user = $_SESSION['userID'];
+  $branch = $db->query("SELECT * FROM branch WHERE customer_id = '".$user."' AND deleted = '0'");
+  $hypermarket = $db->query("SELECT * FROM hypermarket WHERE deleted = '0'");
+  $states = $db->query("SELECT * FROM states WHERE deleted = '0'");
+  $zones = $db->query("SELECT * FROM zones WHERE deleted = '0'");
+  $zones2 = $db->query("SELECT * FROM zones WHERE deleted = '0'");
+  $outlet = $db->query("SELECT * FROM outlet WHERE deleted = '0'");
+  $address = $db->query("SELECT pickup_address FROM customers WHERE id = '".$user."'");
+  $holiday = $db->query("SELECT * FROM holidays WHERE start_date <= '".$todayStart."' AND end_date >= '".$todayStart."' AND deleted = '0'");
 }
 ?>
 
@@ -50,48 +53,37 @@ else{
           <h4 class="m-0 text-dark">Booking</h4>
         </div>
         <div class="card-body">
-                  <div class="row">
-                      <div class="col-4">
-                          <div class="form-group">
-                              <label>Booking Date *</label>
-                              <div class='input-group date' id="bookingDate" data-target-input="nearest">
-                                  <input type='text' class="form-control datetimepicker-input" data-target="#bookingDate" id="booking_date" name="bookingDate" required/>
-                                  <div class="input-group-append" data-target="#bookingDate" data-toggle="datetimepicker">
-                                      <div class="input-group-text"><i class="fa fa-calendar"></i></div>
-                                  </div>
-                              </div>
-                          </div>
-                      </div>
-                      <div class="col-4">
-                          <div class="form-group">
-                              <label class="labelStatus">Branch *</label>
-                              <select class="form-control" id="branch" name="branch">
-                                  <option value="" selected disabled hidden>Please Select</option>
-                                  <?php while($rowCustomer2=mysqli_fetch_assoc($branch)){ ?>
-                                      <option value="<?=$rowCustomer2['id'] ?>" data-index="<?=$rowCustomer2['address'] ?>"><?=$rowCustomer2['name'] ?></option>
-                                  <?php } ?>
-                              </select>
-                          </div>
-                      </div>
-                      <div class="col-4">
-                          <div class="form-group">
-                              <label>Pickup Address *</label>
-                              <textarea class="form-control" id="address" name="address" placeholder="Enter your address"></textarea>
+          <div class="row">
+              <div class="col-4">
+                  <div class="form-group">
+                      <label>Booking Date *</label>
+                      <div class='input-group date' id="bookingDate" data-target-input="nearest">
+                          <input type='text' class="form-control datetimepicker-input" data-target="#bookingDate" id="booking_date" name="bookingDate" required/>
+                          <div class="input-group-append" data-target="#bookingDate" data-toggle="datetimepicker">
+                              <div class="input-group-text"><i class="fa fa-calendar"></i></div>
                           </div>
                       </div>
                   </div>
-                  <div class="row">
-                      <div class="col-4">
-                          <div class="form-group">
-                              <label>Description</label>
-                              <textarea class="form-control" id="description" name="description" placeholder="Enter your description"></textarea>
-                          </div>
-                      </div>
-                      <div class="form-group col-4">
-                          <label>Extimated Ctn *</label>
-                          <input class="form-control" type="number" placeholder="Extimated Carton" id="extimated_ctn" name="extimated_ctn" min="0" required/>                        
-                      </div>
+              </div>
+              <div class="col-4">
+                <div class="form-group">
+                    <label>Pickup Address *</label>
+                    <textarea class="form-control" id="address" name="address" placeholder="Enter your address"><?php if($rowA=mysqli_fetch_assoc($address)){echo $rowA['pickup_address'];} ?></textarea>
+                </div>
+              </div>
+              <div class="col-4">
+                  <div class="form-group">
+                      <label>Description</label>
+                      <textarea class="form-control" id="description" name="description" placeholder="Enter your description"></textarea>
                   </div>
+              </div>
+          </div>
+          <div class="row">
+            <div class="form-group col-4">
+                <label>Extimated Ctn *</label>
+                <input class="form-control" type="number" placeholder="Extimated Carton" id="extimated_ctn" name="extimated_ctn" min="0" required/>                        
+            </div>
+          </div>
         </div>
         </div>
         <div class="card">
@@ -110,6 +102,15 @@ else{
         You are not allow to make any booking after 3pm. Please contact our admin to make booking.
       </div>
     </div>
+    <?php
+      if($rowH=mysqli_fetch_assoc($holiday)){
+        echo '<div class="card" id="holidayCard" style="width: 300px; margin: auto; margin-top: 50px; text-align: center; padding: 20px;">
+        <div class="large-wording">
+          We are in '.$rowH['holiday'].' from '.substr($rowH['start_date'], 0, 10).' until '.substr($rowH['end_date'], 0, 10).'. Please make order after this.
+        </div>
+      </div>';
+      }
+    ?>
 </section>
 
 <script type="text/html" id="addContents">
@@ -241,15 +242,23 @@ $(function () {
     var currentTime = moment();
     var threePm = moment().set({ hour: 15, minute: 0, second: 0, millisecond: 0 });
 
-    if (currentTime.isBefore(threePm)) {
-      // Show the form
-      $('#profileForm').show();
-      $('#errorCard').hide();
-    } else {
-      // Show the error card
-      $('#profileForm').hide();
-      $('#errorCard').show();
+    if ($('#holidayCard').length) {
+        // Show the error card
+        $('#profileForm').hide();
+        $('#errorCard').hide();
     }
+    else{
+      if (currentTime.isBefore(threePm)) {
+        // Show the form
+        $('#profileForm').show();
+        $('#errorCard').hide();
+      } else {
+        // Show the error card
+        $('#profileForm').hide();
+        $('#errorCard').show();
+      }
+    }
+    
 
     $('#bookingDate').datetimepicker({
         icons: { time: 'far fa-clock' },
@@ -348,6 +357,21 @@ $(function () {
         });
 
         size++;
+    });
+
+    $("#TableId").on('change', 'select[id^="do_type"]', function(){
+      if($(this).val() == 'Consignment'){
+        $(this).parents('.details').find('input[id^="do_no"]').val('Consignment');
+        $(this).parents('.details').find('input[id^="po_no"]').val('Consignment');
+      }
+      else if($(this).val() == 'Non-trade'){
+        $(this).parents('.details').find('input[id^="do_no"]').val('Non-trade');
+        $(this).parents('.details').find('input[id^="po_no"]').val('Non-trade');
+      }
+      else{
+        $(this).parents('.details').find('input[id^="do_no"]').val('');
+        $(this).parents('.details').find('input[id^="po_no"]').val('');
+      }
     });
 
     $("#TableId").on('change', 'select[id^="states"]', function(){

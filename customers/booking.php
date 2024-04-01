@@ -9,11 +9,13 @@ if(!isset($_SESSION['userID'])){
 }
 else{
   $user = $_SESSION['userID'];
-
+  $todayStart = date('Y-m-d 00:00:00', strtotime('today'));
   $customers = $db->query("SELECT * FROM customers WHERE deleted = '0'");
   $branch = $db->query("SELECT * FROM branch WHERE customer_id = '".$user."' AND deleted = '0'");
   $branch2 = $db->query("SELECT * FROM branch WHERE customer_id = '".$user."' AND deleted = '0'");
   $users = $db->query("SELECT * FROM users WHERE deleted = '0'");
+  $address = $db->query("SELECT pickup_address FROM customers WHERE id = '".$user."'");
+  $holiday = $db->query("SELECT * FROM holidays WHERE start_date <= '".$todayStart."' AND end_date >= '".$todayStart."' AND deleted = '0'");
 }
 ?>
 
@@ -145,29 +147,18 @@ else{
             </div>
             <div class="col-4">
               <div class="form-group">
-                <label class="labelStatus">Branch *</label>
-                <select class="form-control" id="branch" name="branch">
-                  <option value="" selected disabled hidden>Please Select</option>
-                  <?php while($rowCustomer2=mysqli_fetch_assoc($branch)){ ?>
-                    <option value="<?=$rowCustomer2['id'] ?>" data-index="<?=$rowCustomer2['address'] ?>"><?=$rowCustomer2['name'] ?></option>
-                  <?php } ?>
-                </select>
-              </div>
-            </div>
-            <div class="col-4">
-              <div class="form-group">
                 <label>Pickup Address *</label>
-                <textarea class="form-control" id="address" name="address" placeholder="Enter your address"></textarea>
+                <textarea class="form-control" id="address" name="address" placeholder="Enter your address"><?php if($rowA=mysqli_fetch_assoc($address)){echo $rowA['pickup_address'];} ?></textarea>
               </div>
             </div>
-          </div>
-          <div class="row">
             <div class="col-4">
               <div class="form-group">
                 <label>Description</label>
                 <textarea class="form-control" id="description" name="description" placeholder="Enter your description"></textarea>
               </div>
             </div>
+          </div>
+          <div class="row">
             <div class="form-group col-4">
               <label>Extimated Ctn *</label>
               <input class="form-control" type="number" placeholder="Extimated Carton" id="extimated_ctn" name="extimated_ctn" min="0" required/>                        
@@ -195,6 +186,12 @@ $(function () {
   else {
     $('#newBooking').hide();
   }
+
+  <?php
+    if($rowH=mysqli_fetch_assoc($holiday)){
+      echo "$('#newBooking').hide();";
+    }
+  ?>
 
   var table = $("#weightTable").DataTable({
     "responsive": true,
