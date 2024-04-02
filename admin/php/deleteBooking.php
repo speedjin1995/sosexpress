@@ -21,7 +21,7 @@ if (isset($_POST['userID'])) {
         $stmt1->close();
 
         // Check if the booking date exists in the do_request table within the specified range
-        $checkRequestQuery = "SELECT id FROM do_request WHERE booking_date >= ? AND booking_date <= ?";
+        $checkRequestQuery = "SELECT id FROM do_request WHERE booking_date >= ? AND booking_date <= ? AND deleted = '0'";
         
         // Construct the range start and end dates
         $rangeStartDate = date('Y-m-d 00:00:00', strtotime($bookingDate));
