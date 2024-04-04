@@ -23,9 +23,11 @@ else{
   $customers2 = $db->query("SELECT * FROM customers WHERE deleted = '0'");
   $reasons = $db->query("SELECT * FROM reasons WHERE deleted = '0'");
   $hypermarket = $db->query("SELECT * FROM hypermarket WHERE deleted = '0'");
+  $hypermarket2 = $db->query("SELECT * FROM hypermarket WHERE deleted = '0'");
   $users = $db->query("SELECT * FROM users WHERE deleted = '0'");
   $vehicles = $db->query("SELECT * FROM vehicles WHERE deleted = '0'");
   $drivers = $db->query("SELECT * FROM drivers WHERE deleted = '0'");
+  $drivers2 = $db->query("SELECT * FROM drivers WHERE deleted = '0'");
 }
 ?>
 
@@ -51,7 +53,7 @@ else{
 <!-- Main content -->
 <div class="content">
   <div class="container-fluid">
-    <!--div class="row">
+    <div class="row">
       <div class="col-lg-12">
         <div class="card">
           <div class="card-body">
@@ -64,7 +66,6 @@ else{
                   <div class="input-group-text"><i class="fa fa-calendar"></i></div></div>
                 </div>
               </div>
-
               <div class="form-group col-3">
                 <label>To Date:</label>
                 <div class="input-group date" id="toDatePicker" data-target-input="nearest">
@@ -74,26 +75,53 @@ else{
                   </div>
                 </div>
               </div>
-
+              <div class="form-group col-3">
+                <label>Hypermarket</label>
+                <select class="form-control" id="hypermarketFilter" name="hypermarketFilter" style="width: 100%;">
+                  <option selected="selected">-</option>
+                  <?php while($rowhypermarket2=mysqli_fetch_assoc($hypermarket2)){ ?>
+                    <option value="<?=$rowhypermarket2['id'] ?>"><?=$rowhypermarket2['name'] ?></option>
+                  <?php } ?>
+                </select>
+              </div>
+              <div class="form-group col-3">
+                <label>Outlets</label>
+                <select class="form-control" id="outletsFilter" name="outletsFilter" style="width: 100%;"></select>
+              </div>
               <div class="col-3">
                 <div class="form-group">
-                  <label>Shipment Type</label>
+                  <label>Driver</label>
                   <select class="form-control" id="pickupMethod" name="pickupMethod">
                     <option value="" selected disabled hidden>Please Select</option>
-                    <option value="SOS Pickup">SOS Pickup</option>
-                    <option value="Outstation Pickup">Outstation Pickup</option>
-                    <option value="Send By Own">Send By Own</option>
+                    <?php while($rowdrivers22=mysqli_fetch_assoc($drivers2)){ ?>
+                      <option value="<?=$rowdrivers22['name'] ?>"><?=$rowdrivers22['name'] ?></option>
+                    <?php } ?>
                   </select>
                 </div>
               </div>
-
               <div class="col-3">
                 <div class="form-group">
                   <label>Customer No</label>
                   <select class="form-control" id="customerNoFilter" name="customerNoFilter">
                     <option value="" selected disabled hidden>Please Select</option>
+                    <?php while($rowCustomer2=mysqli_fetch_assoc($customers2)){ ?>
+                      <option value="<?=$rowCustomer2['id'] ?>"><?=$rowCustomer2['customer_name'] ?></option>
+                    <?php } ?>
                   </select>
                 </div>
+              </div>
+              <div class="form-group col-3">
+                <label>Status</label>
+                <select class="form-control" id="statusFilter" name="statusFilter" style="width: 100%;">
+                  <option selected="selected">-</option>
+                  <option value="Created">Created</option>
+                  <option value="Collected">Collected</option>
+                  <option value="Invoiced">Invoiced</option>
+                </select>
+              </div>
+              <div class="form-group col-3">
+                <label>GR No.</label>
+                <input type="text" class="form-control" id="grnFilter" name="grnFilter">
               </div>
             </div>
 
@@ -109,15 +137,21 @@ else{
           </div>
         </div>
       </div>
-    </div-->
+    </div>
 
     <div class="row">
       <div class="col-lg-12">
         <div class="card card-primary">
           <div class="card-header">
             <div class="row">
-              <div class="col-8">Return</div>
-              <div class="col-4">
+              <div class="col-6">Return</div>
+              <div class="col-3">
+                <button type="button" class="btn btn-block bg-gradient-info btn-sm" id="updateStatus">
+                  <i class="fas fa-pen"></i>
+                  Update Status
+                </button>
+              </div>
+              <div class="col-3">
                 <button type="button" class="btn btn-block bg-gradient-success btn-sm" id="newReturn">
                   <i class="fas fa-plus"></i>
                   New Return
@@ -130,6 +164,7 @@ else{
             <table id="weightTable" class="table table-bordered table-striped display">
               <thead>
                 <tr>
+                  <th></th>
                   <th>GR No.</th>
                   <th>Date</th>
                   <th>Customer</th>
@@ -138,6 +173,7 @@ else{
                   <th>Collection <br>Type</th>
                   <th>Total <br>Carton</th>
                   <th>Locations</th>
+                  <th>Status</th>
                   <th></th>
                   <th></th>
                 </tr>
@@ -146,6 +182,43 @@ else{
           </div>
         </div>
       </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="updateModal">
+  <div class="modal-dialog modal-xl" style="max-width: 50%;">
+    <div class="modal-content">
+
+      <form role="form" id="updateForm">
+        <div class="modal-header bg-gray-dark color-palette">
+          <h4 class="modal-title">Update Status</h4>
+          <button type="button" class="close bg-gray-dark color-palette" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+
+        <div class="modal-body">
+          <input type="hidden" class="form-control" id="id" name="id">
+          <div class="row">
+            <div class="col-6">
+              <div class="form-group">
+                <label>Status *</label>
+                <select class="form-control" id="status" name="status">
+                  <option value="" selected disabled hidden>Please Select</option>
+                  <option value="Collected">Collected</option>
+                  <option value="Invoiced">Invoiced</option>
+                </select>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="modal-footer justify-content-between bg-gray-dark color-palette">
+          <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+          <button type="submit" class="btn btn-primary" id="saveButton">Save changes</button>
+        </div>
+      </form>
     </div>
   </div>
 </div>
@@ -324,6 +397,15 @@ $(function () {
       'url':'php/loadReturn.php'
     },
     'columns': [
+      {
+        // Add a checkbox with a unique ID for each row
+        data: 'id', // Assuming 'serialNo' is a unique identifier for each row
+        className: 'select-checkbox',
+        orderable: false,
+        render: function (data, type, row) {
+          return '<input type="checkbox" class="select-checkbox" id="checkbox_' + data + '" value="'+data+'"/>';
+        }
+      },
       { data: 'GR_No' },
       { data: 'return_date' },
       { data: 'customer_name' },
@@ -338,12 +420,13 @@ $(function () {
           return Array.isArray(data) ? data.join('<br>') : data;
         }
       },
+      { data: 'status' },
       {
         data: 'id',
         render: function (data, type, row) {
           var showPrintedOption = true;  // Add your condition to determine whether to show "Printed" or not
           var showInvoiceOption = row.collection_date !== '';
-          var invoiceOption = showInvoiceOption ? '<option value="invoice">Invoice</option>' : '';
+          var invoiceOption = showInvoiceOption ? '<option value="collect">Collect</option><option value="invoice">Invoice</option>' : '';
 
           // Check if 'warehouse' or 'price' is present in return_details
           if (row.return_details && Array.isArray(row.return_details)) {
@@ -412,13 +495,15 @@ $(function () {
 
   //Date picker
   $('#fromDatePicker').datetimepicker({
-      icons: { time: 'far fa-calendar' },
-      defaultDate: new Date
+    icons: { time: 'far fa-clock' },
+    format: 'DD/MM/YYYY',
+    defaultDate: new Date
   });
 
   $('#toDatePicker').datetimepicker({
-      icons: { time: 'far fa-calendar' },
-      defaultDate: new Date
+    icons: { time: 'far fa-clock' },
+    format: 'DD/MM/YYYY',
+    defaultDate: new Date
   });
 
   $('#returnDate').datetimepicker({
@@ -454,6 +539,83 @@ $(function () {
           $('#spinnerLoading').hide();
         });
       }
+      else if($('#updateModal').hasClass('show')){
+        $('#spinnerLoading').show();
+        $.post('php/updateReturn.php', $('#updateForm').serialize(), function(data){
+          var obj = JSON.parse(data); 
+          if(obj.status === 'success'){
+            $('#updateModal').modal('hide');
+            toastr["success"](obj.message, "Success:");
+            $('#weightTable').DataTable().ajax.reload();
+          }
+          else if(obj.status === 'failed'){
+            toastr["error"](obj.message, "Failed:");
+          }
+          else{
+            toastr["error"]("Something wrong when edit", "Failed:");
+          }
+
+          $('#spinnerLoading').hide();
+        });
+      }
+    }
+  });
+
+  $('#hypermarketFilter').on('change', function(){
+    if($('#hypermarketFilter').val()){
+      $('#extendModal').find('#outlets').empty();
+
+      $.post('php/retrieveOutlets.php', {hypermarket: $('#hypermarketFilter').val()}, function(data){
+        var obj = JSON.parse(data);
+        
+        if(obj.status === 'success'){
+          $('#outletsFilter').html('');
+          $('#outletsFilter').append('<option selected="selected">-</option>');
+          for(var i=0; i<obj.message.length; i++){
+            $('#outletsFilter').append('<option value="'+obj.message[i].id+'">'+obj.message[i].name+'</option>')
+          }
+        }
+        else if(obj.status === 'failed'){
+          toastr["error"](obj.message, "Failed:");
+        }
+        else{
+          toastr["error"]("Something wrong when pull data", "Failed:");
+        }
+        $('#spinnerLoading').hide();
+      });
+    }
+  });
+
+  $("#updateStatus").on("click", function () {
+    var selectedIds = []; // An array to store the selected 'id' values
+
+    $("#weightTable tbody input[type='checkbox']").each(function () {
+      if (this.checked) {
+        selectedIds.push($(this).val());
+      }
+    });
+
+    if (selectedIds.length > 0) {
+      $("#updateModal").find('#id').val(selectedIds);
+      $("#updateModal").find('#status').val('');
+      $("#updateModal").modal("show");
+
+      $('#updateForm').validate({
+        errorElement: 'span',
+        errorPlacement: function (error, element) {
+          error.addClass('invalid-feedback');
+          element.closest('.form-group').append(error);
+        },
+        highlight: function (element, errorClass, validClass) {
+          $(element).addClass('is-invalid');
+        },
+        unhighlight: function (element, errorClass, validClass) {
+          $(element).removeClass('is-invalid');
+        }
+      });
+    } else {
+      // Optionally, you can display a message or take another action if no IDs are selected
+      alert("Please select at least one DO to update.");
     }
   });
 
@@ -589,39 +751,14 @@ $(function () {
   $('#filterSearch').on('click', function(){
     //$('#spinnerLoading').show();
 
-    var fromDateValue = '';
-    var toDateValue = '';
-
-    if($('#fromDate').val()){
-      var convert1 = $('#fromDate').val().replace(", ", " ");
-      convert1 = convert1.replace(":", "/");
-      convert1 = convert1.replace(":", "/");
-      convert1 = convert1.replace(" ", "/");
-      convert1 = convert1.replace(" pm", "");
-      convert1 = convert1.replace(" am", "");
-      convert1 = convert1.replace(" PM", "");
-      convert1 = convert1.replace(" AM", "");
-      var convert2 = convert1.split("/");
-      var date  = new Date(convert2[2], convert2[1] - 1, convert2[0], convert2[3], convert2[4], convert2[5]);
-      fromDateValue = date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate() + " " + date.getHours() + ":" + date.getMinutes() + ":" + date.getSeconds();
-    }
-    
-    if($('#toDate').val()){
-      var convert3 = $('#toDate').val().replace(", ", " ");
-      convert3 = convert3.replace(":", "/");
-      convert3 = convert3.replace(":", "/");
-      convert3 = convert3.replace(" ", "/");
-      convert3 = convert3.replace(" pm", "");
-      convert3 = convert3.replace(" am", "");
-      convert3 = convert3.replace(" PM", "");
-      convert3 = convert3.replace(" AM", "");
-      var convert4 = convert3.split("/");
-      var date2  = new Date(convert4[2], convert4[1] - 1, convert4[0], convert4[3], convert4[4], convert4[5]);
-      toDateValue = date2.getFullYear() + "-" + (date2.getMonth() + 1) + "-" + date2.getDate() + " " + date2.getHours() + ":" + date2.getMinutes() + ":" + date2.getSeconds();
-    }
-
-    var pickupMethod = $('#pickupMethod').val() ? $('#pickupMethod').val() : '';
-    var customerNoFilter = $('#customerNoFilter').val() ? $('#customerNoFilter').val() : '';
+    var fromDateValue = $('#fromDate').val();
+    var toDateValue = $('#toDate').val();
+    var hypermarketValue = $('#hypermarketFilter').val() ? $('#hypermarketFilter').val() : '';
+    var outletValue = $('#outletsFilter').val() ? $('#outletsFilter').val() : '';
+    var driverValue= $('#pickupMethod').val() ? $('#pickupMethod').val() : '';
+    var customerNoValue = $('#customerNoFilter').val() ? $('#customerNoFilter').val() : '';
+    var statusValue = $('#statusFilter').val() ? $('#statusFilter').val() : '';
+    var grnValue = $('#grnFilter').val() ? $('#grnFilter').val() : '';
 
     //Destroy the old Datatable
     $("#weightTable").DataTable().clear().destroy();
@@ -638,12 +775,16 @@ $(function () {
       'columnDefs': [ { orderable: false, targets: [0] }],
       'ajax': {
         'type': 'POST',
-        'url':'php/filterBooking.php',
+        'url':'php/filterReturn.php',
         'data': {
           fromDate: fromDateValue,
           toDate: toDateValue,
-          method: pickupMethod,
-          customer: customerNoFilter,
+          hypermarket: hypermarketValue,
+          outlet: outletValue,
+          driver: driverValue,
+          customer: customerNoValue,
+          status: statusValue,
+          grn: grnValue
         } 
       },
       'columns': [
@@ -656,16 +797,66 @@ $(function () {
             return '<input type="checkbox" class="select-checkbox" id="checkbox_' + data + '" value="'+data+'"/>';
           }
         },
+        { data: 'GR_No' },
+        { data: 'return_date' },
         { data: 'customer_name' },
-        { data: 'description' },
-        { data: 'estimated_ctn' },
-        {
-          data: 'actual_ctn',
-          render: function (data, type, row) {
-            return '<a href="#" class="actualCtnLink" data-id="' + row.id + '" data-booking-date="' + row.booking_date + '" data-customer-id="' + row.customer_id + '">' + data + '</a>';
+        { data: 'driver' },
+        { data: 'collection_date' },
+        { data: 'collection_type' },
+        { data: 'total_carton' },
+        { 
+          data: 'locations', // Change from 'return_type' to 'locations'
+          render: function ( data, type, row ) {
+            // Assuming data is an array, create a string with <br> between each location
+            return Array.isArray(data) ? data.join('<br>') : data;
           }
         },
-        { data: 'pickup_method' },
+        { data: 'status' },
+        {
+          data: 'id',
+          render: function (data, type, row) {
+            var showPrintedOption = true;  // Add your condition to determine whether to show "Printed" or not
+            var showInvoiceOption = row.collection_date !== '';
+            var invoiceOption = showInvoiceOption ? '<option value="invoice">Invoice</option>' : '';
+
+            // Check if 'warehouse' or 'price' is present in return_details
+            if (row.return_details && Array.isArray(row.return_details)) {
+              for (var i = 0; i < row.return_details.length; i++) {
+                if (row.return_details[i].warehouse == null || row.return_details[i].warehouse == '' 
+                || row.return_details[i].price == null || row.return_details[i].price == '') {
+                  // Don't show "Printed" option if 'warehouse' or 'price' is present
+                  showPrintedOption = false;
+                  break;  // No need to continue checking once condition is met
+                }
+              }
+            }
+
+            if(row.status == 'Invoiced'){
+              return '';
+            }
+            else{
+              return '<select id="actions' + data + '" class="form-select form-select-sm" onchange="performAction(' + data + ', this.value)">' +
+              '<option value="" selected disabled>Action</option>' +
+              '<option value="edit">Edit</option>' +
+              '<option value="collect">Collect</option>' +
+              '<option value="print" ' + (showPrintedOption ? '' : 'style="display:none;"') + '>Print</option>' +
+              '<option value="deactivate">Deactivate</option>' +
+              invoiceOption +
+              '</select>';
+            }
+          }
+        },
+        /*{
+          data: 'id',
+          render: function (data, type, row) {
+            return '<select id="actions' + data + '" class="form-select form-select-sm" onchange="performAction(' + data + ', this.value)">' +
+                '<option value="" selected disabled>Action</option>' +
+                '<option value="edit">Edit</option>' +
+                '<option value="print">Print</option>' +
+                '<option value="deactivate">Deactivate</option>' +
+                '</select>';
+          }
+        },*/
         { 
           className: 'dt-control',
           orderable: false,
@@ -691,7 +882,7 @@ function format(row) {
         returnString += '<td>' + row.return_details[i].location + '</td>';
         returnString += '<td>' + row.return_details[i].carton + '</td>';
         returnString += '<td>' + row.return_details[i].warehouse + '</td>';
-        returnString += '<td>' + row.return_details[i].price + '</td>';
+        returnString += '<td>' + parseFloat(row.return_details[i].price).toFixed(2).toString() + '</td>';
         returnString += '<td>' + row.return_details[i].reason + '</td>';
         returnString += '<td>' + row.return_details[i].other_reason + '</td>';
         returnString += '</tr>';
@@ -743,6 +934,9 @@ function performAction(data, selectedValue) {
     case 'deactivate':
       deactivate(data);
       break;
+    case 'collect':
+      collect(data);
+      break;
     case 'invoice':
       invoice(data);
       break;
@@ -780,6 +974,7 @@ function edit(id) {
 
         $("#pricingTable").find('#grn_no:last').attr('name', 'grn_no['+pricingCount+']').attr("id", "grn_no" + pricingCount).val(details[i].grn_no);
         $("#pricingTable").find('#hypermarket:last').attr('name', 'hypermarket['+pricingCount+']').attr("id", "hypermarket" + pricingCount).val(details[i].hypermarket);
+        $('#pricingTable').find("#hypermarket" + pricingCount).trigger('change');
         $("#pricingTable").find('#location:last').attr('name', 'location['+pricingCount+']').attr("id", "location" + pricingCount).val(details[i].location);
         $("#pricingTable").find('#carton:last').attr('name', 'carton['+pricingCount+']').attr("id", "carton" + pricingCount).val(details[i].carton);
         $("#pricingTable").find('#reason:last').attr('name', 'reason['+pricingCount+']').attr("id", "reason" + pricingCount).val(details[i].reason);

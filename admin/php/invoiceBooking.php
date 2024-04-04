@@ -34,8 +34,16 @@ if(isset($_POST['userID'])){
 		
 		if($stmt2->execute()){
 			$stmt2->close();
+			$db->close();
 
-			if ($select_stmt = $db->prepare("SELECT COUNT(*) FROM invoice WHERE created_datetime >= ?")) {
+			echo json_encode(
+				array(
+					"status"=> "success", 
+					"message"=> "Invoiced"
+				)
+			);
+
+			/*if ($select_stmt = $db->prepare("SELECT COUNT(*) FROM invoice WHERE created_datetime >= ?")) {
 				$select_stmt->bind_param('s', $today);
 				
 				// Execute the prepared query.
@@ -122,7 +130,7 @@ if(isset($_POST['userID'])){
 						);
 					}
 				}
-			}
+			}*/
 		} 
 		else{
 		    echo json_encode(

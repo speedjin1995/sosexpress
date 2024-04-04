@@ -12,16 +12,28 @@ if(isset($_POST['customerNo'], $_POST['inputDate'], $_POST['totalAmount'])){
     $customerNo = filter_input(INPUT_POST, 'customerNo', FILTER_SANITIZE_STRING);
     $inputDate = filter_input(INPUT_POST, 'inputDate', FILTER_SANITIZE_STRING);
     $totalAmount = filter_input(INPUT_POST, 'totalAmount', FILTER_SANITIZE_STRING);
-
-    $purchaseId = $_POST['purchaseId'];
-    $itemName = $_POST['itemName'];
-    $itemPrice = $_POST['itemPrice'];
     $today = date("Y-m-d 00:00:00");
     $uid = $_SESSION['userID'];
 
+    if(isset($_POST['grn_no'])){
+        $purchaseId = $_POST['purchaseId'];
+    }
+
+    if(isset($_POST['pId'])){
+        $pId = $_POST['pId'];
+    }
+
+    if(isset($_POST['itemName'])){
+        $itemName = $_POST['itemName'];
+    }
+
+    if(isset($_POST['itemPrice'])){
+        $itemPrice = $_POST['itemPrice'];
+    }
+
     if(isset($_POST['id']) && $_POST['id'] != null && $_POST['id'] != ''){
-        if ($update_stmt = $db->prepare("UPDATE transporters SET transporter_code=?, transporter_name=?, transporter_price=? WHERE id=?")) {
-            $update_stmt->bind_param('ssss', $code, $transporter, $price, $_POST['id']);
+        if ($update_stmt = $db->prepare("UPDATE invoice SET customer=?, total_amount=? WHERE id=?")) {
+            $update_stmt->bind_param('sss', $customerNo, $totalAmount, $_POST['id']);
             
             // Execute the prepared query.
             if (! $update_stmt->execute()) {
@@ -34,6 +46,20 @@ if(isset($_POST['customerNo'], $_POST['inputDate'], $_POST['totalAmount'])){
             }
             else{
                 $update_stmt->close();
+                $success = true;
+
+                if(isset($pId) && $pId != null && count($pId) > 0){
+                    for($i=0; $i<count($pId); $i++){
+                        if ($insert_stmt2 = $db->prepare("UPDATE invoice_cart SET items=?, amount=? WHERE id=?")) {
+                            $insert_stmt2->bind_param('sss', $itemName[$i], $itemPrice[$i], $pId[$i]);
+                            
+                            if(!$insert_stmt2->execute()){
+                                $success = false;
+                            }
+                        }
+                    }
+                }
+
                 $db->close();
                 
                 echo json_encode(
@@ -91,12 +117,14 @@ if(isset($_POST['customerNo'], $_POST['inputDate'], $_POST['totalAmount'])){
                         $insert_stmt->close();
                         $success = true;
 
-                        for($i=0; $i<count($purchaseId); $i++){
-                            if ($insert_stmt2 = $db->prepare("INSERT INTO invoice_cart (invoice_id, items, amount) VALUES (?, ?, ?)")) {
-                                $insert_stmt2->bind_param('sss', $invid, $itemName[$i], $itemPrice[$i]);
-                                
-                                if(!$insert_stmt2->execute()){
-                                    $success = false;
+                        if(isset($purchaseId) && $purchaseId != null && count($purchaseId) > 0){
+                            for($i=0; $i<count($purchaseId); $i++){
+                                if ($insert_stmt2 = $db->prepare("INSERT INTO invoice_cart (invoice_id, items, amount) VALUES (?, ?, ?)")) {
+                                    $insert_stmt2->bind_param('sss', $invid, $itemName[$i], $itemPrice[$i]);
+                                    
+                                    if(!$insert_stmt2->execute()){
+                                        $success = false;
+                                    }
                                 }
                             }
                         }

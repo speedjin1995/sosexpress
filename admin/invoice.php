@@ -33,7 +33,10 @@ else{
         <div class="card">
           <div class="card-header">
             <div class="row">
-              <div class="col-9"></div>
+              <div class="col-6"></div>
+              <div class="col-3">
+                <button type="button" class="btn btn-block bg-gradient-success btn-sm" id="generateInvoice">Generate Invoices</button>
+              </div>
               <div class="col-3">
                 <button type="button" class="btn btn-block bg-gradient-warning btn-sm" id="addPurchase">Create New Invoices</button>
               </div>
@@ -80,6 +83,7 @@ else{
                     <div class="form-group">
                       <label for="inputJobNo">Invoice Number</label>
                       <input type="text" class="form-control" id="inputInvNo" name="inputInvNo" placeholder="<new>" readonly>
+                      <input type="hidden" class="form-control" id="id" name="id" readonly>
                     </div>
                   </div>
                   <div class="col-4">
@@ -142,7 +146,7 @@ else{
 
 <script type="text/html" id="addContentsPurchase">
   <tr class="details">
-    <td><input id="purchaseId" type="text" class="form-control purchaseItemRow" readonly></td>
+    <td><input id="purchaseId" type="text" class="form-control purchaseItemRow" readonly><input id="pId" type="hidden" class="form-control purchaseItemRow" readonly></td>
     <td><input id="itemName" type="text" class="form-control purchaseItemRow" required></td>
     <td><input type="number" class="form-control purchaseItemRow" id="itemPrice" name="itemPrice" placeholder="Enter Price" required/></td>
     <td><button class="btn btn-danger btn-sm  purchaseItemRow" id="remove"><i class="fa fa-times"></i></button></td>
@@ -275,6 +279,7 @@ $(function () {
     $("#TableId").find('.details:last').attr("data-index", size);
     $("#TableId").find('#remove:last').attr("id", "remove" + size);
 
+    $("#TableId").find('#pId:last').attr('name', 'pId['+size+']').attr("id", "pId" + size).val('');
     $("#TableId").find('#purchaseId:last').attr('name', 'purchaseId['+size+']').attr("id", "purchaseId" + size).val((size+1).toString());
     $("#TableId").find('#itemName:last').attr('name', 'itemName['+size+']').attr("id", "itemName" + size);
     $("#TableId").find('#itemPrice:last').attr('name', 'itemPrice['+size+']').attr("id", "itemPrice" + size);
@@ -284,6 +289,7 @@ $(function () {
 
   $('#addPurchase').on('click', function(){
     size=0;
+    $('#purchaseModal').find('#id').val("");
     $('#purchaseModal').find('#inputDate').val(new Date);
     $('#purchaseModal').find('#customerNo').val("");
     $('#purchaseModal').find('#totalAmount').val("0.00")
@@ -305,6 +311,28 @@ $(function () {
     });
   });
 
+  $('#generateInvoice').on('click', function(){
+    var confirmation = confirm("Want to generate invoices from booking, loading and return?");
+        
+    if (confirmation) {
+      $.post('php/generateInvoices.php', $('#purchaseForm').serialize(), function(data){
+          var obj = JSON.parse(data); 
+          if(obj.status === 'success'){
+            toastr["success"](obj.message, "Success:");
+            $('#tableforPurchase').DataTable().ajax.reload();
+          }
+          else if(obj.status === 'failed'){
+            toastr["error"](obj.message, "Failed:");
+          }
+          else{
+            toastr["error"]("Something wrong when edit", "Failed:");
+          }
+
+          $('#spinnerLoading').hide();
+        });
+    }
+  });
+
   $('#inputDate').datetimepicker({
     icons: { time: 'far fa-clock' },
     format: 'YYYY-MM-DD HH:mm:ss',
@@ -314,15 +342,24 @@ $(function () {
   $("#TableId").on('click', 'button[id^="remove"]', function () {
     var index = $(this).parents('.details').attr('data-index');
     size--;
-    //$("#TableId").append('<input type="hidden" name="deleted[]" value="'+index+'"/>');
     $(this).parents('.details').remove();
+    var totalAmount = 0;
+
+    $('#TableId tr.details').each(function () {
+      var itemPrice = parseFloat($(this).find('input[id^="itemPrice"]').val()) || 0;
+      totalAmount += itemPrice;
+      $('#totalAmount').val(parseFloat(totalAmount).toFixed(2));
+    });
   });
 
   $("#TableId").on('change', 'input[id^="itemPrice"]', function () {
-    var index = $(this).val();
-    var total = $('#totalAmount').val();
-    var total = parseFloat(total) + parseFloat(index);
-    $('#totalAmount').val(parseFloat(total).toFixed(2));
+    var totalAmount = 0;
+
+    $('#TableId tr.details').each(function () {
+      var itemPrice = parseFloat($(this).find('input[id^="itemPrice"]').val()) || 0;
+      totalAmount += itemPrice;
+      $('#totalAmount').val(parseFloat(totalAmount).toFixed(2));
+    });
   });
 });
 
@@ -343,7 +380,8 @@ function simplyShowCreatedDatetime(row) {
 
   returnString += '<p><small>Action:</small></p>';
 
-  returnString += '<div class="row"><div class="col-3"><button type="button" class="btn btn-info btn-sm" onclick="printQuote('+row.invoice_id+
+  returnString += '<div class="row"><div class="col-3"><button type="button" class="btn btn-warning btn-sm" onclick="edit('+row.invoice_id+
+  ')"><i class="fas fa-pen"></i></button></div><div class="col-3"><button type="button" class="btn btn-info btn-sm" onclick="printQuote('+row.invoice_id+
   ')"><i class="fas fa-print"></i></button></div><div class="col-3"><button type="button" onclick="cancel('+
   row.invoice_id+')" class="btn btn-danger btn-sm"><i class="fas fa fa-times"></i></button></div></div>';
 
@@ -385,6 +423,58 @@ function cancel(id) {
     if(obj.status === 'success'){
       toastr["success"](obj.message, "Success:");
       $('#tableforPurchase').DataTable().ajax.reload();
+    }
+    else if(obj.status === 'failed'){
+      toastr["error"](obj.message, "Failed:");
+    }
+    else{
+      toastr["error"]("Something wrong when edit", "Failed:");
+    }
+
+    $('#spinnerLoading').hide();
+  });
+}
+
+function edit(id) {
+  $('#spinnerLoading').show();
+  $.post('php/getPurchases.php', {purchasesID: id}, function(data){
+    var obj = JSON.parse(data); 
+    
+    if(obj.status === 'success'){
+      $('#purchaseModal').find('#id').val(obj.message.id);
+      $('#purchaseModal').find('#inputInvNo').val(obj.message.invoice_no);
+      $('#purchaseModal').find('#customerNo').val(obj.message.customer);
+      $('#purchaseModal').find('#totalAmount').val(obj.message.total_amount);
+      $("#purchaseModal").find('.purchaseItemRow').remove();
+      
+      for(var i=0; i<obj.message.carts.length; i++){
+        var $addContents = $("#addContentsPurchase").clone();
+        $("#TableId").append($addContents.html());
+
+        $("#TableId").find('.details:last').attr("id", "detail" + size);
+        $("#TableId").find('.details:last').attr("data-index", size);
+        $("#TableId").find('#remove:last').attr("id", "remove" + size);
+
+        $("#TableId").find('#pId:last').attr('name', 'pId['+size+']').attr("id", "pId" + size).val(obj.message.carts[i].id);
+        $("#TableId").find('#purchaseId:last').attr('name', 'purchaseId['+size+']').attr("id", "purchaseId" + size).val((size+1).toString());
+        $("#TableId").find('#itemName:last').attr('name', 'itemName['+size+']').attr("id", "itemName" + size).val(obj.message.carts[i].items);
+        $("#TableId").find('#itemPrice:last').attr('name', 'itemPrice['+size+']').attr("id", "itemPrice" + size).val(obj.message.carts[i].price);
+      }
+
+      $('#purchaseModal').modal('show');
+      $('#purchaseForm').validate({
+        errorElement: 'span',
+        errorPlacement: function (error, element) {
+          error.addClass('invalid-feedback');
+          element.closest('.form-group').append(error);
+        },
+        highlight: function (element, errorClass, validClass) {
+          $(element).addClass('is-invalid');
+        },
+        unhighlight: function (element, errorClass, validClass) {
+          $(element).removeClass('is-invalid');
+        }
+      });
     }
     else if(obj.status === 'failed'){
       toastr["error"](obj.message, "Failed:");

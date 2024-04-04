@@ -108,6 +108,14 @@ else{
     					<label for="rate">Zones *</label>
     					<select class="form-control" style="width: 100%;" id="zones" name="zones" required></select>
     				</div>
+                    <div class="form-group">
+                        <label for="phone">Phone </label>
+                        <input type="text" class="form-control" name="phone" id="phone" placeholder="Enter Phone Number">
+                    </div>
+                    <div class="form-group">
+                        <label for="phone">Address </label>
+                        <textarea class="form-control" name="address" id="address" placeholder="Enter Address"></textarea>
+                    </div>
     			</div>
             </div>
             <div class="modal-footer justify-content-between">
@@ -184,6 +192,8 @@ $(function () {
         $('#unitModal').find('#hypermarket').val("");
         $('#unitModal').find('#states').val("");
         $('#unitModal').find('#zones').val("");
+        $('#unitModal').find('#phone').val("");
+        $('#unitModal').find('#address').val("");
         $('#unitModal').modal('show');
         
         $('#unitForm').validate({
@@ -226,6 +236,8 @@ function edit(id){
             $('#unitModal').find('#hypermarket').val(obj.message.hypermarket);
             $('#unitModal').find('#states').val(obj.message.states);
             $('#unitModal').find('#zones').val(obj.message.zones);
+            $('#unitModal').find('#phone').val(obj.message.phone);
+            $('#unitModal').find('#address').val(obj.message.address);
             $('#unitModal').modal('show');
             
             $('#unitForm').validate({

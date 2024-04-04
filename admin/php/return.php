@@ -13,44 +13,74 @@ if(isset($_POST['returnDate'], $_POST['customerNo'], $_POST['totalCarton'], $_PO
 
 	$driver = null;
 	$lorry = null;
-	$collectionType = null;
+	$collectionType = "Self Collect";
 	$collectionDate = null;
 	$return_type = "return";
 	$today = date("Y-m-d 00:00:00");
 	$returnDate = $returnDate." 00:00:00";
 
-	$grn_no = $_POST['grn_no'];
-	$hypermarket = $_POST['hypermarket'];
-	$location = $_POST['location'];
-	$carton = $_POST['carton'];
-	$reason = $_POST['reason'];
+	//$grn_no = $_POST['grn_no'];
+	//$hypermarket = $_POST['hypermarket'];
+	//$location = $_POST['location'];
+	//$carton = $_POST['carton'];
+	//$reason = $_POST['reason'];
 	$other_reason = $_POST['other_reason'];
-	$warehouse = $_POST['warehouse'];
-	$price = $_POST['price'];
+	//$warehouse = $_POST['warehouse'];
+	//$price = $_POST['price'];
 	$return_details = array();
 
-	for($i=0; $i<count($grn_no); $i++){
-		$res = '0';
-		$others = '';
+	if(isset($_POST['grn_no'])){
+        $grn_no = $_POST['grn_no'];
+    }
 
-		if($reason[$i] == 'Others'){
-			$others = $other_reason[$i];
-		}
-		else{
-			$res = $reason[$i];
+    if(isset($_POST['hypermarket'])){
+        $hypermarket = $_POST['hypermarket'];
+    }
+
+    if(isset($_POST['location'])){
+        $location = $_POST['location'];
+    }
+
+    if(isset($_POST['carton'])){
+        $carton = $_POST['carton'];
+    }
+
+    if(isset($_POST['reason'])){
+        $reason = $_POST['reason'];
+    }
+    
+    if(isset($_POST['warehouse'])){
+        $warehouse = $_POST['warehouse'];
+    }
+
+	if(isset($_POST['price'])){
+        $price = $_POST['price'];
+    }
+
+	if(isset($grn_no) && $grn_no != null && count($grn_no) > 0){
+		for($i=0; $i<count($grn_no); $i++){
+			$res = '0';
 			$others = '';
-		}
 
-		$return_details[] = array(
-			"grn_no" => $grn_no[$i],
-			"hypermarket" => $hypermarket[$i],
-			"location" => $location[$i],
-			"carton" => $carton[$i],
-			"warehouse" => $warehouse[$i],
-			"price" => $price[$i],
-			"reason" => $res,
-			"other_reason" => $others
-		);
+			if($reason[$i] == 'Others'){
+				$others = $other_reason[$i];
+			}
+			else{
+				$res = $reason[$i];
+				$others = '';
+			}
+
+			$return_details[] = array(
+				"grn_no" => $grn_no[$i],
+				"hypermarket" => $hypermarket[$i],
+				"location" => $location[$i],
+				"carton" => $carton[$i],
+				"warehouse" => $warehouse[$i],
+				"price" => $price[$i],
+				"reason" => $res,
+				"other_reason" => $others
+			);
+		}
 	}
 
 	if(isset($_POST['driver']) && $_POST['driver'] != null && $_POST['driver'] != ''){

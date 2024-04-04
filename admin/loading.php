@@ -380,9 +380,9 @@ else{
           <table style="width: 100%;">
             <thead>
               <tr>
-                <th>Particular</th>
+                <th>Notes</th>
                 <th>Quantity</th>
-                <th>Quantity <br>Delivered</th>
+                <!--th>Quantity <br>Delivered</th-->
                 <th>Price/Size</th>
                 <th>Unit Price</th>
                 <th>Amount</th>
@@ -392,7 +392,7 @@ else{
             <tbody id="pricingTable"></tbody>
             <tfoot id="pricingFoot">
               <tr>
-                <th colspan="5" style="text-align:right;">Total Amount</th>
+                <th colspan="4" style="text-align:right;">Total Amount</th>
                 <th><input type="number" class="form-control" id="totalAmount" name="totalAmount" value="0.00" readonly></th>
                 <th></th>
               </tr>
@@ -665,16 +665,23 @@ else{
 <script type="text/html" id="pricingDetails">
   <tr class="details">
     <td>
-      <input type="text" class="form-control" id="particular" placeholder="Enter Particular" required>
+      <input type="text" class="form-control" id="particular" placeholder="Enter Particular">
     </td>
     <td>
       <input type="number" class="form-control" id="quantity_in"  placeholder="Enter ..." required>
     </td>
-    <td>
+    <!--td>
       <input type="number" class="form-control" id="quantity_delivered"  placeholder="Enter ..." required>
-    </td>
+    </td-->
     <td>
-      <input type="text" class="form-control" id="size"  placeholder="Enter ..." required>
+      <div class="input-group">
+        <input type="text" class="form-control" id="size"  placeholder="Enter ..." required>
+        <div class="input-group-append">
+          <span class="input-group-text" id="exclamation-icon" data-toggle="tooltip" data-placement="top" title="Tooltip message">
+            <i class="fas fa-exclamation-circle"></i>
+          </span>
+        </div>
+      </div>
     </td>
     <td>
       <input class="form-control" type="number" placeholder="Unit Price" id="unit_price" required>
@@ -715,11 +722,13 @@ else{
 <script>
 var pricingCount = $("#pricingTable").find(".details").length;
 var pricingCount2 = $("#pricingTable2").find(".details").length;
+var pricingJSON = '[]';
 
 $(function () {
   $("#zoneHidden").hide();
   $("#branchHidden").hide();
   $('#direct_store').hide();
+  $('[data-toggle="tooltip"]').tooltip()
 
   $('#selectAllBtn').on('click', function() {
     var checkboxes = $('#weightTable tbody input[type="checkbox"]');
@@ -1283,13 +1292,31 @@ $(function () {
     $("#pricingTable").find('.details:last').attr("id", "detail" + pricingCount);
     $("#pricingTable").find('.details:last').attr("data-index", pricingCount);
     $("#pricingTable").find('#remove:last').attr("id", "remove" + pricingCount);
+    $("#pricingTable").find('#exclamation-icon:last').attr("id", "exclamation-icon" + pricingCount);
 
     $("#pricingTable").find('#particular:last').attr('name', 'particular['+pricingCount+']').attr("id", "particular" + pricingCount);
     $("#pricingTable").find('#quantity_in:last').attr('name', 'quantity_in['+pricingCount+']').attr("id", "quantity_in" + pricingCount);
-    $("#pricingTable").find('#quantity_delivered:last').attr('name', 'quantity_delivered['+pricingCount+']').attr("id", "quantity_delivered" + pricingCount);
+    //$("#pricingTable").find('#quantity_delivered:last').attr('name', 'quantity_delivered['+pricingCount+']').attr("id", "quantity_delivered" + pricingCount);
     $("#pricingTable").find('#size:last').attr('name', 'size['+pricingCount+']').attr("id", "size" + pricingCount);
     $("#pricingTable").find('#unit_price:last').attr('name', 'unit_price['+pricingCount+']').attr("id", "unit_price" + pricingCount);
     $("#pricingTable").find('#price').attr('name', 'price['+pricingCount+']').attr("id", "price" + pricingCount);
+
+    var pricingJson = JSON.parse(pricingJSON);
+
+    $("#exclamation-icon" + pricingCount).hover(function () {
+        var tooltipContent = '<ul>';
+        pricingJson.forEach(function (item) {
+            tooltipContent += '<li>Size: ' + item.size + ', Price: ' + item.price + ', Notes: ' + (item.notes ? item.notes : 'N/A') + '</li>';
+        });
+        tooltipContent += '</ul>';
+        $(this).attr('data-original-title', tooltipContent);
+        $(this).tooltip({
+            html: true, // Set html option to true
+            placement: 'top', // Adjust tooltip placement if needed
+        }).tooltip('show');
+    }, function () {
+        $(this).tooltip('hide');
+    });
 
     $("#other_reason" + pricingCount).hide();
     pricingCount++;
@@ -1309,6 +1336,24 @@ $(function () {
       totalAmount += itemPrice;
       $('#totalAmount').val(parseFloat(totalAmount).toFixed(2));
     });
+  });
+
+  $("#pricingTable").on('change', 'input[id^="quantity_in"]', function(){
+    var totalAmount = 0;
+    var itemPrice = parseFloat($(this).parents('.details').find('input[id^="unit_price"]').val()) || 0;
+    var itemQuantity = parseFloat($(this).val()) || 0;
+    totalAmount = itemPrice * itemQuantity;
+    $(this).parents('.details').find('input[id^="price"]').val(parseFloat(totalAmount).toFixed(2));
+    $(this).parents('.details').find('input[id^="price"]').trigger('change');
+  });
+
+  $("#pricingTable").on('change', 'input[id^="unit_price"]', function(){
+    var totalAmount = 0;
+    var itemPrice = parseFloat($(this).parents('.details').find('input[id^="quantity_in"]').val()) || 0;
+    var itemQuantity = parseFloat($(this).val()) || 0;
+    totalAmount = itemPrice * itemQuantity;
+    $(this).parents('.details').find('input[id^="price"]').val(parseFloat(totalAmount).toFixed(2));
+    $(this).parents('.details').find('input[id^="price"]').trigger('change');
   });
 
   $("#pricingTable").on('change', 'input[id^="price"]', function(){
@@ -1550,6 +1595,7 @@ function edit(id) {
       $('#extendModal').find('#customerNo').val(obj.message.customer);
       $('#extendModal').find('#hypermarket').val(obj.message.hypermarket);
       $('#extendModal').find('#states').val(obj.message.states);
+      pricingJSON = obj.message.pricing;
 
       $('#extendModal').find('#zones').empty();
       var dataIndexToMatch = obj.message.states;

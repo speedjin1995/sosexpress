@@ -27,6 +27,8 @@ if(isset($_POST['userID'])){
                 $message['hypermarket'] = $row['hypermarket'];
                 $message['states'] = $row['states'];
                 $message['zones'] = $row['zones'];
+                $message['phone'] = $row['phone'];
+                $message['address'] = $row['address'];
             }
             
             echo json_encode(
