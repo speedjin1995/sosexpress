@@ -3,7 +3,7 @@ require_once "db_connect.php";
 
 session_start();
 
-if(!isset($_SESSION['userID'])){
+if(!isset($_SESSION['custID'])){
     echo '<script type="text/javascript">';
     echo 'window.location.href = "../login.html";</script>';
 }
@@ -11,7 +11,7 @@ if(!isset($_SESSION['userID'])){
 if(isset($_POST['names'], $_POST['address'])){
     $names = filter_input(INPUT_POST, 'names', FILTER_SANITIZE_STRING);
     $address = filter_input(INPUT_POST, 'address', FILTER_SANITIZE_STRING);
-    $user = $_SESSION['userID'];
+    $user = $_SESSION['custID'];
 
     if($_POST['id'] != null && $_POST['id'] != ''){
         if ($update_stmt = $db->prepare("UPDATE branch SET name=?, address=? WHERE id=?")) {

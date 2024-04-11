@@ -16,7 +16,7 @@ if(($row = $result->fetch_assoc()) !== null){
 	$password = hash('sha512', $password . $row['salt']);
 	
 	if($password == $row['password']){
-		$_SESSION['userID']=$row['id'];
+		$_SESSION['custID']=$row['id'];
 		$stmt->close();
 		$db->close();
 		

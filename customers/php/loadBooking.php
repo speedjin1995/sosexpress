@@ -2,7 +2,7 @@
 ## Database configuration
 require_once 'db_connect.php';
 session_start();
-$user = $_SESSION['userID'];
+$user = $_SESSION['custID'];
 
 ## Read value
 $draw = $_POST['draw'];

@@ -3,11 +3,11 @@ require_once 'db_connect.php';
 ini_set('display_errors', 1);
 session_start();
 
-if(!isset($_SESSION['userID'])){
+if(!isset($_SESSION['custID'])){
 	echo '<script type="text/javascript">location.href = "../login.html";</script>'; 
 } 
 else{
-	$userId = $_SESSION['userID'];
+	$userId = $_SESSION['custID'];
 }
 
 if(isset($_POST['bookingDate'], $_POST['address'], $_POST['extimated_ctn'])){

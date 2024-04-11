@@ -3,12 +3,12 @@ require_once 'php/db_connect.php';
 
 session_start();
 
-if(!isset($_SESSION['userID'])){
+if(!isset($_SESSION['custID'])){
   echo '<script type="text/javascript">';
   echo 'window.location.href = "login.html";</script>';
 }
 else{
-  $user = $_SESSION['userID'];
+  $user = $_SESSION['custID'];
   $stmt = $db->prepare("SELECT * from customers where id = ?");
 	$stmt->bind_param('s', $user);
 	$stmt->execute();
@@ -335,12 +335,12 @@ to get the desired effect
               <p>Dashboard</p>
             </a>
           </li-->
-          <li class="nav-item">
+          <!--li class="nav-item">
             <a href="#request" data-file="request.php" class="nav-link link">
               <i class="nav-icon fas fa-chart-bar"></i>
               <p>Requests</p>
             </a>
-          </li>
+          </li-->
           <li class="nav-item has-treeview menu-open">
             <a href="#" class="nav-link">
               <i class="nav-icon fas fa-users"></i>
@@ -360,6 +360,12 @@ to get the desired effect
                 </a>
               </li>
             </ul>
+          </li>
+          <li class="nav-item">
+            <a href="#return" data-file="return.php" class="nav-link link">
+              <i class="nav-icon fas fa-undo"></i>
+              <p>Good Return</p>
+            </a>
           </li>
           <li class="nav-item has-treeview">
             <a href="#" class="nav-link">
@@ -429,7 +435,7 @@ to get the desired effect
 
   <!-- Main Footer -->
   <footer class="main-footer">
-    <strong>Copyright &copy; 2024 <a href="#">DQ IT Solutions</a>.</strong>All rights reserved.<div class="float-right d-none d-sm-inline-block"><b>Version</b> 1.0.0 </div>
+    <strong>Copyright &copy; 2024 <a href="#">DQ IT Solutions</a>.</strong> All rights reserved.<div class="float-right d-none d-sm-inline-block"><b>Version</b> 1.0.0 </div>
   </footer>
 </div>
 <!-- ./wrapper -->
@@ -502,6 +508,42 @@ $(function () {
   
   $("a[href='#request']").click();
 });
+
+function formatDate(date) {
+  const day = ('0' + date.getDate()).slice(-2);
+  const month = ('0' + (date.getMonth() + 1)).slice(-2);
+  const year = date.getFullYear();
+  const hours = ('0' + date.getHours()).slice(-2);
+  const minutes = ('0' + date.getMinutes()).slice(-2);
+  const seconds = ('0' + date.getSeconds()).slice(-2);
+  const ampm = date.getHours() >= 12 ? 'PM' : 'AM';
+
+  //return `${day}/${month}/${year} ${hours}:${minutes}:${seconds} ${ampm}`;
+  return `${year}-${month}-${day}`;
+}
+
+function formatDate2(date) {
+  const day = ('0' + date.getDate()).slice(-2);
+  const month = ('0' + (date.getMonth() + 1)).slice(-2);
+  const year = date.getFullYear();
+  const hours = ('0' + date.getHours()).slice(-2);
+  const minutes = ('0' + date.getMinutes()).slice(-2);
+  const seconds = ('0' + date.getSeconds()).slice(-2);
+  const ampm = date.getHours() >= 12 ? 'PM' : 'AM';
+
+  //return `${day}/${month}/${year} ${hours}:${minutes}:${seconds} ${ampm}`;
+  return `${day}/${month}/${year}`;
+}
+
+function updateParentCheckboxes(checkbox) {
+  var isChecked = checkbox.prop('checked');
+  var parentCheckbox = checkbox.closest('tr').prev('tr').find(':checkbox');
+
+  if (parentCheckbox.length > 0) {
+    parentCheckbox.prop('checked', isChecked);
+    updateParentCheckboxes(parentCheckbox);
+  }
+}
 </script>
 </body>
 </html>

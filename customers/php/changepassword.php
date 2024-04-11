@@ -3,10 +3,10 @@ require_once 'db_connect.php';
 
 session_start();
 
-if(!isset($_SESSION['userID'])){
+if(!isset($_SESSION['custID'])){
 	echo '<script type="text/javascript">location.href = "../login.html";</script>'; 
 } else{
-	$id = $_SESSION['userID'];
+	$id = $_SESSION['custID'];
 }
 
 if(isset($_POST['oldPassword'], $_POST['newPassword'], $_POST['confirmPassword'])){

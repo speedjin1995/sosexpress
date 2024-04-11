@@ -3,7 +3,7 @@ require_once 'db_connect.php';
 
 session_start();
 
-if(!isset($_SESSION['userID'])){
+if(!isset($_SESSION['custID'])){
 	echo '<script type="text/javascript">location.href = "../login.html";</script>'; 
 }
 

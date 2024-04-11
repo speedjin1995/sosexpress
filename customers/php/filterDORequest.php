@@ -2,7 +2,7 @@
 ## Database configuration
 require_once 'db_connect.php';
 session_start();
-$user = $_SESSION['userID'];
+$user = $_SESSION['custID'];
 
 ## Read value
 $draw = $_POST['draw'];
@@ -16,12 +16,16 @@ $searchValue = mysqli_real_escape_string($db,$_POST['search']['value']); // Sear
 ## Search 
 $searchQuery = " ";
 
-if($_POST['fromDate'] != null && $_POST['fromDate'] != ''){
-    $searchQuery = " and do_request.booking_date >= '".$_POST['fromDate']."'";
+if($_POST['fromDate'] != null && $_POST['fromDate'] != '') {
+  $dateTime = DateTime::createFromFormat('d/m/Y', $_POST['fromDate']);
+  $fromDateTime = $dateTime->format('Y-m-d 00:00:00');
+  $searchQuery .= " and do_request.booking_date >= '".$fromDateTime."'";
 }
 
-if($_POST['toDate'] != null && $_POST['toDate'] != ''){
-  $searchQuery = " and do_request.booking_date <= '".$_POST['toDate']."'";
+if($_POST['toDate'] != null && $_POST['toDate'] != '') {
+  $dateTime = DateTime::createFromFormat('d/m/Y', $_POST['toDate']);
+  $toDateTime = $dateTime->format('Y-m-d 23:59:59');
+  $searchQuery .= " and do_request.booking_date <= '".$toDateTime."'";
 }
 
 if($_POST['state'] != null && $_POST['state'] != '' && $_POST['state'] != '-'){

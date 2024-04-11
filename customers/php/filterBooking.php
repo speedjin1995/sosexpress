@@ -2,7 +2,7 @@
 ## Database configuration
 require_once 'db_connect.php';
 session_start();
-$user = $_SESSION['userID'];
+$user = $_SESSION['custID'];
 
 ## Read value
 $draw = $_POST['draw'];
@@ -17,15 +17,15 @@ $searchValue = mysqli_real_escape_string($db,$_POST['search']['value']); // Sear
 $searchQuery = " ";
 
 if($_POST['fromDate'] != null && $_POST['fromDate'] != ''){
-  $fromDate = new DateTime($_POST['fromDate']);
-  $fromDateTime = date_format($fromDate,"Y-m-d H:i:s");
-  $searchQuery = " and booking.created_datetime >= '".$fromDateTime."'";
+  $dateTime = DateTime::createFromFormat('d/m/Y', $_POST['fromDate']);
+  $fromDateTime = $dateTime->format('Y-m-d 00:00:00');
+  $searchQuery = " and booking.booking_date >= '".$fromDateTime."'";
 }
 
 if($_POST['toDate'] != null && $_POST['toDate'] != ''){
-  $toDate = new DateTime($_POST['toDate']);
-  $toDateTime = date_format($toDate,"Y-m-d H:i:s");
-	$searchQuery .= " and booking.created_datetime <= '".$toDateTime."'";
+  $dateTime = DateTime::createFromFormat('d/m/Y', $_POST['toDate']);
+  $toDateTime = $dateTime->format('Y-m-d 23:59:59');
+	$searchQuery .= " and booking.booking_date <= '".$toDateTime."'";
 }
 
 if($_POST['branch'] != null && $_POST['branch'] != '' && $_POST['branch'] != '-'){
@@ -47,7 +47,7 @@ $records = mysqli_fetch_assoc($sel);
 $totalRecordwithFilter = $records['allcount'];
 
 ## Fetch records
-$empQuery = "SELECT booking.id, booking.pickup_method, customers.customer_name, booking.pickup_location, booking.description, 
+$empQuery = "SELECT booking.id, booking.booking_date, booking.pickup_method, customers.customer_name, booking.pickup_location, booking.description, 
 booking.estimated_ctn, booking.actual_ctn, booking.vehicle_no, booking.col_goods, booking.col_chq, booking.form_no, 
 booking.gate, booking.checker, booking.status FROM booking, customers WHERE booking.customer = customers.id AND 
 booking.customer = '".$user."' AND booking.deleted = '0'".$searchQuery." order by ".$columnName." ".$columnSortOrder." limit ".$row.",".$rowperpage;
@@ -78,6 +78,7 @@ while($row = mysqli_fetch_assoc($empRecords)) {
   $data[] = array( 
     "no"=>$counter,
     "id"=>$row['id'],
+    "booking_date"=>$row['booking_date'],
     "pickup_method"=>$row['pickup_method'],
     "customer_name"=>$row['customer_name'],
     "pickup_location"=>$row['pickup_location'],

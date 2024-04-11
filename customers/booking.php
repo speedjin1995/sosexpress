@@ -3,12 +3,12 @@ require_once 'php/db_connect.php';
 
 session_start();
 
-if(!isset($_SESSION['userID'])){
+if(!isset($_SESSION['custID'])){
   echo '<script type="text/javascript">';
   echo 'window.location.href = "login.html";</script>';
 }
 else{
-  $user = $_SESSION['userID'];
+  $user = $_SESSION['custID'];
   $todayStart = date('Y-m-d 00:00:00', strtotime('today'));
   $customers = $db->query("SELECT * FROM customers WHERE deleted = '0'");
   $branch = $db->query("SELECT * FROM branch WHERE customer_id = '".$user."' AND deleted = '0'");
@@ -16,6 +16,11 @@ else{
   $users = $db->query("SELECT * FROM users WHERE deleted = '0'");
   $address = $db->query("SELECT pickup_address FROM customers WHERE id = '".$user."'");
   $holiday = $db->query("SELECT * FROM holidays WHERE start_date <= '".$todayStart."' AND end_date >= '".$todayStart."' AND deleted = '0'");
+  $pAddress = '';
+
+  if($rowA=mysqli_fetch_assoc($address)){
+    $pAddress = $rowA['pickup_address'];
+  }
 }
 ?>
 
@@ -64,7 +69,7 @@ else{
                   </div>
                 </div>
               </div>
-              <div class="form-group col-3">
+              <div class="form-group col-3" style="display:none;">
                 <label>Branch:</label>
                 <select class="form-control" id="branchFilter" name="branchFilter">
                   <option value="" selected disabled hidden>Please Select</option>
@@ -104,7 +109,7 @@ else{
             <table id="weightTable" class="table table-bordered table-striped display">
               <thead>
                 <tr>
-                  <th>Customer</th>
+                  <th>Booking Datetime</th>
                   <th>Description</th>
                   <th>Estimated Ctn</th>
                   <th>Pickup Address</th>
@@ -148,7 +153,7 @@ else{
             <div class="col-4">
               <div class="form-group">
                 <label>Pickup Address *</label>
-                <textarea class="form-control" id="address" name="address" placeholder="Enter your address"><?php if($rowA=mysqli_fetch_assoc($address)){echo $rowA['pickup_address'];} ?></textarea>
+                <textarea class="form-control" id="address" name="address" placeholder="Enter your address"><?=$pAddress ?></textarea>
               </div>
             </div>
             <div class="col-4">
@@ -179,13 +184,16 @@ else{
 $(function () {
   var currentTime = moment();
   var threePm = moment().set({ hour: 15, minute: 0, second: 0, millisecond: 0 });
+  const today = new Date();
+  const tomorrow = new Date(today);
+  tomorrow.setDate(tomorrow.getDate() + 1);
 
-  if (currentTime.isBefore(threePm)) {
+  /*if (currentTime.isBefore(threePm)) {
     $('#newBooking').show();
   } 
   else {
     $('#newBooking').hide();
-  }
+  }*/
 
   <?php
     if($rowH=mysqli_fetch_assoc($holiday)){
@@ -205,7 +213,7 @@ $(function () {
       'url':'php/loadBooking.php'
     },
     'columns': [
-      { data: 'customer_name' },
+      { data: 'booking_date' },
       { data: 'description' },
       { data: 'estimated_ctn' },
       { data: 'pickup_location' },
@@ -239,21 +247,21 @@ $(function () {
 
   //Date picker
   $('#fromDatePicker').datetimepicker({
-      icons: { time: 'far fa-clock' },
-      format: 'DD/MM/YYYY HH:mm:ss A',
-      defaultDate: new Date
+    icons: { time: 'far fa-clock' },
+    format: 'DD/MM/YYYY',
+    defaultDate: new Date
   });
 
   $('#toDatePicker').datetimepicker({
-      icons: { time: 'far fa-clock' },
-      format: 'DD/MM/YYYY HH:mm:ss A',
-      defaultDate: new Date
+    icons: { time: 'far fa-clock' },
+    format: 'DD/MM/YYYY',
+    defaultDate: new Date
   });
 
   $('#bookingDate').datetimepicker({
     icons: { time: 'far fa-clock' },
-    format: 'DD/MM/YYYY HH:mm:ss A',
-    defaultDate: new Date
+    format: 'DD/MM/YYYY',
+    minDate: new Date
   });
 
   $.validator.setDefaults({
@@ -336,9 +344,9 @@ $(function () {
     var date = new Date();
 
     $('#extendModal').find('#id').val("");
-    $('#extendModal').find('#booking_date').val(date.toLocaleString('en-AU', { hour12: false }));
+    $('#extendModal').find('#booking_date').val(formatDate2(tomorrow));
     $('#extendModal').find('#branch').val("");
-    $('#extendModal').find('#address').val("");
+    //$('#extendModal').find('#address').val("");
     $('#extendModal').find('#description').val("");
     $('#extendModal').find('#extimated_ctn').val("");
     $('#extendModal').modal('show');
@@ -394,34 +402,8 @@ $(function () {
     var fromDateValue = '';
     var toDateValue = '';
 
-    if($('#fromDate').val()){
-      var convert1 = $('#fromDate').val().replace(", ", " ");
-      convert1 = convert1.replace(":", "/");
-      convert1 = convert1.replace(":", "/");
-      convert1 = convert1.replace(" ", "/");
-      convert1 = convert1.replace(" pm", "");
-      convert1 = convert1.replace(" am", "");
-      convert1 = convert1.replace(" PM", "");
-      convert1 = convert1.replace(" AM", "");
-      var convert2 = convert1.split("/");
-      var date  = new Date(convert2[2], convert2[1] - 1, convert2[0], convert2[3], convert2[4], convert2[5]);
-      fromDateValue = date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate() + " " + date.getHours() + ":" + date.getMinutes() + ":" + date.getSeconds();
-    }
-    
-    if($('#toDate').val()){
-      var convert3 = $('#toDate').val().replace(", ", " ");
-      convert3 = convert3.replace(":", "/");
-      convert3 = convert3.replace(":", "/");
-      convert3 = convert3.replace(" ", "/");
-      convert3 = convert3.replace(" pm", "");
-      convert3 = convert3.replace(" am", "");
-      convert3 = convert3.replace(" PM", "");
-      convert3 = convert3.replace(" AM", "");
-      var convert4 = convert3.split("/");
-      var date2  = new Date(convert4[2], convert4[1] - 1, convert4[0], convert4[3], convert4[4], convert4[5]);
-      toDateValue = date2.getFullYear() + "-" + (date2.getMonth() + 1) + "-" + date2.getDate() + " " + date2.getHours() + ":" + date2.getMinutes() + ":" + date2.getSeconds();
-    }
-
+    var fromDateValue = $('#fromDate').val();
+    var toDateValue = $('#toDate').val();
     var branchFilter = $('#branchFilter').val() ? $('#branchFilter').val() : '';
 
     //Destroy the old Datatable
@@ -447,7 +429,7 @@ $(function () {
         } 
       },
       'columns': [
-        { data: 'customer_name' },
+        { data: 'booking_date' },
         { data: 'description' },
         { data: 'estimated_ctn' },
         { data: 'pickup_location' },
@@ -537,7 +519,7 @@ function edit(id) {
     
     if(obj.status === 'success'){
       $('#extendModal').find('#id').val(obj.message.id);
-      $('#extendModal').find('#booking_date').val(obj.message.booking_date.toLocaleString('en-AU', { hour12: false }));
+      $('#extendModal').find('#booking_date').val(formatDate2(new Date(obj.message.booking_date)));
       $('#extendModal').find('#branch').val(obj.message.branch);
       $('#extendModal').find('#address').val(obj.message.pickup_location);
       $('#extendModal').find('#description').val(obj.message.description);

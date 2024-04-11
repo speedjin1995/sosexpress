@@ -3,12 +3,12 @@ require_once 'php/db_connect.php';
 
 session_start();
 
-if(!isset($_SESSION['userID'])){
+if(!isset($_SESSION['custID'])){
     echo '<script type="text/javascript">';
     echo 'window.location.href = "login.html";</script>';
 }
 else{
-    $id = $_SESSION['userID'];
+    $id = $_SESSION['custID'];
     $stmt = $db->prepare("SELECT * from customers where id = ?");
 	$stmt->bind_param('s', $id);
 	$stmt->execute();

@@ -3,13 +3,13 @@ require_once 'php/db_connect.php';
 
 session_start();
 
-if(!isset($_SESSION['userID'])){
+if(!isset($_SESSION['custID'])){
     echo '<script type="text/javascript">';
     echo 'window.location.href = "login.html";</script>';
 }
 else{
   $todayStart = date('Y-m-d 00:00:00', strtotime('today'));
-  $user = $_SESSION['userID'];
+  $user = $_SESSION['custID'];
   $branch = $db->query("SELECT * FROM branch WHERE customer_id = '".$user."' AND deleted = '0'");
   $hypermarket = $db->query("SELECT * FROM hypermarket WHERE deleted = '0'");
   $states = $db->query("SELECT * FROM states WHERE deleted = '0'");
@@ -208,7 +208,7 @@ else{
   </div>
   <div class="col-4">
     <div class="form-group">
-      <label>Estimated Carton *</label>
+      <label>Actual Carton *</label>
       <input class="form-control" type="number" placeholder="Actual Carton" id="actual_ctn" name="actual_ctn" required>
     </div>
   </div>
@@ -243,9 +243,9 @@ $(function () {
     var threePm = moment().set({ hour: 15, minute: 0, second: 0, millisecond: 0 });
 
     if ($('#holidayCard').length) {
-        // Show the error card
-        $('#profileForm').hide();
-        $('#errorCard').hide();
+      // Show the error card
+      $('#profileForm').hide();
+      $('#errorCard').hide();
     }
     else{
       if (currentTime.isBefore(threePm)) {

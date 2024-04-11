@@ -10,7 +10,7 @@ if(isset($_POST['bookingDate'], $_POST['deliveryDate'], $_POST['cancellationDate
 	$booking_date = filter_input(INPUT_POST, 'bookingDate', FILTER_SANITIZE_STRING);
 	$delivery_date = filter_input(INPUT_POST, 'deliveryDate', FILTER_SANITIZE_STRING);
 	$cancellation_date = filter_input(INPUT_POST, 'cancellationDate', FILTER_SANITIZE_STRING);
-	$customer = $_SESSION['userID'];
+	$customer = $_SESSION['custID'];
 	$hypermarket = filter_input(INPUT_POST, 'hypermarket', FILTER_SANITIZE_STRING);
 	$states = filter_input(INPUT_POST, 'states', FILTER_SANITIZE_STRING);
 	$zone = filter_input(INPUT_POST, 'zones', FILTER_SANITIZE_STRING);

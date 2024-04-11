@@ -3,12 +3,12 @@ require_once 'php/db_connect.php';
 
 session_start();
 
-if(!isset($_SESSION['userID'])){
+if(!isset($_SESSION['custID'])){
   echo '<script type="text/javascript">';
   echo 'window.location.href = "login.html";</script>';
 }
 else{
-  $user = $_SESSION['userID'];
+  $user = $_SESSION['custID'];
   $todayStart = date('Y-m-d 00:00:00', strtotime('today'));
   $stmt = $db->prepare("SELECT * from users where id = ?");
 	$stmt->bind_param('s', $user);
@@ -254,8 +254,8 @@ else{
               <div class="form-group">
                 <label for="rate">Outlet *</label>
                 <select class="form-control" style="width: 100%;" id="outlets" name="outlets"></select>
-                <!--select class="js-data-example-ajax" id="direct_store" name="direct_store"></select-->
-                <input class="form-control" type="text" placeholder="Outlet" id="direct_store" name="direct_store">
+                <select id="direct_store" name="direct_store"></select>
+                <!--input class="form-control" type="text" placeholder="Outlet" id="direct_store" name="direct_store"-->
               </div>
             </div>
             <div class="col-4">
@@ -322,7 +322,11 @@ else{
 $(function () {
   $("#zoneHidden").hide();
   $("#branchHidden").hide();
-  $('#direct_store').hide();
+  //$('#direct_store').hide();
+
+  const today = new Date();
+  const tomorrow = new Date(today);
+  tomorrow.setDate(tomorrow.getDate() + 1);
 
   <?php
     if($rowH=mysqli_fetch_assoc($holiday)){
@@ -388,33 +392,101 @@ $(function () {
 
   //Date picker
   $('#fromDatePicker').datetimepicker({
-      icons: { time: 'far fa-clock' },
-      format: 'DD/MM/YYYY HH:mm:ss A',
-      defaultDate: new Date
+    icons: { time: 'far fa-clock' },
+    format: 'DD/MM/YYYY',
+    defaultDate: new Date
   });
 
   $('#toDatePicker').datetimepicker({
-      icons: { time: 'far fa-clock' },
-      format: 'DD/MM/YYYY HH:mm:ss A',
-      defaultDate: new Date
+    icons: { time: 'far fa-clock' },
+    format: 'DD/MM/YYYY',
+    defaultDate: new Date
   });
-
+  
   $('#bookingDate').datetimepicker({
     icons: { time: 'far fa-clock' },
-    format: 'DD/MM/YYYY HH:mm:ss A',
-    defaultDate: new Date
+    format: 'DD/MM/YYYY',
   });
 
   $('#deliveryDate').datetimepicker({
     icons: { time: 'far fa-clock' },
-    format: 'DD/MM/YYYY HH:mm:ss A',
-    defaultDate: new Date
+    format: 'DD/MM/YYYY',
+    minDate: tomorrow
   });
 
   $('#cancellationDate').datetimepicker({
     icons: { time: 'far fa-clock' },
-    format: 'DD/MM/YYYY HH:mm:ss A',
-    defaultDate: new Date
+    format: 'DD/MM/YYYY',
+    minDate: tomorrow
+  });
+
+  $('#direct_store').select2({
+    ajax: {
+      url: 'php/getDirectStore.php',
+      dataType: 'json',
+      data: function (params) {
+        var query = {
+          search: params.term,
+          states: $('#states').val(),
+          zones: $('#zones').val(),
+          type: 'public'
+        };
+        return query;
+      },
+      delay: 250,
+      processResults: function (data) {
+        var resultsArray = [];
+
+        // Assuming data.message is an object
+        for (var key in data.message) {
+          if (data.message.hasOwnProperty(key)) {
+            resultsArray.push({
+              id: data.message[key].name, // Use the property key as the id
+              text: data.message[key].name // Use the name property as the text
+            });
+          }
+        }
+
+        return {
+          results: resultsArray
+        };
+      },
+      cache: true,
+    },
+    minimumInputLength: 1,
+    placeholder: 'Search for options...',
+    tags: true,
+    createTag: function (params) {
+      if ($.trim(params.term) === '') {
+        return null;
+      }
+      return {
+        id: params.term,
+        text: params.term
+      };
+    },
+  });
+
+  $('#direct_store').data('select2').$container.hide();
+
+  $('#booking_date').on('blur', function (e) {
+    if($('#booking_date').val()){
+      $.post('php/checkBooking.php', {bookingDate: $(booking_date).val()}, function(data){
+        var obj = JSON.parse(data);
+        
+        if(obj.status === 'success'){
+          $('#saveButton').prop('disabled', false);
+        }
+        else if(obj.status === 'failed'){
+          toastr["error"](obj.message, "Failed:");
+          $('#saveButton').prop('disabled', true);
+        }
+        else{
+          toastr["error"]("Something wrong when pull data", "Failed:");
+        }
+        $('#spinnerLoading').hide();
+      });
+    }
   });
 
   $('#stateFilter').on('change', function(){
@@ -662,9 +734,9 @@ $(function () {
   $('#newBooking').on('click', function(){
     var date = new Date();
     $('#extendModal').find('#id').val("");
-    $('#extendModal').find('#booking_date').val(date.toLocaleString('en-AU', { hour12: false }));
-    $('#extendModal').find('#delivery_date').val(date.toLocaleString('en-AU', { hour12: false }));
-    $('#extendModal').find('#cancellation_date').val(date.toLocaleString('en-AU', { hour12: false }));
+    $('#extendModal').find('#booking_date').val(formatDate2(tomorrow));
+    $('#extendModal').find('#delivery_date').val(formatDate2(tomorrow));
+    $('#extendModal').find('#cancellation_date').val(formatDate2(tomorrow));
     $('#extendModal').find('#customerNo').val("");
     $('#extendModal').find('#hypermarket').val("");
     $('#extendModal').find('#states').val("");
@@ -717,8 +789,7 @@ $(function () {
       $('#extendModal').find("#direct_store").attr('required', false);
       $('#extendModal').find('#outlets').attr('required', true);
       $('#extendModal').find('#outlets').show();
-      $('#extendModal').find("#direct_store").hide();
-      //$('#extendModal').find('.select2-container').hide();
+      $('#extendModal').find('#direct_store').data('select2').$container.hide();
 
       $.post('php/listOutlets.php', {states: $('#states').val(), zones: $('#zones').val(), hypermarket: $('#hypermarket').val()}, function(data){
         var obj = JSON.parse(data);
@@ -740,7 +811,7 @@ $(function () {
     else{
       $('#extendModal').find('#outlets').attr('required', false);
       $('#extendModal').find('#outlets').hide();
-      $('#extendModal').find("#direct_store").show();
+      $('#extendModal').find('#direct_store').data('select2').$container.show();
       $('#extendModal').find("#direct_store").attr('required', true);
       $('#extendModal').find("#direct_store").val('');
       //$('#extendModal').find('.select2-container').show();
@@ -753,7 +824,7 @@ $(function () {
       $('#extendModal').find("#direct_store").attr('required', false);
       $('#extendModal').find('#outlets').attr('required', true);
       $('#extendModal').find('#outlets').show();
-      $('#extendModal').find("#direct_store").hide();
+      $('#extendModal').find('#direct_store').data('select2').$container.hide();
       //$('#extendModal').find('.select2-container').hide();
 
       $.post('php/listOutlets.php', {states: $('#states').val(), zones: $('#zones').val(), hypermarket: $('#hypermarket').val()}, function(data){
@@ -776,7 +847,7 @@ $(function () {
     else{
       $('#extendModal').find('#outlets').attr('required', false);
       $('#extendModal').find('#outlets').hide();
-      $('#extendModal').find("#direct_store").show();
+      $('#extendModal').find('#direct_store').data('select2').$container.show();
       $('#extendModal').find("#direct_store").attr('required', true);
       $('#extendModal').find("#direct_store").val('');
       //$('#extendModal').find('.select2-container').show();
@@ -789,7 +860,7 @@ $(function () {
       $('#extendModal').find("#direct_store").attr('required', false);
       $('#extendModal').find('#outlets').attr('required', true);
       $('#extendModal').find('#outlets').show();
-      $('#extendModal').find("#direct_store").hide();
+      $('#extendModal').find('#direct_store').data('select2').$container.hide();
       //$('#extendModal').find('.select2-container').hide();
 
       $.post('php/listOutlets.php', {states: $('#states').val(), zones: $('#zones').val(), hypermarket: $('#hypermarket').val()}, function(data){
@@ -812,31 +883,12 @@ $(function () {
     else{
       $('#extendModal').find('#outlets').attr('required', false);
       $('#extendModal').find('#outlets').hide();
-      $('#extendModal').find("#direct_store").show();
+      $('#extendModal').find('#direct_store').data('select2').$container.show();
       $('#extendModal').find("#direct_store").attr('required', true);
       //$('#extendModal').find('.select2-container').show();
       $('#extendModal').find("#direct_store").val('');
     }
   });
-
-  /*$('.js-data-example-ajax').select2({
-    ajax: {
-      url: 'php/searchOutlets.php',
-      data: function (params) {
-        var query = {
-          search: params.term
-        }
-
-        return query;
-      },
-      processResults: function (data) {
-        // Transforms the top-level key of the response object from 'items' to 'results'
-        return {
-          results: data.results
-        };
-      }
-    }
-  });*/
 });
 
 function format (row) {
@@ -911,14 +963,29 @@ function edit(id) {
     
     if(obj.status === 'success'){
       $('#extendModal').find('#id').val(obj.message.id);
-      $('#extendModal').find('#booking_date').val(obj.message.booking_date.toLocaleString('en-AU', { hour12: false }));
-      $('#extendModal').find('#delivery_date').val(obj.message.delivery_date.toLocaleString('en-AU', { hour12: false }));
-      $('#extendModal').find('#cancellation_date').val(obj.message.cancellation_date.toLocaleString('en-AU', { hour12: false }));
+      $('#extendModal').find('#booking_date').val(formatDate2(new Date(obj.message.booking_date)));
+      $('#extendModal').find('#delivery_date').val(formatDate2(new Date(obj.message.delivery_date)));
+      $('#extendModal').find('#cancellation_date').val(formatDate2(new Date(obj.message.cancellation_date)));
       $('#extendModal').find('#customerNo').val(obj.message.customer);
       $('#extendModal').find('#hypermarket').val(obj.message.hypermarket);
       $('#extendModal').find('#states').val(obj.message.states);
-      $('#extendModal').find('#states').trigger('change');
-      $('#extendModal').find('#zones').val(obj.message.zone);
+
+      $('#zones').empty();
+      var dataIndexToMatch = obj.message.states;
+
+      $('#zoneHidden option').each(function() {
+        var dataIndex = $(this).data('index');
+
+        if (dataIndex == dataIndexToMatch) {
+          $('#extendModal').find('#zones').append($(this).clone());
+          $('#extendModal').find('#zones').val(obj.message.zone);
+          $('#extendModal').find('#zones').trigger('change');
+        }
+      });
+
+      //$('#extendModal').find('#states').trigger('change');
+      //$('#extendModal').find('#zones').val(obj.message.zone);
+
       $('#extendModal').find('#hypermarket').trigger('change');
       $('#extendModal').find('#do_type').val(obj.message.do_type);
       $('#extendModal').find('#do_no').val(obj.message.do_number);
