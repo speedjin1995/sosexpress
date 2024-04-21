@@ -309,7 +309,7 @@ else{
           <table style="width: 100%;">
             <thead>
               <tr>
-                <th>GRN/RTV No.</th>
+                <th>RTV No.</th>
                 <th>Hypermarket</th>
                 <th>Location</th>
                 <th>Carton</th>
@@ -508,14 +508,12 @@ $(function () {
 
   $('#returnDate').datetimepicker({
     icons: { time: 'far fa-calendar' },
-    format: 'YYYY-MM-DD',
-    defaultDate: tomorrow
+    format: 'YYYY-MM-DD'
   });
 
   $('#collectionDate').datetimepicker({
     icons: { time: 'far fa-calendar' },
-    format: 'YYYY-MM-DD',
-    minDate: tomorrow
+    format: 'YYYY-MM-DD'
   });
 
   $.validator.setDefaults({
@@ -872,7 +870,7 @@ $(function () {
 
 function format(row) {
     var returnString = '<table class="table table-bordered">';
-    returnString += '<thead><tr><th>GRN No</th><th>Hypermarket</th><th>Location</th><th>Carton</th><th>Warehouse</th><th>Price</th><th>Reason</th><th>Other Reason</th></tr></thead>';
+    returnString += '<thead><tr><th>RTV No</th><th>Hypermarket</th><th>Location</th><th>Carton</th><th>Warehouse</th><th>Price</th><th>Reason</th><th>Other Reason</th></tr></thead>';
     returnString += '<tbody>';
 
     for (var i = 0; i < row.return_details.length; i++) {

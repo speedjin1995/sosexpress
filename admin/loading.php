@@ -434,7 +434,7 @@ else{
           <table style="width: 100%;">
             <thead>
               <tr>
-                <th>RTV No.</th>
+                <th>DO No.</th>
                 <th>Carton</th>
                 <th>Reason</th>
                 <th>Warehouse</th>
@@ -857,6 +857,7 @@ $(function () {
       { data: 'outlet' },
       { data: 'delivery_date' },
       { data: 'actual_carton' },
+      { data: 'status' },
       { 
         className: 'dt-control',
         orderable: false,
@@ -1063,6 +1064,7 @@ $(function () {
         { data: 'outlet' },
         { data: 'delivery_date' },
         { data: 'actual_carton' },
+        { data: 'status' },
         { 
           className: 'dt-control',
           orderable: false,
@@ -1560,8 +1562,8 @@ function format (row) {
   }
   else if(row.status == 'Printed'){
     returnString +='<div class="row"><div class="col-3"><button type="button" class="btn btn-warning btn-sm" title="Edit" onclick="edit('+row.id+
-  ')"><i class="fas fa-pen"></i></button></div><div class="col-3"><button type="button" class="btn btn-danger btn-sm" onclick="reject('+row.id+
-  ')"><i class="fas fa-times"></i></button></div><div class="col-3"><button type="button" class="btn btn-danger btn-sm" title="Delete" onclick="deactivate('+row.id+
+  ')"><i class="fas fa-pen"></i></button></div><div class="col-3"><button type="button" class="btn btn-danger btn-sm" title="Reject" onclick="reject('+row.id+
+  ')">RJ</button></div><div class="col-3"><button type="button" class="btn btn-danger btn-sm" title="Delete" onclick="deactivate('+row.id+
   ')"><i class="fas fa-trash"></i></button></div><div class="col-3"><button type="button" class="btn btn-info btn-sm" title="Delivered" onclick="delivered('+row.id+
   ')"><i class="fas fa-truck"></i></button></div></div></div></div>';
   }
