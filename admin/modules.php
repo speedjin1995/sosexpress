@@ -150,7 +150,6 @@ $(function () {
     });
 
     $('#addLots').on('click', function(){
-        debugger;
         $('#lotModal').find('#id').val("");
         $('#lotModal').find('#modules').val("");
         $('#lotModal').find('#parents').val("");

@@ -145,14 +145,15 @@ if(isset($_POST['id'], $_POST['driver'], $_POST['lorry'])){
             
                 // Check if returnDetailsArray is not empty
                 if (!empty($returnDetailsArray)) {
-                    $message .= '<table style="width:100%">';
-                    $message .= '<thead><tr><th>Location</th><th>Carton</th></tr></thead><tbody>';
+                    $message .= '<br><p><b>Return Info</b></p><table style="width:100%">';
+                    $message .= '<thead><tr><th>RTV No.</th><th>Warehouse</th><th>Carton</th></tr></thead><tbody>';
                 
                     foreach ($returnDetailsArray as $returnDetail) {
-                        $location = $returnDetail['location'];
+                        $grn_no = $returnDetail['grn_no'] ?? '';
                         $carton = $returnDetail['carton'];
-                        $outletName = getOutletNameById($location, $db);
-                        $message .= '<tr><td>'.$outletName.'</td><td>'.$carton.'</td></tr>';
+                        $warehouse = $returnDetail['warehouse'] ?? '';
+                        //$outletName = getOutletNameById($location, $db);
+                        $message .= '<tr><td>'.$grn_no.'</td><td>'.$warehouse.'</td><td>'.$carton.'</td></tr>';
                     }
                 
                     $message .= '</tbody></table>';

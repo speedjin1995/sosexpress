@@ -23,9 +23,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         // Send a response (you can customize the response based on your needs)
         echo json_encode(array('status' => 'success', 'message' => 'Status confirmed successfully'));
-    } else {
+    } 
+    else {
         // 'ids' parameter is not set in the POST data
-        echo json_encode(array('status' => 'error', 'message' => 'Missing IDs parameter'));
+        echo json_encode(array('status' => 'error', 'message' => 'Please check the DO to confirm'));
     }
 } else {
     // Not a POST request

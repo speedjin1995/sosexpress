@@ -109,6 +109,8 @@ if(isset($_POST['bookingDate'], $_POST['deliveryDate'], $_POST['cancellationDate
     
                 // Fetch the result
                 if ($select_stmt->fetch()) {
+                    $select_stmt->close();
+
                     if ($update_stmt = $db->prepare("UPDATE do_request SET booking_date=?, delivery_date=?, cancellation_date=?, customer=?, hypermarket=?, states=?, zone=?
                     , outlet=?, do_type=?, do_number=?, po_number=?, note=?, actual_carton=?, need_grn=?, loading_time=?, direct_store=?, hold=?, do_details=? WHERE id=?")){
                         $id = $_POST['id'];
@@ -184,7 +186,6 @@ if(isset($_POST['bookingDate'], $_POST['deliveryDate'], $_POST['cancellationDate
                 }
             }
         }
-        
     }
     else{
         $booking_date = DateTime::createFromFormat('d/m/Y', str_replace(',', '', explode(" ", $booking_date)[0]))->format('Y-m-d H:i:s');

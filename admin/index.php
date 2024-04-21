@@ -270,6 +270,11 @@ else{
       -o-animation: uil-ring-anim 1s linear infinite;
       animation: uil-ring-anim 1s linear infinite;
     }
+
+    /* Increase the size of the checkboxes */
+    #weightTable input[type="checkbox"] {
+      transform: scale(1.5); /* Increase the size */
+    }
   </style>
 </head>
 <!--

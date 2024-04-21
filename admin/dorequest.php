@@ -141,6 +141,7 @@ else{
                   <option value="Printed">Printed</option>
                   <option value="Delivered">Delivered</option>
                   <option value="Invoiced">Invoiced</option>
+                  <option value="Cancelled">Cancelled</option>
                 </select>
               </div>
             </div>
@@ -168,7 +169,7 @@ else{
               <div class="col-3">
                 <button type="button" class="btn btn-block bg-gradient-info btn-sm" id="updateStatus">
                   <i class="fas fa-pen"></i>
-                  Update Status
+                  Post for Loading
                 </button>
               </div>
               <div class="col-3">
@@ -189,8 +190,9 @@ else{
                   <th>Customer</th>
                   <th>Hypermarket</th>
                   <th>Outlet</th>
-                  <th>Delivery Date</th>
-                  <th>Number of Carton</th>
+                  <th>Delivery<br>Date</th>
+                  <th>Number of<br>Carton</th>
+                  <th>Status</th>
                   <th></th>
                 </tr>
               </thead>
@@ -392,7 +394,7 @@ else{
                   <option value="" selected disabled hidden>Please Select</option>
                   <option value="Posted">Post to Loading</option>
                   <!--option value="Loaded">Loaded</option-->
-                  <option value="Delivered">Delivered</option>
+                  <!--option value="Delivered">Delivered</option-->
                 </select>
               </div>
             </div>
@@ -448,7 +450,49 @@ $(function () {
   
   const today = new Date();
   const tomorrow = new Date(today);
+  const yesterday = new Date(today);
   tomorrow.setDate(tomorrow.getDate() + 1);
+  yesterday.setDate(yesterday.getDate() - 1);
+
+  //Date picker
+  $('#fromDatePicker').datetimepicker({
+    icons: { time: 'far fa-clock' },
+    format: 'DD/MM/YYYY',
+    defaultDate: new Date
+  });
+
+  $('#toDatePicker').datetimepicker({
+    icons: { time: 'far fa-clock' },
+    format: 'DD/MM/YYYY',
+    defaultDate: new Date
+  });
+  
+  $('#bookingDate').datetimepicker({
+    icons: { time: 'far fa-clock' },
+    format: 'DD/MM/YYYY',
+    defaultDate: today
+  });
+
+  $('#deliveryDate').datetimepicker({
+    icons: { time: 'far fa-clock' },
+    format: 'DD/MM/YYYY',
+    minDate: today
+  });
+
+  $('#cancellationDate').datetimepicker({
+    icons: { time: 'far fa-clock' },
+    format: 'DD/MM/YYYY',
+    minDate: today
+  });
+
+  var fromDateI = $('#fromDate').val();
+  var toDateI = $('#toDate').val();
+  var stateI = $('#stateFilter').val() ? $('#stateFilter').val() : '';
+  var customerNoI = $('#customerNoFilter').val() ? $('#customerNoFilter').val() : '';
+  var zonesI = $('#zonesFilter').val() ? $('#zonesFilter').val() : '';
+  var hypermarketI = $('#hypermarketFilter').val() ? $('#hypermarketFilter').val() : '';
+  var outletsI = $('#outletsFilter').val() ? $('#outletsFilter').val() : '';
+  var statusI = $('#statusFilter').val() ? $('#statusFilter').val() : '';
 
   var table = $("#weightTable").DataTable({
     "responsive": true,
@@ -458,8 +502,22 @@ $(function () {
     'serverMethod': 'post',
     'order': [[ 1, 'asc' ]],
     'columnDefs': [ { orderable: false,  targets: [0] }],
-    'ajax': {
+    /*'ajax': {
       'url':'php/loadDO.php'
+    },*/
+    'ajax': {
+      'type': 'POST',
+      'url':'php/filterDORequest.php',
+      'data': {
+        fromDate: fromDateI,
+        toDate: toDateI,
+        state: stateI,
+        customer: customerNoI,
+        zones: zonesI,
+        hypermarket: hypermarketI,
+        outlets: outletsI,
+        status: statusI
+      } 
     },
     'columns': [
       {
@@ -477,6 +535,7 @@ $(function () {
       { data: 'outlet' },
       { data: 'delivery_date' },
       { data: 'actual_carton' },
+      { data: 'status' },
       { 
         className: 'dt-control',
         orderable: false,
@@ -514,36 +573,6 @@ $(function () {
     else {
       row.child( format(row.data()) ).show();tr.addClass("shown");
     }
-  });
-
-  //Date picker
-  $('#fromDatePicker').datetimepicker({
-    icons: { time: 'far fa-clock' },
-    format: 'DD/MM/YYYY',
-    defaultDate: new Date
-  });
-
-  $('#toDatePicker').datetimepicker({
-    icons: { time: 'far fa-clock' },
-    format: 'DD/MM/YYYY',
-    defaultDate: new Date
-  });
-  
-  $('#bookingDate').datetimepicker({
-    icons: { time: 'far fa-clock' },
-    format: 'DD/MM/YYYY',
-  });
-
-  $('#deliveryDate').datetimepicker({
-    icons: { time: 'far fa-clock' },
-    format: 'DD/MM/YYYY',
-    minDate: tomorrow
-  });
-
-  $('#cancellationDate').datetimepicker({
-    icons: { time: 'far fa-clock' },
-    format: 'DD/MM/YYYY',
-    minDate: tomorrow
   });
 
   $('#booking_date').on('blur', function (e) {
@@ -727,6 +756,7 @@ $(function () {
         { data: 'outlet' },
         { data: 'delivery_date' },
         { data: 'actual_carton' },
+        { data: 'status' },
         { 
           className: 'dt-control',
           orderable: false,
@@ -845,8 +875,8 @@ $(function () {
 
     if (selectedIds.length > 0) {
       $("#updateModal").find('#id').val(selectedIds);
-      $("#updateModal").find('#status').val('');
-      $("#updateModal").modal("show");
+      $("#updateModal").find('#status').val('Posted');
+      //$("#updateModal").modal("show");
 
       $('#updateForm').validate({
         errorElement: 'span',
@@ -861,7 +891,26 @@ $(function () {
           $(element).removeClass('is-invalid');
         }
       });
-    } else {
+
+      $('#spinnerLoading').show();
+      $.post('php/updateRequest.php', $('#updateForm').serialize(), function(data){
+        var obj = JSON.parse(data); 
+        if(obj.status === 'success'){
+          $('#updateModal').modal('hide');
+          toastr["success"](obj.message, "Success:");
+          $('#weightTable').DataTable().ajax.reload();
+        }
+        else if(obj.status === 'failed'){
+          toastr["error"](obj.message, "Failed:");
+        }
+        else{
+          toastr["error"]("Something wrong when edit", "Failed:");
+        }
+
+        $('#spinnerLoading').hide();
+      });
+    } 
+    else {
       // Optionally, you can display a message or take another action if no IDs are selected
       alert("Please select at least one DO to update.");
     }
@@ -870,9 +919,9 @@ $(function () {
   $('#newBooking').on('click', function(){
     var date = new Date();
     $('#extendModal').find('#id').val("");
-    $('#extendModal').find('#booking_date').val(formatDate2(tomorrow));
-    $('#extendModal').find('#delivery_date').val(formatDate2(tomorrow));
-    $('#extendModal').find('#cancellation_date').val(formatDate2(tomorrow));
+    $('#extendModal').find('#booking_date').val(formatDate2(today));
+    $('#extendModal').find('#delivery_date').val(formatDate2(today));
+    $('#extendModal').find('#cancellation_date').val(formatDate2(today));
     $('#extendModal').find('#customerNo').val("");
     $('#extendModal').find('#hypermarket').val("");
     $('#extendModal').find('#states').val("");
@@ -933,6 +982,7 @@ $(function () {
         var obj = JSON.parse(data);
         
         if(obj.status === 'success'){
+          $('#extendModal').find('#outlets').html('');
           for(var i=0; i<obj.message.length; i++){
             $('#extendModal').find('#outlets').append('<option value="'+obj.message[i].id+'">'+obj.message[i].name+'</option>')
           }
@@ -969,6 +1019,7 @@ $(function () {
         var obj = JSON.parse(data);
         
         if(obj.status === 'success'){
+          $('#extendModal').find('#outlets').html('');
           for(var i=0; i<obj.message.length; i++){
             $('#extendModal').find('#outlets').append('<option value="'+obj.message[i].id+'">'+obj.message[i].name+'</option>')
           }
@@ -1005,6 +1056,7 @@ $(function () {
         var obj = JSON.parse(data);
         
         if(obj.status === 'success'){
+          $('#extendModal').find('#outlets').html('');
           for(var i=0; i<obj.message.length; i++){
             $('#extendModal').find('#outlets').append('<option value="'+obj.message[i].id+'">'+obj.message[i].name+'</option>')
           }
@@ -1038,9 +1090,14 @@ $(function () {
   });
 
   $('#openModalBtn').on('click', function () {
-    $('#doPoTable tbody').empty();
-    addRow2($('#do_no').val(), $('#po_no').val()); // Pass default values to the addRow function
-    $('#doModal').modal('show');
+    if($('#doPoTable tbody tr').length > 0){
+      $('#doModal').modal('show');
+    }
+    else{
+      $('#doPoTable tbody').empty();
+      addRow2($('#do_no').val(), $('#po_no').val()); // Pass default values to the addRow function
+      $('#doModal').modal('show');
+    }
   });
 
   $('#addRowBtn').on('click', function () {

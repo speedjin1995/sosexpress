@@ -506,7 +506,7 @@ $(function () {
       });
   });
   
-  $("a[href='#request']").click();
+  $("a[href='#booking']").click();
 });
 
 function formatDate(date) {

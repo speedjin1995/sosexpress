@@ -160,13 +160,14 @@ else{
             <table id="weightTable" class="table table-bordered table-striped display">
               <thead>
                 <tr>
-                  <th></th>
+                  <th><input type="checkbox" id="selectAllCheckbox" class="selectAllCheckbox"></th>
                   <th>Customer</th>
                   <th>Booking Datetime</th>
                   <th>Description</th>
                   <th>Estimated Ctn</th>
                   <th>Actual Ctn</th>
                   <th>Pickup Method</th>
+                  <th>Lorry No.</th>
                   <th></th>
                 </tr>
               </thead>
@@ -430,7 +431,33 @@ $(function () {
   $("#branchHidden").hide();
   const today = new Date();
   const tomorrow = new Date(today);
+  const yesterday = new Date(today);
   tomorrow.setDate(tomorrow.getDate() + 1);
+  yesterday.setDate(yesterday.getDate() - 1);
+
+  //Date picker
+  $('#fromDatePicker').datetimepicker({
+    icons: { time: 'far fa-clock' },
+    format: 'DD/MM/YYYY',
+    defaultDate: new Date
+  });
+
+  $('#toDatePicker').datetimepicker({
+    icons: { time: 'far fa-clock' },
+    format: 'DD/MM/YYYY',
+    defaultDate: new Date
+  });
+
+  $('#bookingDate').datetimepicker({
+    icons: { time: 'far fa-clock' },
+    format: 'DD/MM/YYYY',
+    minDate: yesterday
+  });
+
+  var fromDateI = $('#fromDate').val();
+  var toDateI = $('#toDate').val();
+  var pickupMethodI = $('#pickupMethod').val() ? $('#pickupMethod').val() : '';
+  var customerNoI = $('#customerNoFilter').val() ? $('#customerNoFilter').val() : '';
 
   var table = $("#weightTable").DataTable({
     "responsive": true,
@@ -440,8 +467,18 @@ $(function () {
     'serverMethod': 'post',
     'order': [[ 1, 'asc' ]],
     'columnDefs': [ { orderable: false, targets: [0] }],
-    'ajax': {
+    /*'ajax': {
       'url':'php/loadBooking.php'
+    },*/
+    'ajax': {
+      'type': 'POST',
+      'url':'php/filterBooking.php',
+      'data': {
+        fromDate: fromDateI,
+        toDate: toDateI,
+        method: pickupMethodI,
+        customer: customerNoI,
+      } 
     },
     'columns': [
       {
@@ -470,6 +507,7 @@ $(function () {
         }
       },
       { data: 'pickup_method' },
+      { data: 'vehicle_no' },
       { 
         className: 'dt-control',
         orderable: false,
@@ -482,6 +520,11 @@ $(function () {
     "rowCallback": function( row, data, index ) {
       //$('td', row).css('background-color', '#E6E6FA');
     },        
+  });
+
+  $('#selectAllCheckbox').on('change', function() {
+    var checkboxes = $('#weightTable tbody input[type="checkbox"]');
+    checkboxes.prop('checked', $(this).prop('checked')).trigger('change');
   });
 
   // Add event listener for opening and closing details
@@ -561,25 +604,6 @@ $(function () {
             console.error('Error retrieving actual_ctn data:', error);
         }
     });
-  });
-
-  //Date picker
-  $('#fromDatePicker').datetimepicker({
-    icons: { time: 'far fa-clock' },
-    format: 'DD/MM/YYYY',
-    defaultDate: new Date
-  });
-
-  $('#toDatePicker').datetimepicker({
-    icons: { time: 'far fa-clock' },
-    format: 'DD/MM/YYYY',
-    defaultDate: new Date
-  });
-
-  $('#bookingDate').datetimepicker({
-    icons: { time: 'far fa-clock' },
-    format: 'DD/MM/YYYY',
-    minDate: new Date
   });
 
   $.validator.setDefaults({
@@ -685,7 +709,7 @@ $(function () {
     var date = new Date();
 
     $('#extendModal').find('#id').val("");
-    $('#extendModal').find('#booking_date').val(formatDate2(tomorrow));
+    $('#extendModal').find('#booking_date').val(formatDate2(today));
     $('#extendModal').find('#pickup_method').val("");
     $('#extendModal').find('#customerNo').val("");
     $('#extendModal').find('#branch').val("");
@@ -804,6 +828,7 @@ $(function () {
           }
         },
         { data: 'pickup_method' },
+        { data: 'vehicle_no' },
         { 
           className: 'dt-control',
           orderable: false,
@@ -813,61 +838,24 @@ $(function () {
           }
         }
       ],
-      "rowCallback": function( row, data, index ) {
-        //$('td', row).css('background-color', '#E6E6FA');
-        //$('#spinnerLoading').hide();
-      },
-      // "footerCallback": function ( row, data, start, end, display ) {
-      //   var api = this.api();
-
-      //   // Remove the formatting to get integer data for summation
-      //   var intVal = function (i) {
-      //     return typeof i === 'string' ? i.replace(/[\$,]/g, '')*1 : typeof i === 'number' ? i : 0;
-      //   };
-
-      //   // Total over all pages
-      //   total = api.column(3).data().reduce( function (a, b) { return intVal(a) + intVal(b); }, 0 );
-      //   total2 = api.column(4).data().reduce( function (a, b) { return intVal(a) + intVal(b); }, 0 );
-      //   total3 = api.column(5).data().reduce( function (a, b) { return intVal(a) + intVal(b); }, 0 );
-      //   total4 = api.column(6).data().reduce( function (a, b) { return intVal(a) + intVal(b); }, 0 );
-      //   total5 = api.column(7).data().reduce( function (a, b) { return intVal(a) + intVal(b); }, 0 );
-      //   total6 = api.column(8).data().reduce( function (a, b) { return intVal(a) + intVal(b); }, 0 );
-      //   total7 = api.column(9).data().reduce( function (a, b) { return intVal(a) + intVal(b); }, 0 );
-
-      //   // Total over this page
-      //   pageTotal = api.column(3, {page: 'current'}).data().reduce( function (a, b) {return intVal(a) + intVal(b);}, 0 );
-      //   pageTotal2 = api.column(4, {page: 'current'}).data().reduce( function (a, b) {return intVal(a) + intVal(b);}, 0 );
-      //   pageTotal3 = api.column(5, {page: 'current'}).data().reduce( function (a, b) {return intVal(a) + intVal(b);}, 0 );
-      //   pageTotal4 = api.column(6, {page: 'current'}).data().reduce( function (a, b) {return intVal(a) + intVal(b);}, 0 );
-      //   pageTotal5 = api.column(7, {page: 'current'}).data().reduce( function (a, b) {return intVal(a) + intVal(b);}, 0 );
-      //   pageTotal6 = api.column(8, {page: 'current'}).data().reduce( function (a, b) {return intVal(a) + intVal(b);}, 0 );
-      //   pageTotal7 = api.column(9, {page: 'current'}).data().reduce( function (a, b) {return intVal(a) + intVal(b);}, 0 );
-
-      //   // Update footer
-      //   $(api.column(3).footer()).html(pageTotal +' kg ( '+ total +' kg)');
-      //   $(api.column(4).footer()).html(pageTotal2 +' kg ( '+ total2 +' kg)');
-      //   $(api.column(5).footer()).html(pageTotal3 +' kg ( '+ total3 +' kg)');
-      //   $(api.column(6).footer()).html(pageTotal4 +' kg ( '+ total4 +' kg)');
-      //   $(api.column(7).footer()).html(pageTotal5 +' ('+ total5 +')');
-      //   $(api.column(8).footer()).html('RM'+pageTotal6 +' ( RM'+ total6 +' total)');
-      //   $(api.column(9).footer()).html('RM'+pageTotal7 +' ( RM'+ total7 +' total)');
-      // }
     });
   });
 
   $('#print').on('click', function () {
     var selectedIds = []; // An array to store the selected 'id' values
+    var vehicle = [];
 
     $("#weightTable tbody input[type='checkbox']").each(function () {
       if (this.checked) {
         selectedIds.push($(this).val());
+        vehicle.push($(this).closest('tr').find('td:nth-child(8)').text());
       }
     });
 
     if (selectedIds.length > 0) {
       $("#printModal").find('#id').val(selectedIds);
       $("#printModal").find('#driver').val('');
-      $("#printModal").find('#lorry').val('');
+      $("#printModal").find('#lorry').val((vehicle.length > 0 ? vehicle[0] : ''));
       $("#printModal").modal("show");
 
       $('#printForm').validate({
@@ -995,8 +983,16 @@ function confirmStatus(rowIds) {
     type: 'POST',
     data: { ids: rowIds },
     success: function (response) {
+      var obj = JSON.parse(response);
+
+      if(obj.status === 'success'){
+        toastr["success"](obj.message, "Success:");
+      }
+      else{
+        toastr["error"](obj.message, "Failed:");
+      }
+
       $('#myModal').modal('hide');
-      toastr["success"](obj.message, "Success:");
     },
     error: function (xhr, status, error) {
       //$('#myModal').modal('hide');

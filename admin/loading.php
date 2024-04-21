@@ -144,10 +144,10 @@ else{
                 <label>Status</label>
                 <select class="form-control" id="statusFilter" name="statusFilter" style="width: 100%;">
                   <option selected="selected">-</option>
-                  <option value="Posted">Posted</option>
-                  <option value="Confirmed">Confirmed</option>
+                  <option value="Posted" selected>Posted</option>
                   <option value="Printed">Printed</option>
                   <option value="Delivered">Delivered</option>
+                  <option value="Cancelled">Cancelled</option>
                 </select>
               </div>
             </div>
@@ -196,8 +196,9 @@ else{
                   <th>Customer</th>
                   <th>Hypermarket</th>
                   <th>Outlet</th>
-                  <th>Delevery Date</th>
-                  <th>Number of Carton</th>
+                  <th>Delivery<br>Date</th>
+                  <th>Number of<br>Carton</th>
+                  <th>Status</th>
                   <th></th>
                 </tr>
               </thead>
@@ -793,6 +794,28 @@ $(function () {
     myDropzone.removeAllFiles(true);
   }
 
+  //Date picker
+  $('#fromDatePicker').datetimepicker({
+    icons: { time: 'far fa-clock' },
+    format: 'DD/MM/YYYY',
+    defaultDate: ''
+  });
+
+  $('#toDatePicker').datetimepicker({
+    icons: { time: 'far fa-clock' },
+    format: 'DD/MM/YYYY',
+    defaultDate: ''
+  });
+
+  var fromDateI = $('#fromDate').val();
+  var toDateI= $('#toDate').val();
+  var stateI = $('#stateFilter').val() ? $('#stateFilter').val() : '';
+  var customerNoI = $('#customerNoFilter').val() ? $('#customerNoFilter').val() : '';
+  var zonesI = $('#zonesFilter').val() ? $('#zonesFilter').val() : '';
+  var hypermarketI= $('#hypermarketFilter').val() ? $('#hypermarketFilter').val() : '';
+  var outletsI = $('#outletsFilter').val() ? $('#outletsFilter').val() : '';
+  var statusI = $('#statusFilter').val() ? $('#statusFilter').val() : '';
+
   var table = $("#weightTable").DataTable({
     "responsive": true,
     "autoWidth": false,
@@ -801,8 +824,22 @@ $(function () {
     'serverMethod': 'post',
     'order': [[ 1, 'asc' ]],
     'columnDefs': [ { orderable: false,  targets: [0] }],
-    'ajax': {
+    /*'ajax': {
       'url':'php/loadLoading.php'
+    },*/
+    'ajax': {
+      'type': 'POST',
+      'url':'php/filterLoadingRequest.php',
+      'data': {
+        fromDate: fromDateI,
+        toDate: toDateI,
+        state: stateI,
+        customer: customerNoI,
+        zones: zonesI,
+        hypermarket: hypermarketI,
+        outlets: outletsI,
+        status: statusI
+      } 
     },
     'columns': [
       {
@@ -857,19 +894,6 @@ $(function () {
     else {
       row.child( format(row.data()) ).show();tr.addClass("shown");
     }
-  });
-
-  //Date picker
-  $('#fromDatePicker').datetimepicker({
-      icons: { time: 'far fa-clock' },
-      format: 'DD/MM/YYYY',
-      defaultDate: new Date
-  });
-
-  $('#toDatePicker').datetimepicker({
-      icons: { time: 'far fa-clock' },
-      format: 'DD/MM/YYYY',
-      defaultDate: new Date
   });
 
   $('#bookingDate').datetimepicker({

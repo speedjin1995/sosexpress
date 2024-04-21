@@ -35,7 +35,17 @@ if($_POST['customer'] != null && $_POST['customer'] != '' && $_POST['customer'] 
 }
 
 if($_POST['zones'] != null && $_POST['zones'] != '' && $_POST['zones'] != '-'){
-  $searchQuery = " and do_request.zone = '".$_POST['zones']."'";
+  $check_zones_stmt = $db->prepare("SELECT * FROM zones WHERE id=? AND zones <> '-'");
+  $check_zones_stmt->bind_param('s', $zones);
+  $check_zones_stmt->execute();
+  $check_zones_result = $check_zones_stmt->get_result();
+
+  // Check if the zones column contains "-"
+  if ($check_zones_result->num_rows > 0) {
+    $searchQuery = " and do_request.zone = '".$_POST['zones']."'";
+  }
+
+  $check_zones_stmt->close();
 }
 
 if($_POST['hypermarket'] != null && $_POST['hypermarket'] != '' && $_POST['hypermarket'] != '-'){
@@ -47,7 +57,13 @@ if($_POST['outlets'] != null && $_POST['outlets'] != '' && $_POST['outlets'] != 
 }
 
 if($_POST['status'] != null && $_POST['status'] != '' && $_POST['status'] != '-'){
-  $searchQuery = " and do_request.status = '".$_POST['status']."'";
+  if($_POST['status'] == 'Posted'){
+    $searchQuery = " and do_request.status IN ('Posted','Confirmed')";
+  }
+  else{
+    $searchQuery = " and do_request.status = '".$_POST['status']."'";
+  }
+  
 }
 
 if($searchValue != ''){
@@ -57,20 +73,20 @@ if($searchValue != ''){
 }
 
 ## Total number of records without filtering
-$sel = mysqli_query($db,"select count(DISTINCT do_request.id) as allcount from do_request, hypermarket, outlet, states, customers, zones WHERE do_request.deleted = '0' AND do_request.customer = customers.id AND do_request.hypermarket = hypermarket.id AND do_request.states = states.id AND do_request.zone = zones.id AND do_request.outlet = outlet.id AND do_request.status  IN ('Posted', 'Delivered', 'Printed', 'Confirmed')");
+$sel = mysqli_query($db,"select count(DISTINCT do_request.id) as allcount from do_request, hypermarket, outlet, states, customers, zones WHERE do_request.customer = customers.id AND do_request.hypermarket = hypermarket.id AND do_request.states = states.id AND do_request.zone = zones.id AND do_request.outlet = outlet.id AND do_request.status  IN ('Posted', 'Delivered', 'Printed', 'Confirmed')");
 $records = mysqli_fetch_assoc($sel);
 $totalRecords = $records['allcount'];
 
 ## Total number of record with filtering
-$sel = mysqli_query($db,"select count(DISTINCT do_request.id) as allcount from do_request, hypermarket, outlet, states, customers, zones WHERE do_request.deleted = '0' AND do_request.customer = customers.id AND do_request.hypermarket = hypermarket.id AND do_request.states = states.id AND do_request.zone = zones.id AND do_request.outlet = outlet.id AND do_request.status IN ('Posted', 'Delivered', 'Printed', 'Confirmed')".$searchQuery);
+$sel = mysqli_query($db,"select count(DISTINCT do_request.id) as allcount from do_request, hypermarket, outlet, states, customers, zones WHERE do_request.customer = customers.id AND do_request.hypermarket = hypermarket.id AND do_request.states = states.id AND do_request.zone = zones.id AND do_request.outlet = outlet.id AND do_request.status IN ('Posted', 'Delivered', 'Printed', 'Confirmed')".$searchQuery);
 $records = mysqli_fetch_assoc($sel);
 $totalRecordwithFilter = $records['allcount'];
 
 ## Fetch records
 $empQuery = "select do_request.id, do_request.booking_date, do_request.delivery_date, do_request.cancellation_date, customers.customer_name, 
 hypermarket.name as hypermarket, do_request.direct_store, states.states, zones.zones, outlet.name as outlet, do_type, do_number, po_number, note, actual_carton, 
-need_grn, loading_time, loading_time, status from do_request, hypermarket, outlet, states, customers, zones WHERE do_request.deleted = '0' AND do_request.customer = customers.id AND 
-do_request.hypermarket = hypermarket.id AND do_request.states = states.id AND do_request.zone = zones.id AND do_request.outlet = outlet.id AND do_request.status IN ('Posted', 'Delivered', 'Printed', 'Confirmed')".$searchQuery." 
+need_grn, loading_time, loading_time, status from do_request, hypermarket, outlet, states, customers, zones WHERE do_request.customer = customers.id AND 
+do_request.hypermarket = hypermarket.id AND do_request.states = states.id AND do_request.zone = zones.id AND do_request.outlet = outlet.id".$searchQuery." 
 order by ".$columnName." ".$columnSortOrder." limit ".$row.",".$rowperpage;
 $empRecords = mysqli_query($db, $empQuery);
 $data = array();
