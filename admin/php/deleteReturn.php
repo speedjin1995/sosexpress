@@ -10,8 +10,10 @@ if(!isset($_SESSION['userID'])){
 if(isset($_POST['userID'])){
 	$id = filter_input(INPUT_POST, 'userID', FILTER_SANITIZE_STRING);
 	$del = "1";
-	if ($stmt2 = $db->prepare("UPDATE goods_return SET deleted=? WHERE id=?")) {
-		$stmt2->bind_param('ss', $del, $id);
+	$status = "Cancelled";
+
+	if ($stmt2 = $db->prepare("UPDATE goods_return SET status=?, deleted=? WHERE id=?")) {
+		$stmt2->bind_param('sss', $status, $del, $id);
 		
 		if($stmt2->execute()){
 			$stmt2->close();

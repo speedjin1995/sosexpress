@@ -117,6 +117,7 @@ else{
                   <option value="Created">Created</option>
                   <option value="Collected">Collected</option>
                   <option value="Invoiced">Invoiced</option>
+                  <option value="Cancelled">Cancelled</option>
                 </select>
               </div>
               <div class="form-group col-3">
@@ -252,7 +253,7 @@ else{
             <div class="col-4">
               <div class="form-group">
                 <label class="labelStatus">Customer *</label>
-                <select class="form-control" id="customerNo" name="customerNo" required>
+                <select class="form-control select2" id="customerNo" name="customerNo" required>
                   <option value="" selected disabled hidden>Please Select</option>
                   <?php while($rowCustomer=mysqli_fetch_assoc($customers)){ ?>
                     <option value="<?=$rowCustomer['id'] ?>" data-address="<?=$rowCustomer['customer_address'] ?>"><?=$rowCustomer['customer_name'] ?></option>
@@ -273,7 +274,7 @@ else{
           <div class="row">
             <div class="form-group col-4">
               <label>Lorry No</label>
-              <select class="form-control" id="lorry" name="lorry" >
+              <select class="form-control select2" id="lorry" name="lorry" >
                 <option value="" selected disabled hidden>Please Select</option>
                 <?php while($rowvehicles=mysqli_fetch_assoc($vehicles)){ ?>
                   <option value="<?=$rowvehicles['veh_number'] ?>"><?=$rowvehicles['veh_number'] ?></option>
@@ -354,7 +355,7 @@ else{
       </select>
     </td>
     <td>
-      <select class="form-control" style="width: 100%;" id="location" required></select>
+      <select class="form-control select2" style="width: 100%;" id="location" required></select>
     </td>
     <td>
       <input type="number" class="form-control" id="carton"  placeholder="Enter ..." required>
@@ -384,6 +385,10 @@ $(function () {
   const today = new Date();
   const tomorrow = new Date(today);
   tomorrow.setDate(tomorrow.getDate() + 1);
+
+  $('.select2').select2({
+    allowClear: true
+  });
 
   var table = $("#weightTable").DataTable({
     "responsive": true,
@@ -622,8 +627,8 @@ $(function () {
 
     $('#extendModal').find('#id').val("");
     $('#extendModal').find('#return_date').val(formatDate(date));
-    $('#extendModal').find('#customerNo').val("");
-    $('#extendModal').find('#lorry').val("");
+    $('#extendModal').find('#customerNo').select2('destroy').val('').select2();
+    $('#extendModal').find('#lorry').select2('destroy').val('').select2();
     $('#extendModal').find('#driver').val("");
     $('#extendModal').find('#collection_date').val("");
     $('#extendModal').find('#collectionType').val("");
@@ -702,6 +707,10 @@ $(function () {
         for(var i=0; i<obj.message.length; i++){
           element.append('<option value="'+obj.message[i].id+'">'+obj.message[i].name+'</option>')
         }
+
+        $(element).select2({
+          allowClear: true
+        });
       }
       else if(obj.status === 'failed'){
         toastr["error"](obj.message, "Failed:");
@@ -829,7 +838,7 @@ $(function () {
               }
             }
 
-            if(row.status == 'Invoiced'){
+            if(row.status == 'Invoiced' || row.status == 'Cancelled'){
               return '';
             }
             else{
@@ -951,8 +960,8 @@ function edit(id) {
     if(obj.status === 'success'){
       $('#extendModal').find('#id').val(obj.message.id);
       $('#extendModal').find('#return_date').val(obj.message.return_date);
-      $('#extendModal').find('#customerNo').val(obj.message.customer);
-      $('#extendModal').find('#lorry').val(obj.message.vehicle);
+      $('#extendModal').find('#customerNo').val(obj.message.customer).trigger('change');
+      $('#extendModal').find('#lorry').val(obj.message.vehicle).trigger('change');
       $('#extendModal').find('#driver').val(obj.message.driver);
       $('#extendModal').find('#collection_date').val(obj.message.collection_date);
       $('#extendModal').find('#collectionType').val(obj.message.collection_type);
@@ -973,7 +982,7 @@ function edit(id) {
         $("#pricingTable").find('#grn_no:last').attr('name', 'grn_no['+pricingCount+']').attr("id", "grn_no" + pricingCount).val(details[i].grn_no);
         $("#pricingTable").find('#hypermarket:last').attr('name', 'hypermarket['+pricingCount+']').attr("id", "hypermarket" + pricingCount).val(details[i].hypermarket);
         $('#pricingTable').find("#hypermarket" + pricingCount).trigger('change');
-        $("#pricingTable").find('#location:last').attr('name', 'location['+pricingCount+']').attr("id", "location" + pricingCount).val(details[i].location);
+        $("#pricingTable").find('#location:last').attr('name', 'location['+pricingCount+']').attr("id", "location" + pricingCount).val(details[i].location).trigger('change');
         $("#pricingTable").find('#carton:last').attr('name', 'carton['+pricingCount+']').attr("id", "carton" + pricingCount).val(details[i].carton);
         $("#pricingTable").find('#reason:last').attr('name', 'reason['+pricingCount+']').attr("id", "reason" + pricingCount).val(details[i].reason);
         $("#pricingTable").find('#other_reason').attr('name', 'other_reason['+pricingCount+']').attr("id", "other_reason" + pricingCount).val(details[i].other_reason);

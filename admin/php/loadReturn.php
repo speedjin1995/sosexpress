@@ -18,19 +18,19 @@ if($searchValue != ''){
 }
 
 ## Total number of records without filtering
-$sel = mysqli_query($db,"select count(*) as allcount from goods_return, customers WHERE goods_return.customer = customers.id AND goods_return.deleted = '0'");
+$sel = mysqli_query($db,"select count(*) as allcount from goods_return, customers WHERE goods_return.customer = customers.id");
 $records = mysqli_fetch_assoc($sel);
 $totalRecords = $records['allcount'];
 
 ## Total number of record with filtering
-$sel = mysqli_query($db,"select count(*) as allcount from goods_return, customers WHERE goods_return.customer = customers.id AND goods_return.deleted = '0'".$searchQuery);
+$sel = mysqli_query($db,"select count(*) as allcount from goods_return, customers WHERE goods_return.customer = customers.id".$searchQuery);
 $records = mysqli_fetch_assoc($sel);
 $totalRecordwithFilter = $records['allcount'];
 
 ## Fetch records
 $empQuery = "SELECT goods_return.id, goods_return.GR_No, goods_return.return_date, goods_return.driver, customers.id AS custId, 
 customers.customer_name, goods_return.return_details, goods_return.collection_date, goods_return.collection_type, goods_return.status, 
-goods_return.total_carton, goods_return.return_type FROM goods_return, customers WHERE goods_return.customer = customers.id AND goods_return.deleted = '0'".$searchQuery." 
+goods_return.total_carton, goods_return.return_type FROM goods_return, customers WHERE goods_return.customer = customers.id".$searchQuery." 
 order by ".$columnName." ".$columnSortOrder." limit ".$row.",".$rowperpage;
 $empRecords = mysqli_query($db, $empQuery);
 $data = array();

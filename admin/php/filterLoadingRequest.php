@@ -63,7 +63,6 @@ if($_POST['status'] != null && $_POST['status'] != '' && $_POST['status'] != '-'
   else{
     $searchQuery = " and do_request.status = '".$_POST['status']."'";
   }
-  
 }
 
 if($searchValue != ''){

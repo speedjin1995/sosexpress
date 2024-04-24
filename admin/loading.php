@@ -191,7 +191,7 @@ else{
             <table id="weightTable" class="table table-bordered table-striped display">
               <thead>
                 <tr>
-                  <th><button id="selectAllBtn" class="btn btn-primary">Select All</button></th>
+                  <th><input type="checkbox" id="selectAllCheckbox" class="selectAllCheckbox"></th>
                   <!--th>No</th-->
                   <th>Customer</th>
                   <th>Hypermarket</th>
@@ -697,7 +697,7 @@ else{
 <script type="text/html" id="pricingDetails2">
   <tr class="details">
     <td>
-      <input type="text" class="form-control" id="grn_no"  placeholder="Enter ..." required>
+      <input type="text" class="form-control" id="grn_no"  placeholder="Enter ...">
     </td>
     <td>
       <input type="number" class="form-control" id="carton"  placeholder="Enter ..." required>
@@ -724,6 +724,7 @@ else{
 var pricingCount = $("#pricingTable").find(".details").length;
 var pricingCount2 = $("#pricingTable2").find(".details").length;
 var pricingJSON = '[]';
+var do_number = '';
 
 $(function () {
   $("#zoneHidden").hide();
@@ -731,9 +732,9 @@ $(function () {
   $('#direct_store').hide();
   $('[data-toggle="tooltip"]').tooltip()
 
-  $('#selectAllBtn').on('click', function() {
+  $('#selectAllCheckbox').on('change', function() {
     var checkboxes = $('#weightTable tbody input[type="checkbox"]');
-    checkboxes.prop('checked', !checkboxes.prop('checked')).trigger('change');
+    checkboxes.prop('checked', $(this).prop('checked')).trigger('change');
   });
 
   // DropzoneJS Demo Code Start
@@ -1401,7 +1402,7 @@ $(function () {
     $("#pricingTable2").find('.details:last').attr("data-index", pricingCount2);
     $("#pricingTable2").find('#remove:last').attr("id", "remove" + pricingCount2);
 
-    $("#pricingTable2").find('#grn_no:last').attr('name', 'grn_no['+pricingCount2+']').attr("id", "grn_no" + pricingCount2);
+    $("#pricingTable2").find('#grn_no:last').attr('name', 'grn_no['+pricingCount2+']').attr("id", "grn_no" + pricingCount2).val(do_number);
     $("#pricingTable2").find('#carton:last').attr('name', 'carton['+pricingCount2+']').attr("id", "carton" + pricingCount2);
     $("#pricingTable2").find('#reason:last').attr('name', 'reason['+pricingCount2+']').attr("id", "reason" + pricingCount2).val("1");
     $("#pricingTable2").find('#other_reason').attr('name', 'other_reason['+pricingCount2+']').attr("id", "other_reason" + pricingCount2);
@@ -1703,6 +1704,7 @@ function reject(id) {
       $('#updateModal').find('#outlets').val(obj.message.outlet);
       pricingCount2 = 0;
       $('#updateModal').find('#pricingTable2').html('');
+      do_number = obj.message.do_number
       $('#updateModal').modal('show');
       
       $('#updateForm').validate({

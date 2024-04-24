@@ -18,6 +18,7 @@ if(isset($_POST['returnDate'], $_POST['customerNo'], $_POST['totalCarton'], $_PO
 	$return_type = "return";
 	$today = date("Y-m-d 00:00:00");
 	$returnDate = $returnDate." 00:00:00";
+	$status = 'Created';
 
 	//$grn_no = $_POST['grn_no'];
 	//$hypermarket = $_POST['hypermarket'];
@@ -97,13 +98,14 @@ if(isset($_POST['returnDate'], $_POST['customerNo'], $_POST['totalCarton'], $_PO
 
 	if(isset($_POST['collectionDate']) && $_POST['collectionDate'] != null && $_POST['collectionDate'] != ''){
 		$collectionDate = filter_input(INPUT_POST, 'collectionDate', FILTER_SANITIZE_STRING);
+		$status = 'Collected';
 	}
 
 	if(isset($_POST['id']) && $_POST['id'] != null && $_POST['id'] != ''){
 		if ($update_stmt = $db->prepare("UPDATE goods_return SET return_date=?, customer=?, vehicle=?, driver=?, return_details=?, total_carton=?, total_amount=?, collection_date=?, collection_type=?
-		, return_type=? WHERE id=?")){
+		, return_type=?, status=? WHERE id=?")){
 			$data = json_encode($return_details);
-			$update_stmt->bind_param('sssssssssss', $returnDate, $customerNo, $lorry, $driver, $data, $totalCarton, $totalAmount, $collectionDate, $collectionType, $return_type, $_POST['id']);
+			$update_stmt->bind_param('ssssssssssss', $returnDate, $customerNo, $lorry, $driver, $data, $totalCarton, $totalAmount, $collectionDate, $collectionType, $return_type, $status, $_POST['id']);
 		
 			// Execute the prepared query.
 			if (! $update_stmt->execute()){
@@ -165,9 +167,9 @@ if(isset($_POST['returnDate'], $_POST['customerNo'], $_POST['totalCarton'], $_PO
 		
 				$firstChar .= strval($count);
 
-				if ($insert_stmt = $db->prepare("INSERT INTO goods_return (GR_No, return_date, customer, vehicle, driver, return_details, total_carton, total_amount, collection_date, collection_type, return_type) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")) {
+				if ($insert_stmt = $db->prepare("INSERT INTO goods_return (GR_No, return_date, customer, vehicle, driver, return_details, total_carton, total_amount, collection_date, collection_type, return_type, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")) {
 					$data = json_encode($return_details);
-					$insert_stmt->bind_param('sssssssssss', $firstChar, $returnDate, $customerNo, $lorry, $driver, $data, $totalCarton, $totalAmount, $collectionDate, $collectionType, $return_type);
+					$insert_stmt->bind_param('ssssssssssss', $firstChar, $returnDate, $customerNo, $lorry, $driver, $data, $totalCarton, $totalAmount, $collectionDate, $collectionType, $return_type, $status);
 					
 					if(!$insert_stmt->execute()){
 						echo json_encode(

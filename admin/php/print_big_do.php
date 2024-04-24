@@ -57,7 +57,7 @@ if(isset($_POST['id'], $_POST['driver'], $_POST['lorry'], $_POST['checker'])){
 
     $placeholders = implode(',', array_fill(0, count($arrayOfId), '?'));
     $select_stmt = $db->prepare("SELECT do_request.id, outlet.name, do_request.do_number, do_request.do_details, do_request.po_number, customers.short_name, 
-    do_request.note, do_request.actual_carton FROM outlet, do_request, customers WHERE do_request.outlet = outlet.id AND do_request.customer = customers.id AND
+    do_request.note, do_request.actual_carton, do_request.do_type FROM outlet, do_request, customers WHERE do_request.outlet = outlet.id AND do_request.customer = customers.id AND
     do_request.id IN ($placeholders)");
 
     // Check if the statement is prepared successfully
@@ -66,13 +66,25 @@ if(isset($_POST['id'], $_POST['driver'], $_POST['lorry'], $_POST['checker'])){
         $types = str_repeat('i', count($arrayOfId)); // Assuming the IDs are integers
         $select_stmt->bind_param($types, ...$arrayOfId);
         $select_stmt->execute();
-        $select_stmt->bind_result($id, $outlet_name, $do_number, $do_details, $po_number, $customer, $note, $actual_carton);
+        $select_stmt->bind_result($id, $outlet_name, $do_number, $do_details, $po_number, $customer, $note, $actual_carton, $do_type);
         $results = array();
+        $doTypes = array();
         $index = 1;
 
         while ($select_stmt->fetch()) {
-            if($do_details == null || $do_details == ''){
+            if(!in_array($do_type , $doTypes)){
                 $results[]=array(
+                    'doType' => $do_type,
+                    'values' => array(),
+                );
+
+                array_push($doTypes, $do_type);
+            }
+
+            $key = array_search($do_type, $doTypes);
+
+            if($do_details == null || $do_details == ''){
+                array_push($results[$key]['values'], array(
                     'index' => $index,
                     'notes' => $note,
                     'po' => $po_number,
@@ -81,7 +93,7 @@ if(isset($_POST['id'], $_POST['driver'], $_POST['lorry'], $_POST['checker'])){
                     'outlet' => $outlet_name,
                     'id' => $id,
                     'customer' => $customer
-                );
+                ));
 
                 $index++;
             }
@@ -89,7 +101,7 @@ if(isset($_POST['id'], $_POST['driver'], $_POST['lorry'], $_POST['checker'])){
                 $poList = json_decode($do_details, true);
 
                 for($i=0; $i<count($poList); $i++){
-                    $results[]=array(
+                    array_push($results[$key]['values'], array(
                         'index' => $index,
                         'notes' => $note,
                         'po' => $poList[$i]['poNumber'],
@@ -98,7 +110,7 @@ if(isset($_POST['id'], $_POST['driver'], $_POST['lorry'], $_POST['checker'])){
                         'outlet' => $outlet_name,
                         'id' => $id,
                         'customer' => $customer
-                    );
+                    ));
 
                     $index++;
                 }
@@ -164,88 +176,96 @@ if(isset($_POST['id'], $_POST['driver'], $_POST['lorry'], $_POST['checker'])){
                     }
                 </style>
             </head>
-            <body>
-            <br><br><br><br><br><br><br><br>
-            <table style="width:100%">
-                <tbody>
-                    <tr>
-                        <td style="width:70%">
-                            <span>TO: '.$results[0]['outlet'].'<span>
-                        </td>
-                        <td style="width:30%">
-                            <span>NO. : '.$do.'<span>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td></td>
-                        <td></td>
-                    </tr>
-                    <tr>
-                        <td></td>
-                        <td></td>
-                    </tr>
-                    <tr>
-                        <td></td>
-                        <td></td>
-                    </tr>
-                    <tr>
-                        <td style="width:70%"></td>
-                        <td style="width:30%">
-                            <span>Date: '.$todayDate.'<span>
-                        </td>
-                    </tr>
-                </tbody>
-            </table><br><br><br>
-            <table style="width:100%">
-                <tbody>';
+            <body>';
 
-        $count = 0;
-        for($j=0; $j<count($results); $j++) {
-            $message .= '<tr><td>'.$results[$j]['index'].'</td><td>'.$results[$j]['customer'].'</td><td>'.$results[$j]['notes'].'</td><td>'.$results[$j]['po'].'</td><td>'.$results[$j]['do'].'</td><td style="text-align: center;">'.$results[$j]['carton'].'</td></tr>';
-            $count += (int)$results[$j]['carton'];
+            for($t=0; $t<count($results); $t++){
+                $result = $results[$t]['values'];
 
-            $update_stmt = $db->prepare("UPDATE do_request SET checker = ?, status = 'Printed' WHERE id = ?");
-            $update_stmt->bind_param("si", $checker, $results[$j]['id']);
-            $update_stmt->execute();
-            $update_stmt->close();
-        }
+                $message .= '<br><br><br><br><br><br><br><br>
+                        <table style="width:100%">
+                            <tbody>
+                                <tr>
+                                    <td style="width:70%">
+                                        <span>TO: '.$result[0]['outlet'].'<span>
+                                    </td>
+                                    <td style="width:30%">
+                                        <span>NO. : '.$do.'<span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td></td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td></td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td></td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td style="width:70%"></td>
+                                    <td style="width:30%">
+                                        <span>Date: '.$todayDate.'<span>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table><br><br><br>
+                        <table style="width:100%">
+                            <tbody>';
 
-        $message .= '</tbody><tfoot>
-        <tr>
-            <th colspan="5" style="text-align: right;">Total: </th>
-            <th style="border-top: 1px solid #ccc;border-bottom: 1px solid #ccc;">'.$count.'</th>
-        </tr>
-    </tfoot></table><br><br><br>
-    <table class="bottom-table" style="width:100%">
-        <tbody>
-            <tr>
-                <td style="width:60%"></td>
-                <td style="width:40%">
-                    <span>Phone: '.$driverPhone.'<span>
-                </td>
-            </tr>
-            <tr>
-                <td style="width:60%"></td>
-                <td style="width:40%">
-                    <span>Driver Name: '.$driverName.'<span>
-                </td>
-            </tr>
-            <tr>
-                <td style="width:60%"></td>
-                <td style="width:40%">
-                    <span>Driver IC: '.$driverIc.'<span>
-                </td>
-            </tr>
-            <tr>
-                <td style="width:60%"></td>
-                <td style="width:40%">
-                    <span>Lorry: '.$lorry.'<span>
-                </td>
-            </tr>
-        </tbody>
-    </table>';
+                    $count = 0;
+                    for($j=0; $j<count($result); $j++) {
+                        $message .= '<tr><td>'.$result[$j]['index'].'</td><td>'.$result[$j]['customer'].'</td><td>'.$result[$j]['notes'].'</td><td>'.$result[$j]['po'].'</td><td>'.$result[$j]['do'].'</td><td style="text-align: center;">'.$result[$j]['carton'].'</td></tr>';
+                        $count += (int)$result[$j]['carton'];
+
+                        $update_stmt = $db->prepare("UPDATE do_request SET checker = ?, status = 'Printed' WHERE id = ?");
+                        $update_stmt->bind_param("si", $checker, $result[$j]['id']);
+                        $update_stmt->execute();
+                        $update_stmt->close();
+                    }
+
+                    $message .= '</tbody><tfoot>
+                    <tr>
+                        <th colspan="5" style="text-align: right;">Total: </th>
+                        <th style="border-top: 1px solid #ccc;border-bottom: 1px solid #ccc;">'.$count.'</th>
+                    </tr>
+                </tfoot></table><br><br><br>
+                <table class="bottom-table" style="width:100%">
+                    <tbody>
+                        <tr>
+                            <td style="width:60%"></td>
+                            <td style="width:40%">
+                                <span>Phone: '.$driverPhone.'<span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="width:60%"></td>
+                            <td style="width:40%">
+                                <span>Driver Name: '.$driverName.'<span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="width:60%"></td>
+                            <td style="width:40%">
+                                <span>Driver IC: '.$driverIc.'<span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="width:60%"></td>
+                            <td style="width:40%">
+                                <span>Lorry: '.$lorry.'<span>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>';
+
+                $message .= '<p style="page-break-after: always;">&nbsp;</p>';
+            }
+            
     
-    $message .= '</html>';
+    $message .= '</body></html>';
 
         // Fetch each row
         $select_stmt->close();

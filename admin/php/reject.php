@@ -28,9 +28,10 @@ if(isset($_POST['customerNo'], $_POST['totalCarton'], $_POST['totalAmount2'], $_
 	$price = $_POST['price'];
 	$return_details = array();
 
-	for($i=0; $i<count($grn_no); $i++){
+	for($i=0; $i<count($carton); $i++){
 		$res = '0';
 		$others = '';
+		$grn = '';
 
 		if($reason[$i] == 'Others'){
 			$others = $other_reason[$i];
@@ -40,8 +41,12 @@ if(isset($_POST['customerNo'], $_POST['totalCarton'], $_POST['totalAmount2'], $_
 			$others = '';
 		}
 
+		if(isset($grn_no[$i]) && $grn_no[$i] != null && $grn_no[$i] != ''){
+			$grn = $grn_no[$i];
+		}
+
 		$return_details[] = array(
-			"grn_no" => $grn_no[$i],
+			"grn_no" => $grn,
 			"hypermarket" => $hypermarket,
 			"location" => $outlets,
 			"carton" => $carton[$i],
