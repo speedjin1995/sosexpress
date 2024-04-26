@@ -12,6 +12,7 @@ else{
   $role = $_SESSION['role'];
   $users = $db->query("SELECT * FROM users WHERE deleted = '0'");
   $customers = $db->query("SELECT * FROM customers WHERE deleted = '0'");
+  $customers2 = $db->query("SELECT * FROM customers WHERE deleted = '0'");
 }
 ?>
 
@@ -28,6 +29,64 @@ else{
 
 <section class="content">
   <div class="container-fluid">
+    <div class="row">
+      <div class="col-lg-12">
+        <div class="card">
+          <div class="card-body">
+            <div class="row">
+              <div class="form-group col-3">
+                <label>From Date:</label>
+                <div class="input-group date" id="fromDatePicker" data-target-input="nearest">
+                  <input type="text" class="form-control datetimepicker-input" data-target="#fromDatePicker" id="fromDate"/>
+                  <div class="input-group-append" data-target="#fromDatePicker" data-toggle="datetimepicker">
+                  <div class="input-group-text"><i class="fa fa-calendar"></i></div></div>
+                </div>
+              </div>
+
+              <div class="form-group col-3">
+                <label>To Date:</label>
+                <div class="input-group date" id="toDatePicker" data-target-input="nearest">
+                  <input type="text" class="form-control datetimepicker-input" data-target="#toDatePicker" id="toDate"/>
+                  <div class="input-group-append" data-target="#toDatePicker" data-toggle="datetimepicker">
+                    <div class="input-group-text"><i class="fa fa-calendar"></i></div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="form-group col-3">
+                <label>Invoice No.</label>
+                <div class="input-group" id="invNoinput" data-target-input="nearest">
+                  <input type="text" class="form-control" data-target="#invNoinput" id="invNo"/>
+                </div>
+              </div>
+              
+              <div class="col-3">
+                <div class="form-group">
+                  <label>Customer No</label>
+                  <select class="form-control" id="customerNoFilter" name="customerNoFilter">
+                    <option value="" selected disabled hidden>Please Select</option>
+                    <?php while($rowCustomer2=mysqli_fetch_assoc($customers2)){ ?>
+                      <option value="<?=$rowCustomer2['id'] ?>"><?=$rowCustomer2['customer_name'] ?></option>
+                    <?php } ?>
+                  </select>
+                </div>
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="col-9"></div>
+              <div class="col-3">
+                <button type="button" class="btn btn-block bg-gradient-warning btn-sm"  id="filterSearch">
+                  <i class="fas fa-search"></i>
+                  Search
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <div class="row">
       <div class="col-12">
         <div class="card">
@@ -160,6 +219,23 @@ var jobId = "";
 var jobStatus = "";
 
 $(function () {
+  //Date picker
+  $('#fromDatePicker').datetimepicker({
+    icons: { time: 'far fa-clock' },
+    format: 'DD/MM/YYYY',
+    defaultDate: new Date
+  });
+
+  $('#toDatePicker').datetimepicker({
+    icons: { time: 'far fa-clock' },
+    format: 'DD/MM/YYYY',
+    defaultDate: new Date
+  });
+
+  var fromDateI = $('#fromDate').val();
+  var toDateI = $('#toDate').val();
+  var customerNoI = $('#customerNoFilter').val() ? $('#customerNoFilter').val() : '';
+
   var table = $("#tableforPurchase").DataTable({
     "responsive": true,
     "autoWidth": false,
@@ -224,6 +300,75 @@ $(function () {
         });
       }
     }
+  });
+
+  $('#filterSearch').on('click', function(){
+    //$('#spinnerLoading').show();
+
+    var fromDateValue = $('#fromDate').val();
+    var toDateValue = $('#toDate').val();
+    var customerNoFilter = $('#customerNoFilter').val() ? $('#customerNoFilter').val() : '';
+
+    //Destroy the old Datatable
+    $("#weightTable").DataTable().clear().destroy();
+
+    //Create new Datatable
+    table = $("#weightTable").DataTable({
+      "responsive": true,
+      "autoWidth": false,
+      'processing': true,
+      'serverSide': true,
+      'serverMethod': 'post',
+      'searching': false,
+      'order': [[ 1, 'asc' ]],
+      'columnDefs': [ { orderable: false, targets: [0] }],
+      'ajax': {
+        'type': 'POST',
+        'url':'php/filterBooking.php',
+        'data': {
+          fromDate: fromDateValue,
+          toDate: toDateValue,
+          customer: customerNoFilter,
+        } 
+      },
+      'columns': [
+        {
+          // Add a checkbox with a unique ID for each row
+          data: 'id', // Assuming 'serialNo' is a unique identifier for each row
+          className: 'select-checkbox',
+          orderable: false,
+          render: function (data, type, row) {
+            return '<input type="checkbox" class="select-checkbox" id="checkbox_' + data + '" value="'+data+'"/>';
+          }
+        },
+        { data: 'customer_name' },
+        { data: 'booking_date' },
+        { data: 'description' },
+        { data: 'estimated_ctn' },
+        {
+          data: 'actual_ctn',
+          render: function (data, type, row) {
+            // Check if data is null
+            if (data === null) {
+              return ''; // Return empty string
+            }
+
+            // Generate HTML with a link
+            return '<a href="#" class="actualCtnLink" data-id="' + row.id + '" data-booking-date="' + row.booking_date + '" data-customer-id="' + row.customer_id + '">' + data + '</a>';
+          }
+        },
+        { data: 'pickup_method' },
+        { data: 'vehicle_no' },
+        { 
+          className: 'dt-control',
+          orderable: false,
+          data: null,
+          render: function ( data, type, row ) {
+            return '<td class="table-elipse" data-toggle="collapse" data-target="#demo'+row.serialNo+'"><i class="fas fa-angle-down"></i></td>';
+          }
+        }
+      ],
+    });
   });
 
   $(".search").click(function(){

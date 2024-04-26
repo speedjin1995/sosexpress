@@ -61,7 +61,7 @@ else{
 <!-- Main content -->
 <div class="content">
   <div class="container-fluid">
-    <!--div class="row">
+    <div class="row">
       <div class="col-lg-12">
         <div class="card">
           <div class="card-body">
@@ -85,15 +85,10 @@ else{
                 </div>
               </div>
 
-              <div class="col-3">
-                <div class="form-group">
-                  <label>Shipment Type</label>
-                  <select class="form-control" id="pickupMethod" name="pickupMethod">
-                    <option value="" selected disabled hidden>Please Select</option>
-                    <option value="SOS Pickup">SOS Pickup</option>
-                    <option value="Outstation Pickup">Outstation Pickup</option>
-                    <option value="Send By Own">Send By Own</option>
-                  </select>
+              <div class="form-group col-3">
+                <label>Type</label>
+                <div class="input-group" id="invNoinput" data-target-input="nearest">
+                  <input type="text" class="form-control" data-target="#invNoinput" id="invNo"/>
                 </div>
               </div>
 
@@ -102,6 +97,9 @@ else{
                   <label>Customer No</label>
                   <select class="form-control" id="customerNoFilter" name="customerNoFilter">
                     <option value="" selected disabled hidden>Please Select</option>
+                    <?php while($rowCustomer2=mysqli_fetch_assoc($customers2)){ ?>
+                      <option value="<?=$rowCustomer2['id'] ?>"><?=$rowCustomer2['customer_name'] ?></option>
+                    <?php } ?>
                   </select>
                 </div>
               </div>
@@ -119,7 +117,7 @@ else{
           </div>
         </div>
       </div>
-    </div-->
+    </div>
 
     <div class="row">
       <div class="col-lg-12">
