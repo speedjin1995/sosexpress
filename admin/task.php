@@ -87,9 +87,13 @@ else{
 
               <div class="form-group col-3">
                 <label>Type</label>
-                <div class="input-group" id="invNoinput" data-target-input="nearest">
-                  <input type="text" class="form-control" data-target="#invNoinput" id="invNo"/>
-                </div>
+                <select class="form-control" id="invNoinput" name="invNoinput" required>
+                  <option value="" selected disabled hidden>Please Select</option>
+                  <option value="GRN Collection">GRN Collection</option>
+                  <option value="Reject Collection">Reject Collection</option>
+                  <option value="Goods Return">Goods Return</option>
+                  <option value="General">General</option>
+                </select>
               </div>
 
               <div class="col-3">
@@ -353,13 +357,15 @@ $(function () {
 
   //Date picker
   $('#fromDatePicker').datetimepicker({
-      icons: { time: 'far fa-calendar' },
-      defaultDate: new Date
+    icons: { time: 'far fa-clock' },
+    format: 'DD/MM/YYYY',
+    defaultDate: new Date
   });
 
   $('#toDatePicker').datetimepicker({
-      icons: { time: 'far fa-calendar' },
-      defaultDate: new Date
+    icons: { time: 'far fa-clock' },
+    format: 'DD/MM/YYYY',
+    defaultDate: new Date
   });
 
   $('#bookingDate').datetimepicker({
@@ -394,39 +400,10 @@ $(function () {
   });
 
   $('#filterSearch').on('click', function(){
-    var fromDateValue = '';
-    var toDateValue = '';
-
-    if($('#fromDate').val()){
-      var convert1 = $('#fromDate').val().replace(", ", " ");
-      convert1 = convert1.replace(":", "/");
-      convert1 = convert1.replace(":", "/");
-      convert1 = convert1.replace(" ", "/");
-      convert1 = convert1.replace(" pm", "");
-      convert1 = convert1.replace(" am", "");
-      convert1 = convert1.replace(" PM", "");
-      convert1 = convert1.replace(" AM", "");
-      var convert2 = convert1.split("/");
-      var date  = new Date(convert2[2], convert2[1] - 1, convert2[0], convert2[3], convert2[4], convert2[5]);
-      fromDateValue = date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate() + " " + date.getHours() + ":" + date.getMinutes() + ":" + date.getSeconds();
-    }
-    
-    if($('#toDate').val()){
-      var convert3 = $('#toDate').val().replace(", ", " ");
-      convert3 = convert3.replace(":", "/");
-      convert3 = convert3.replace(":", "/");
-      convert3 = convert3.replace(" ", "/");
-      convert3 = convert3.replace(" pm", "");
-      convert3 = convert3.replace(" am", "");
-      convert3 = convert3.replace(" PM", "");
-      convert3 = convert3.replace(" AM", "");
-      var convert4 = convert3.split("/");
-      var date2  = new Date(convert4[2], convert4[1] - 1, convert4[0], convert4[3], convert4[4], convert4[5]);
-      toDateValue = date2.getFullYear() + "-" + (date2.getMonth() + 1) + "-" + date2.getDate() + " " + date2.getHours() + ":" + date2.getMinutes() + ":" + date2.getSeconds();
-    }
-
-    var pickupMethod = $('#pickupMethod').val() ? $('#pickupMethod').val() : '';
+    var fromDateValue = $('#fromDate').val();
+    var toDateValue = $('#toDate').val();
     var customerNoFilter = $('#customerNoFilter').val() ? $('#customerNoFilter').val() : '';
+    var invoiceFilter = $('#invNoinput').val() ? $('#invNoinput').val() : '';
 
     //Destroy the old Datatable
     $("#weightTable").DataTable().clear().destroy();
@@ -438,25 +415,24 @@ $(function () {
       'processing': true,
       'serverSide': true,
       'serverMethod': 'post',
-      'searching': false,
       'order': [[ 1, 'asc' ]],
       'columnDefs': [ { orderable: false, targets: [0] }],
       'ajax': {
         'type': 'POST',
-        'url':'php/filterBooking.php',
+        'url':'php/filterTask.php',
         'data': {
           fromDate: fromDateValue,
           toDate: toDateValue,
-          method: pickupMethod,
           customer: customerNoFilter,
+          invoice: invoiceFilter
         } 
       },
       'columns': [
-        { data: 'customer_name' },
+        { data: 'customerName' },
         { data: 'vehicle_no' },
         { data: 'driver_name' },
-        { data: 'outlet' },
-        { data: 'date' },
+        { data: 'outletName' },
+        { data: 'booking_date' },
         { data: 'type' },
         { 
           data: 'id',
@@ -472,7 +448,10 @@ $(function () {
             return '<td class="table-elipse" data-toggle="collapse" data-target="#demo'+row.id+'"><i class="fas fa-angle-down"></i></td>';
           }
         }
-      ]
+      ],
+      "rowCallback": function( row, data, index ) {
+        //$('td', row).css('background-color', '#E6E6FA');
+      },        
     });
   });
 

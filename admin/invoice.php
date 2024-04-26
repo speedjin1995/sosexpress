@@ -92,9 +92,12 @@ else{
         <div class="card">
           <div class="card-header">
             <div class="row">
-              <div class="col-6"></div>
+              <div class="col-3"></div>
               <div class="col-3">
                 <button type="button" class="btn btn-block bg-gradient-success btn-sm" id="generateInvoice">Generate Invoices</button>
+              </div>
+              <div class="col-3">
+                <button type="button" class="btn btn-block bg-gradient-info btn-sm" id="exportInvoice">Export Invoices</button>
               </div>
               <div class="col-3">
                 <button type="button" class="btn btn-block bg-gradient-warning btn-sm" id="addPurchase">Create New Invoices</button>
@@ -308,63 +311,54 @@ $(function () {
     var fromDateValue = $('#fromDate').val();
     var toDateValue = $('#toDate').val();
     var customerNoFilter = $('#customerNoFilter').val() ? $('#customerNoFilter').val() : '';
+    var invoiceFilter = $('#invNoinput').val() ? $('#invNoinput').val() : '';
 
     //Destroy the old Datatable
-    $("#weightTable").DataTable().clear().destroy();
+    $("#tableforPurchase").DataTable().clear().destroy();
 
     //Create new Datatable
-    table = $("#weightTable").DataTable({
+    table = $("#tableforPurchase").DataTable({
       "responsive": true,
       "autoWidth": false,
       'processing': true,
       'serverSide': true,
-      'serverMethod': 'post',
       'searching': false,
-      'order': [[ 1, 'asc' ]],
-      'columnDefs': [ { orderable: false, targets: [0] }],
+      'serverMethod': 'post',
+      'ordering': false,
       'ajax': {
         'type': 'POST',
-        'url':'php/filterBooking.php',
+        'url':'php/filterInvoice.php',
         'data': {
           fromDate: fromDateValue,
           toDate: toDateValue,
           customer: customerNoFilter,
+          invoice: invoiceFilter
         } 
       },
       'columns': [
-        {
-          // Add a checkbox with a unique ID for each row
-          data: 'id', // Assuming 'serialNo' is a unique identifier for each row
-          className: 'select-checkbox',
-          orderable: false,
-          render: function (data, type, row) {
-            return '<input type="checkbox" class="select-checkbox" id="checkbox_' + data + '" value="'+data+'"/>';
-          }
-        },
-        { data: 'customer_name' },
-        { data: 'booking_date' },
-        { data: 'description' },
-        { data: 'estimated_ctn' },
-        {
-          data: 'actual_ctn',
-          render: function (data, type, row) {
-            // Check if data is null
-            if (data === null) {
-              return ''; // Return empty string
-            }
-
-            // Generate HTML with a link
-            return '<a href="#" class="actualCtnLink" data-id="' + row.id + '" data-booking-date="' + row.booking_date + '" data-customer-id="' + row.customer_id + '">' + data + '</a>';
-          }
-        },
-        { data: 'pickup_method' },
-        { data: 'vehicle_no' },
         { 
-          className: 'dt-control',
-          orderable: false,
-          data: null,
+          data: 'invoice_id',
           render: function ( data, type, row ) {
-            return '<td class="table-elipse" data-toggle="collapse" data-target="#demo'+row.serialNo+'"><i class="fas fa-angle-down"></i></td>';
+            return simplyShowId(row);
+          }
+        },
+        { 
+          data: 'invoice_id',
+          render: function ( data, type, row ) {
+            return details(row);
+          }
+        },
+        { 
+          data: 'invoice_id',
+          render: function ( data, type, row ) {
+            <?php
+              if($role == 'ADMIN'){
+                echo 'return simplyShowCreatedDatetime(row);';
+              }
+              else{
+                echo 'return simplyShowCreatedDatetime2(row);';
+              }
+            ?>  
           }
         }
       ],
@@ -505,6 +499,22 @@ $(function () {
       totalAmount += itemPrice;
       $('#totalAmount').val(parseFloat(totalAmount).toFixed(2));
     });
+  });
+
+  $('#exportInvoice').on('click', function(){
+    /*var fromDateValue = $('#fromDateValue').val() ? $('#fromDateValue').val() : '';
+    var toDateValue = $('#toDateValue').val() ? $('#toDateValue').val() : '';
+    var statusFilter = $('#statusFilter').val() ? $('#statusFilter').val() : '';
+    var customerNoFilter = $('#customerNoFilter').val() ? $('#customerNoFilter').val() : '';
+    var vehicleFilter = $('#vehicleFilter').val() ? $('#vehicleFilter').val() : '';
+    var invoiceFilter = $('#invoiceFilter').val() ? $('#invoiceFilter').val() : '';
+    var batchFilter = $('#batchFilter').val() ? $('#batchFilter').val() : '';
+    var productFilter = $('#productFilter').val() ? $('#productFilter').val() : '';
+    
+    window.open("php/export.php?file=weight&fromDate="+fromDateValue+"&toDate="+toDateValue+
+    "&status="+statusFilter+"&customer="+customerNoFilter+"&vehicle="+vehicleFilter+
+    "&invoice="+invoiceFilter+"&batch="+batchFilter+"&product="+productFilter);*/
+    window.open("php/export.php");
   });
 });
 

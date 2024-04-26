@@ -12,9 +12,30 @@ $columnSortOrder = $_POST['order'][0]['dir']; // asc or desc
 $searchValue = mysqli_real_escape_string($db,$_POST['search']['value']); // Search value
 
 ## Search 
-$searchQuery = "";
+$searchQuery = " ";
+
+if($_POST['fromDate'] != null && $_POST['fromDate'] != ''){
+  $dateTime = DateTime::createFromFormat('d/m/Y', $_POST['fromDate']);
+  $fromDateTime = $dateTime->format('Y-m-d 00:00:00');
+  $searchQuery = " and booking_date >= '".$fromDateTime."'";
+}
+
+if($_POST['toDate'] != null && $_POST['toDate'] != ''){
+  $dateTime = DateTime::createFromFormat('d/m/Y', $_POST['toDate']);
+  $toDateTime = $dateTime->format('Y-m-d 23:59:59');
+	$searchQuery .= " and booking_date <= '".$toDateTime."'";
+}
+
+if($_POST['invoice'] != null && $_POST['invoice'] != '' && $_POST['invoice'] != '-'){
+	$searchQuery .= " and type = '".$_POST['invoice']."'";
+}
+
+if($_POST['customer'] != null && $_POST['customer'] != '' && $_POST['customer'] != '-'){
+	$searchQuery .= " and customer = '".$_POST['customer']."'";
+}
+
 if($searchValue != ''){
-  $searchQuery = " and (customers.customer_name like '%".$searchValue."%')";
+  $searchQuery = " and (customer_name like '%".$searchValue."%')";
 }
 
 ## Total number of records without filtering
