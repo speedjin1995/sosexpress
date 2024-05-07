@@ -1,10 +1,12 @@
 <?php
 
 require_once 'db_connect.php';
-// // Load the database configuration file 
+require_once '../../vendor/autoload.php'; 
+use PhpOffice\PhpSpreadsheet\Spreadsheet; 
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
  
 // Filter the excel data 
-function filterData(&$str){ 
+/*function filterData(&$str){ 
     $str = preg_replace("/\t/", "\\t", $str); 
     $str = preg_replace("/\r?\n/", "\\n", $str); 
     if(strstr($str, '"')) $str = '"' . str_replace('"', '""', $str) . '"'; 
@@ -68,5 +70,22 @@ header("Content-Disposition: attachment; filename=\"$fileName\"");
 // Render excel data 
 echo $excelData; 
  
-exit;
+exit;*/
+// Creates New Spreadsheet 
+$spreadsheet = new Spreadsheet(); 
+  
+// Retrieve the current active worksheet 
+$sheet = $spreadsheet->getActiveSheet(); 
+  
+// Set the value of cell A1 
+$sheet->setCellValue('A1', 'GeeksForGeeks!'); 
+  
+// Sets the value of cell B1 
+$sheet->setCellValue('B1', 'A Computer Science Portal For Geeks'); 
+   
+// Write an .xlsx file  
+$writer = new Xlsx($spreadsheet); 
+  
+// Save .xlsx file to the current directory 
+$writer->save('gfg.xlsx'); 
 ?>

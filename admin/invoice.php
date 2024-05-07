@@ -506,19 +506,13 @@ $(function () {
   });
 
   $('#exportInvoice').on('click', function(){
-    /*var fromDateValue = $('#fromDateValue').val() ? $('#fromDateValue').val() : '';
-    var toDateValue = $('#toDateValue').val() ? $('#toDateValue').val() : '';
-    var statusFilter = $('#statusFilter').val() ? $('#statusFilter').val() : '';
+    var fromDateValue = $('#fromDate').val() : '';
+    var toDateValue = $('#toDate').val() : '';
     var customerNoFilter = $('#customerNoFilter').val() ? $('#customerNoFilter').val() : '';
-    var vehicleFilter = $('#vehicleFilter').val() ? $('#vehicleFilter').val() : '';
-    var invoiceFilter = $('#invoiceFilter').val() ? $('#invoiceFilter').val() : '';
-    var batchFilter = $('#batchFilter').val() ? $('#batchFilter').val() : '';
-    var productFilter = $('#productFilter').val() ? $('#productFilter').val() : '';
+    var invoiceFilter = $('#invNoinput').val() ? $('#invNoinput').val() : '';
     
-    window.open("php/export.php?file=weight&fromDate="+fromDateValue+"&toDate="+toDateValue+
-    "&status="+statusFilter+"&customer="+customerNoFilter+"&vehicle="+vehicleFilter+
-    "&invoice="+invoiceFilter+"&batch="+batchFilter+"&product="+productFilter);*/
-    window.open("php/export.php");
+    window.open("php/export.php?fromDate="+fromDateValue+"&toDate="+toDateValue+
+    "&customer="+customerNoFilter+"&invoice="+invoiceFilter);
   });
 });
 
