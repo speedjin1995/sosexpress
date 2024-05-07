@@ -93,7 +93,7 @@ else{
               <div class="col-3">
                 <div class="form-group">
                   <label>Shipment Type</label>
-                  <select class="form-control" id="pickupMethod" name="pickupMethod">
+                  <select class="form-control select2" id="pickupMethod" name="pickupMethod">
                     <option value="" selected disabled hidden>Please Select</option>
                     <option value="SOS Pickup">SOS Pickup</option>
                     <option value="Outstation Pickup">Outstation Pickup</option>
@@ -105,7 +105,7 @@ else{
               <div class="col-3">
                 <div class="form-group">
                   <label>Customer No</label>
-                  <select class="form-control" id="customerNoFilter" name="customerNoFilter">
+                  <select class="form-control select2" id="customerNoFilter" name="customerNoFilter">
                     <option value="" selected disabled hidden>Please Select</option>
                     <?php while($rowCustomer2=mysqli_fetch_assoc($customers2)){ ?>
                       <option value="<?=$rowCustomer2['id'] ?>"><?=$rowCustomer2['customer_name'] ?></option>
@@ -208,7 +208,7 @@ else{
             <div class="col-4">
               <div class="form-group">
                 <label class="labelStatus">Pickup Method *</label>
-                <select class="form-control" id="pickup_method" name="pickup_method" required>
+                <select class="form-control select2" id="pickup_method" name="pickup_method" required>
                   <option value="" selected disabled hidden>Please Select</option>
                   <option value="SOS Pickup">SOS Pickup</option>
                   <option value="Outstation Pickup">Outstation Pickup</option>
@@ -219,7 +219,7 @@ else{
             <div class="col-4">
               <div class="form-group">
                 <label class="labelStatus">Customer *</label>
-                <select class="form-control" id="customerNo" name="customerNo" required>
+                <select class="form-control select2" id="customerNo" name="customerNo" required>
                   <option value="" selected disabled hidden>Please Select</option>
                   <?php while($rowCustomer=mysqli_fetch_assoc($customers)){ ?>
                     <option value="<?=$rowCustomer['id'] ?>" data-address="<?=$rowCustomer['customer_address'] ?>"><?=$rowCustomer['customer_name'] ?></option>
@@ -434,6 +434,10 @@ $(function () {
   const yesterday = new Date(today);
   tomorrow.setDate(tomorrow.getDate() + 1);
   yesterday.setDate(yesterday.getDate() - 1);
+
+  $('.select2').select2({
+    allowClear: true
+  });
 
   //Date picker
   $('#fromDatePicker').datetimepicker({
@@ -710,8 +714,8 @@ $(function () {
 
     $('#extendModal').find('#id').val("");
     $('#extendModal').find('#booking_date').val(formatDate2(today));
-    $('#extendModal').find('#pickup_method').val("");
-    $('#extendModal').find('#customerNo').val("");
+    $('#extendModal').find('#pickup_method').select2('destroy').val('').select2();
+    $('#extendModal').find('#customerNo').select2('destroy').val('').select2();
     $('#extendModal').find('#branch').val("");
     $('#extendModal').find('#address').val("");
     $('#extendModal').find('#description').val("");
@@ -1009,8 +1013,8 @@ function edit(id) {
     if(obj.status === 'success'){
       $('#extendModal').find('#id').val(obj.message.id);
       $('#extendModal').find('#booking_date').val(formatDate2(new Date(obj.message.booking_date)));
-      $('#extendModal').find('#pickup_method').val(obj.message.pickup_method);
-      $('#extendModal').find('#customerNo').val(obj.message.customer);
+      $('#extendModal').find('#pickup_method').val(obj.message.pickup_method).trigger('change');
+      $('#extendModal').find('#customerNo').val(obj.message.customer).trigger('change');
       $('#extendModal').find('#branch').val(obj.message.branch);
       $('#extendModal').find('#address').val(obj.message.pickup_location);
       $('#extendModal').find('#description').val(obj.message.description);

@@ -63,7 +63,7 @@ else{
               <div class="col-3">
                 <div class="form-group">
                   <label>Customer No</label>
-                  <select class="form-control" id="customerNoFilter" name="customerNoFilter">
+                  <select class="form-control select2" id="customerNoFilter" name="customerNoFilter">
                     <option value="" selected disabled hidden>Please Select</option>
                     <?php while($rowCustomer2=mysqli_fetch_assoc($customers2)){ ?>
                       <option value="<?=$rowCustomer2['id'] ?>"><?=$rowCustomer2['customer_name'] ?></option>
@@ -238,6 +238,10 @@ $(function () {
   var fromDateI = $('#fromDate').val();
   var toDateI = $('#toDate').val();
   var customerNoI = $('#customerNoFilter').val() ? $('#customerNoFilter').val() : '';
+
+  $('.select2').select2({
+    allowClear: true
+  });
 
   var table = $("#tableforPurchase").DataTable({
     "responsive": true,
