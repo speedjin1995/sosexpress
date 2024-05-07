@@ -6,47 +6,56 @@ use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
  
 // Filter the excel data 
-/*function filterData(&$str){ 
+function filterData(&$str){ 
     $str = preg_replace("/\t/", "\\t", $str); 
     $str = preg_replace("/\r?\n/", "\\n", $str); 
     if(strstr($str, '"')) $str = '"' . str_replace('"', '""', $str) . '"'; 
 } 
  
 // Excel file name for download 
-$fileName = "Invoice_" . date('Y-m-d') . ".xls";
+$fileName = "Invoice_" . date('Y-m-d') . ".xlsx";
  
 // Column names 
-$fields = array('Type', 'No', 'Date', 'Customer', 'Customer Reference No', 'Inventory', 'Description', 'UOM', 'Amount', 'Qty',	
-'Unit Price', 'Dis%', 'GST Amt', 'GST', 'MSIC', 'Entity Info', 'Branch', 'Project', 'Bill Reference No', 'Comment', 'Shipment',	
+// Create a new Spreadsheet
+$spreadsheet = new Spreadsheet();
+
+// Get the active worksheet
+$sheet = $spreadsheet->getActiveSheet();
+
+// Column names 
+$fields = array('Type', 'No', 'Date', 'Customer', 'Customer Reference No', 'Inventory', 'Description', 'UOM', 'Amount', 'Qty',    
+'Unit Price', 'Dis%', 'GST Amt', 'GST', 'MSIC', 'Entity Info', 'Branch', 'Project', 'Bill Reference No', 'Comment', 'Shipment',    
 'Journal Memo', 'Sales Person'); 
 
 // Display column names as first row 
-$excelData = implode("\t", array_values($fields)) . "\n"; 
+$sheet->fromArray($fields, NULL, 'A1');
 
 ## Search 
-$searchQuery = " ";
+$searchQuery = "";
 
 if(isset($_GET['fromDate']) && $_GET['fromDate'] != null && $_GET['fromDate'] != ''){
-    $searchQuery = " and invoice.created_datetime >= '".$_GET['fromDate']."'";
+    $searchQuery .= " AND invoice.created_datetime >= '".$_GET['fromDate']."'";
 }
 
 if(isset($_GET['toDate']) && $_GET['toDate'] != null && $_GET['toDate'] != ''){
-    $searchQuery = " and invoice.created_datetime <= '".$_GET['toDate']."'";
+    $searchQuery .= " AND invoice.created_datetime <= '".$_GET['toDate']."'";
 }
 
 if(isset($_GET['customer']) && $_GET['customer'] != null && $_GET['customer'] != '' && $_GET['customer'] != '-'){
-    $searchQuery = " and customers.id = '".$_GET['customer']."'";
+    $searchQuery .= " AND customers.id = '".$_GET['customer']."'";
 }
 
 if(isset($_GET['invoice']) && $_GET['invoice'] != null && $_GET['invoice'] != ''){
-    $searchQuery = " and invoice.invoice_no like '%".$_GET['invoice']."%'";
+    $searchQuery .= " AND invoice.invoice_no like '%".$_GET['invoice']."%'";
 }
 
 // Fetch records from database
-$query = $db->query("select invoice.invoice_no, customers.customer_code, customers.customer_name, customers.short_name, customers.customer_address,
+$query = $db->query("SELECT invoice.invoice_no, customers.customer_code, customers.customer_name, customers.short_name, customers.customer_address,
 invoice.total_amount, users.name, invoice.created_datetime, invoice_cart.id, invoice_cart.invoice_id, invoice_cart.items, 
-invoice_cart.amount from invoice, invoice_cart, customers, users WHERE customers.id = invoice.customer AND 
+invoice_cart.amount FROM invoice, invoice_cart, customers, users WHERE customers.id = invoice.customer AND 
 invoice.id = invoice_cart.invoice_id AND users.id = invoice.created_by".$searchQuery);
+
+$rowIndex = 2; // Start from the second row
 
 if($query->num_rows > 0){ 
     // Output each row of the data 
@@ -57,35 +66,22 @@ if($query->num_rows > 0){
         , $row['items'], 'Jobs', $row['amount'], '1', $row['amount'], '', '', '', '01112', $entity, '', '', '', '', '', '', '');
 
         array_walk($lineData, 'filterData'); 
-        $excelData .= implode("\t", array_values($lineData)) . "\n"; 
+        $sheet->fromArray($lineData, NULL, 'A'.$rowIndex);
+        $rowIndex++;
     } 
 }else{ 
-    $excelData .= 'No records found...'. "\n"; 
+    $sheet->setCellValue('A'.$rowIndex, 'No records found...');
 } 
- 
-// Headers for download 
-header("Content-Type: application/vnd.ms-excel"); 
-header("Content-Disposition: attachment; filename=\"$fileName\""); 
- 
-// Render excel data 
-echo $excelData; 
- 
-exit;*/
-// Creates New Spreadsheet 
-$spreadsheet = new Spreadsheet(); 
-  
-// Retrieve the current active worksheet 
-$sheet = $spreadsheet->getActiveSheet(); 
-  
-// Set the value of cell A1 
-$sheet->setCellValue('A1', 'GeeksForGeeks!'); 
-  
-// Sets the value of cell B1 
-$sheet->setCellValue('B1', 'A Computer Science Portal For Geeks'); 
-   
-// Write an .xlsx file  
-$writer = new Xlsx($spreadsheet); 
-  
-// Save .xlsx file to the current directory 
-$writer->save('gfg.xlsx'); 
+
+// Create a writer object
+$writer = new Xlsx($spreadsheet);
+
+// Output to browser
+header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+header('Content-Disposition: attachment;filename="'.$fileName.'"');
+header('Cache-Control: max-age=0');
+
+// Save the spreadsheet
+$writer->save('php://output');
+exit;
 ?>
