@@ -151,7 +151,7 @@ else{
                   <div class="col-4">
                     <div class="form-group">
                       <label for="inputJobNo">Customer *</label>
-                      <select class="form-control" id="customerNo" name="customerNo" required>
+                      <select class="form-control select2" id="customerNo" name="customerNo" required>
                         <option value="" selected disabled hidden>Please Select</option>
                         <?php while($rowCustomer=mysqli_fetch_assoc($customers)){ ?>
                             <option value="<?=$rowCustomer['id'] ?>"><?=$rowCustomer['customer_name'] ?></option>
@@ -240,7 +240,8 @@ $(function () {
   var customerNoI = $('#customerNoFilter').val() ? $('#customerNoFilter').val() : '';
 
   $('.select2').select2({
-    allowClear: true
+    allowClear: true,
+    placeholder: "Please Select"
   });
 
   var table = $("#tableforPurchase").DataTable({
@@ -506,8 +507,8 @@ $(function () {
   });
 
   $('#exportInvoice').on('click', function(){
-    var fromDateValue = $('#fromDate').val() : '';
-    var toDateValue = $('#toDate').val() : '';
+    var fromDateValue = $('#fromDate').val() ? $('#fromDate').val() : '';
+    var toDateValue = $('#toDate').val() ? $('#toDate').val() : '';
     var customerNoFilter = $('#customerNoFilter').val() ? $('#customerNoFilter').val() : '';
     var invoiceFilter = $('#invNoinput').val() ? $('#invNoinput').val() : '';
     

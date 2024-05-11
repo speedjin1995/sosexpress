@@ -94,7 +94,7 @@ else{
                 <div class="form-group">
                   <label>Shipment Type</label>
                   <select class="form-control select2" id="pickupMethod" name="pickupMethod">
-                    <option value="" selected disabled hidden>Please Select</option>
+                    <!--option value="" selected disabled hidden>Please Select</option-->
                     <option value="SOS Pickup">SOS Pickup</option>
                     <option value="Outstation Pickup">Outstation Pickup</option>
                     <option value="Send By Own">Send By Own</option>
@@ -436,7 +436,8 @@ $(function () {
   yesterday.setDate(yesterday.getDate() - 1);
 
   $('.select2').select2({
-    allowClear: true
+    allowClear: true,
+    placeholder: "Please Select"
   });
 
   //Date picker

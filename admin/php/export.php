@@ -34,11 +34,15 @@ $sheet->fromArray($fields, NULL, 'A1');
 $searchQuery = "";
 
 if(isset($_GET['fromDate']) && $_GET['fromDate'] != null && $_GET['fromDate'] != ''){
-    $searchQuery .= " AND invoice.created_datetime >= '".$_GET['fromDate']."'";
+    $dateTime = DateTime::createFromFormat('d/m/Y', $_GET['fromDate']);
+    $fromDateTime = $dateTime->format('Y-m-d 00:00:00');
+    $searchQuery .= " AND invoice.created_datetime >= '".$fromDateTime."'";
 }
 
 if(isset($_GET['toDate']) && $_GET['toDate'] != null && $_GET['toDate'] != ''){
-    $searchQuery .= " AND invoice.created_datetime <= '".$_GET['toDate']."'";
+    $dateTime = DateTime::createFromFormat('d/m/Y', $_GET['toDate']);
+    $toDateTime = $dateTime->format('Y-m-d 23:59:59');
+    $searchQuery .= " AND invoice.created_datetime <= '".$toDateTime."'";
 }
 
 if(isset($_GET['customer']) && $_GET['customer'] != null && $_GET['customer'] != '' && $_GET['customer'] != '-'){
@@ -61,6 +65,7 @@ if($query->num_rows > 0){
     // Output each row of the data 
     while($row = $query->fetch_assoc()){ 
         $entity = $row['customer_name'].$row['customer_address'];
+        $entity = trim(preg_replace('/\s\s+/', ' ', $entity));
 
         $lineData = array('Invoice', $row['invoice_no'], substr($row['created_datetime'], 0, 10), $row['customer_name'], $row['customer_code'], 'New Product Code'
         , $row['items'], 'Jobs', $row['amount'], '1', $row['amount'], '', '', '', '01112', $entity, '', '', '', '', '', '', '');
