@@ -570,7 +570,7 @@ $(function () {
 
                     // Conditionally add checkbox only when status is 'Posted'
                     if (rowData.status === 'Posted') {
-                        var checkboxHtml = '<td><input type="checkbox" class="postedCheckbox" id="checkbox_' + rowData.id + '" checked></td>';
+                        var checkboxHtml = '<td><input type="checkbox" class="postedCheckbox" id="checkbox_' + rowData.id + '"></td>';
                         tableContent += checkboxHtml;
                     } else {
                         // If status is not 'Posted', leave the cell empty

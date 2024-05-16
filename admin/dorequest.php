@@ -420,7 +420,6 @@ else{
                 </button>
             </div>
             <div class="modal-body">
-              <button type="button" class="btn btn-success" id="addRowBtn">Add Row</button>
               <table class="table" id="doPoTable">
                   <thead>
                       <tr>
@@ -435,6 +434,7 @@ else{
               </table>
             </div>
             <div class="modal-footer">
+              <button type="button" class="btn btn-success" id="addRowBtn">Add Row</button>
               <button type="button" class="btn btn-primary" id="saveRowsBtn">Save</button>
             </div>
         </div>
@@ -1136,6 +1136,7 @@ function addRow() {
   
   // Append the new row to the table
   $('#doPoTable tbody').append(newRow);
+  $('#doPoTable tbody tr:last-child td:first-child input').focus();
 }
 
 function addRow2(defaultDONumber, defaultPONumber) {
@@ -1147,6 +1148,7 @@ function addRow2(defaultDONumber, defaultPONumber) {
   
     // Append the new row to the table
     $('#doPoTable tbody').append(newRow);
+    $('#doPoTable tbody tr:last-child td:first-child input').focus();
 }
 
 function format (row) {
