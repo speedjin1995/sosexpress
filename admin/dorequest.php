@@ -88,7 +88,7 @@ else{
               <div class="col-3">
                 <div class="form-group">
                   <label>Customer No</label>
-                  <select class="form-control" id="customerNoFilter" name="customerNoFilter">
+                  <select class="form-control select2" id="customerNoFilter" name="customerNoFilter">
                     <option value="" selected disabled hidden>Please Select</option>
                     <?php while($rowCustomer2=mysqli_fetch_assoc($customers2)){ ?>
                       <option value="<?=$rowCustomer2['id'] ?>"><?=$rowCustomer2['customer_name'] ?></option>
@@ -100,7 +100,7 @@ else{
               <div class="col-3">
                 <div class="form-group">
                   <label>States</label>
-                  <select class="form-control" id="stateFilter" name="stateFilter" style="width: 100%;">
+                  <select class="form-control select2" id="stateFilter" name="stateFilter" style="width: 100%;">
                     <option selected="selected">-</option>
                     <?php while($rowStatus2=mysqli_fetch_assoc($states2)){ ?>
                       <option value="<?=$rowStatus2['id'] ?>"><?=$rowStatus2['states'] ?></option>
@@ -113,12 +113,12 @@ else{
             <div class="row">
               <div class="form-group col-3">
                 <label>Zones</label>
-                <select class="form-control" id="zonesFilter" name="zonesFilter" style="width: 100%;"></select>
+                <select class="form-control select2" id="zonesFilter" name="zonesFilter" style="width: 100%;"></select>
               </div>
 
               <div class="form-group col-3">
                 <label>Hypermarket</label>
-                <select class="form-control" id="hypermarketFilter" name="hypermarketFilter" style="width: 100%;">
+                <select class="form-control select2" id="hypermarketFilter" name="hypermarketFilter" style="width: 100%;">
                   <option selected="selected">-</option>
                   <?php while($rowhypermarket2=mysqli_fetch_assoc($hypermarket2)){ ?>
                     <option value="<?=$rowhypermarket2['id'] ?>"><?=$rowhypermarket2['name'] ?></option>
@@ -128,12 +128,12 @@ else{
 
               <div class="form-group col-3">
                 <label>Outlets</label>
-                <select class="form-control" id="outletsFilter" name="outletsFilter" style="width: 100%;"></select>
+                <select class="form-control select2" id="outletsFilter" name="outletsFilter" style="width: 100%;"></select>
               </div>
 
               <div class="form-group col-3">
                 <label>Status</label>
-                <select class="form-control" id="statusFilter" name="statusFilter" style="width: 100%;">
+                <select class="form-control select2" id="statusFilter" name="statusFilter" style="width: 100%;">
                   <option selected="selected">-</option>
                   <option value="Created">Created</option>
                   <option value="Posted">Posted</option>
@@ -454,6 +454,11 @@ $(function () {
   tomorrow.setDate(tomorrow.getDate() + 1);
   yesterday.setDate(yesterday.getDate() - 1);
 
+  $('.select2').select2({
+    allowClear: true,
+    placeholder: "Please Select"
+  });
+  
   //Date picker
   $('#fromDatePicker').datetimepicker({
     icons: { time: 'far fa-clock' },

@@ -77,7 +77,7 @@ else{
               </div>
               <div class="form-group col-3">
                 <label>Hypermarket</label>
-                <select class="form-control" id="hypermarketFilter" name="hypermarketFilter" style="width: 100%;">
+                <select class="form-control select2" id="hypermarketFilter" name="hypermarketFilter" style="width: 100%;">
                   <option selected="selected">-</option>
                   <?php while($rowhypermarket2=mysqli_fetch_assoc($hypermarket2)){ ?>
                     <option value="<?=$rowhypermarket2['id'] ?>"><?=$rowhypermarket2['name'] ?></option>
@@ -86,12 +86,12 @@ else{
               </div>
               <div class="form-group col-3">
                 <label>Outlets</label>
-                <select class="form-control" id="outletsFilter" name="outletsFilter" style="width: 100%;"></select>
+                <select class="form-control select2" id="outletsFilter" name="outletsFilter" style="width: 100%;"></select>
               </div>
               <div class="col-3">
                 <div class="form-group">
                   <label>Driver</label>
-                  <select class="form-control" id="pickupMethod" name="pickupMethod">
+                  <select class="form-control select2" id="pickupMethod" name="pickupMethod">
                     <option value="" selected disabled hidden>Please Select</option>
                     <?php while($rowdrivers22=mysqli_fetch_assoc($drivers2)){ ?>
                       <option value="<?=$rowdrivers22['name'] ?>"><?=$rowdrivers22['name'] ?></option>
@@ -102,7 +102,7 @@ else{
               <div class="col-3">
                 <div class="form-group">
                   <label>Customer No</label>
-                  <select class="form-control" id="customerNoFilter" name="customerNoFilter">
+                  <select class="form-control select2" id="customerNoFilter" name="customerNoFilter">
                     <option value="" selected disabled hidden>Please Select</option>
                     <?php while($rowCustomer2=mysqli_fetch_assoc($customers2)){ ?>
                       <option value="<?=$rowCustomer2['id'] ?>"><?=$rowCustomer2['customer_name'] ?></option>
@@ -112,7 +112,7 @@ else{
               </div>
               <div class="form-group col-3">
                 <label>Status</label>
-                <select class="form-control" id="statusFilter" name="statusFilter" style="width: 100%;">
+                <select class="form-control select2" id="statusFilter" name="statusFilter" style="width: 100%;">
                   <option selected="selected">-</option>
                   <option value="Created">Created</option>
                   <option value="Collected">Collected</option>
@@ -263,7 +263,7 @@ else{
             </div>
             <div class="form-group col-4">
               <label>Driver</label>
-              <select class="form-control" id="driver" name="driver" >
+              <select class="form-control select2" id="driver" name="driver" >
                 <option value="" selected disabled hidden>Please Select</option>
                 <?php while($rowdrivers=mysqli_fetch_assoc($drivers)){ ?>
                   <option value="<?=$rowdrivers['name'] ?>"><?=$rowdrivers['name'] ?></option>
@@ -295,7 +295,7 @@ else{
             <div class="col-4">
               <div class="form-group">
                 <label class="labelStatus">Collection Type </label>
-                <select class="form-control" id="collectionType" name="collectionType">
+                <select class="form-control select2" id="collectionType" name="collectionType">
                   <option value="" selected disabled hidden>Please Select</option>
                   <option value="Self Collect">Self Collect</option>
                   <option value="SOS Delivery">SOS Delivery</option>
@@ -387,7 +387,8 @@ $(function () {
   tomorrow.setDate(tomorrow.getDate() + 1);
 
   $('.select2').select2({
-    allowClear: true
+    allowClear: true,
+    placeholder: "Please Select"
   });
 
   var table = $("#weightTable").DataTable({
