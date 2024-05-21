@@ -316,7 +316,7 @@ $(function () {
     var fromDateValue = $('#fromDate').val();
     var toDateValue = $('#toDate').val();
     var customerNoFilter = $('#customerNoFilter').val() ? $('#customerNoFilter').val() : '';
-    var invoiceFilter = $('#invNoinput').val() ? $('#invNoinput').val() : '';
+    var invoiceFilter = $('#invNo').val() ? $('#invNo').val() : '';
 
     //Destroy the old Datatable
     $("#tableforPurchase").DataTable().clear().destroy();
