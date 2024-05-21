@@ -21,12 +21,18 @@ else{
 
   $customers = $db->query("SELECT * FROM customers WHERE deleted = '0'");
   $customers2 = $db->query("SELECT * FROM customers WHERE deleted = '0'");
+  $customers3 = $db->query("SELECT * FROM customers WHERE deleted = '0'");
   $branch = $db->query("SELECT * FROM branch WHERE deleted = '0'");
   $branch2 = $db->query("SELECT * FROM branch WHERE deleted = '0'");
   $users = $db->query("SELECT * FROM users WHERE deleted = '0'");
   $vehicles = $db->query("SELECT * FROM vehicles WHERE deleted = '0'");
   $vehicles2 = $db->query("SELECT * FROM vehicles WHERE deleted = '0'");
   $drivers = $db->query("SELECT * FROM drivers WHERE deleted = '0'");
+  $outlet = $db->query("SELECT * FROM outlet WHERE deleted = '0'");
+  $do_type = $db->query("SELECT * FROM do_type WHERE deleted = '0'");
+  $zones = $db->query("SELECT * FROM zones WHERE deleted = '0'");
+  $states = $db->query("SELECT * FROM states WHERE deleted = '0'");
+  $hypermarket = $db->query("SELECT * FROM hypermarket WHERE deleted = '0'");
 }
 ?>
 
@@ -40,8 +46,8 @@ else{
 
 <select class="form-control" style="width: 100%;" id="zoneHidden" style="display: none;">
   <option value="" selected disabled hidden>Please Select</option>
-  <?php while($row3=mysqli_fetch_assoc($branch)){ ?>
-    <option value="<?=$row3['id'] ?>" data-index="<?=$row3['customer_id'] ?>"><?=$row3['name'] ?></option>
+  <?php while($row3=mysqli_fetch_assoc($zones)){ ?>
+    <option value="<?=$row3['id'] ?>" data-index="<?=$row3['states'] ?>"><?=$row3['zones'] ?></option>
   <?php } ?>
 </select>
 
@@ -175,6 +181,174 @@ else{
           </div>
         </div>
       </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="doModal">
+  <div class="modal-dialog modal-xl" style="max-width: 90%;">
+    <div class="modal-content">
+
+      <form role="form" id="doForm">
+        <div class="modal-header bg-gray-dark color-palette">
+          <h4 class="modal-title">Add New DO Request</h4>
+          <button type="button" class="close bg-gray-dark color-palette" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+
+        <div class="modal-body">
+          <input type="hidden" class="form-control" id="id" name="id">
+          <input type="hidden" class="form-control" id="jsonDataField" name="jsonDataField">
+
+          <div class="row">
+            <div class="col-4">
+              <div class="form-group">
+                <label>Booking Date *</label>
+                  <div class='input-group date' id="bookingDate" data-target-input="nearest">
+                    <input type='text' class="form-control datetimepicker-input" data-target="#bookingDate" id="booking_date" name="bookingDate" required/>
+                    <div class="input-group-append" data-target="#bookingDate" data-toggle="datetimepicker">
+                      <div class="input-group-text"><i class="fa fa-calendar"></i></div>
+                    </div>
+                  </div>
+              </div>
+            </div>
+            <div class="col-4">
+              <div class="form-group">
+                <label>Delivery Date *</label>
+                  <div class='input-group date' id="deliveryDate" data-target-input="nearest">
+                    <input type='text' class="form-control datetimepicker-input" data-target="#deliveryDate" id="delivery_date" name="deliveryDate" required/>
+                    <div class="input-group-append" data-target="#deliveryDate" data-toggle="datetimepicker">
+                      <div class="input-group-text"><i class="fa fa-calendar"></i></div>
+                    </div>
+                  </div>
+              </div>
+            </div>
+            <div class="col-4">
+              <div class="form-group">
+                <label>Cancellation Date *</label>
+                  <div class='input-group date' id="cancellationDate" data-target-input="nearest">
+                    <input type='text' class="form-control datetimepicker-input" data-target="#cancellationDate" id="cancellation_date" name="cancellationDate" required/>
+                    <div class="input-group-append" data-target="#cancellationDate" data-toggle="datetimepicker">
+                      <div class="input-group-text"><i class="fa fa-calendar"></i></div>
+                    </div>
+                  </div>
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-4">
+              <div class="form-group">
+                <label class="labelStatus">Customer *</label>
+                <select class="form-control" id="customerNo" name="customerNo" required>
+                  <option value="" selected disabled hidden>Please Select</option>
+                  <?php while($rowCustomer=mysqli_fetch_assoc($customers3)){ ?>
+                    <option value="<?=$rowCustomer['id'] ?>"><?=$rowCustomer['customer_name'] ?></option>
+                  <?php } ?>
+                </select>
+              </div>
+            </div>
+            <div class="col-4">
+              <div class="form-group">
+                <label class="labelStatus">Hypermarket *</label>
+                <select class="form-control" id="hypermarket" name="hypermarket" required>
+                  <option value="" selected disabled hidden>Please Select</option>
+                  <?php while($rowhypermarket=mysqli_fetch_assoc($hypermarket)){ ?>
+                    <option value="<?=$rowhypermarket['id'] ?>"><?=$rowhypermarket['name'] ?></option>
+                  <?php } ?>
+                </select>
+              </div>
+            </div>
+            <div class="col-4">
+              <div class="form-group">
+                <label class="labelStatus">States *</label>
+                <select class="form-control" id="states" name="states" required>
+                  <option value="" selected disabled hidden>Please Select</option>
+                  <?php while($rowCustomer=mysqli_fetch_assoc($states)){ ?>
+                    <option value="<?=$rowCustomer['id'] ?>"><?=$rowCustomer['states'] ?></option>
+                  <?php } ?>
+                </select>
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-4">
+              <div class="form-group">
+                <label for="rate">Zones *</label>
+                <select class="form-control" style="width: 100%;" id="zones" name="zones" required></select>
+              </div>
+            </div>
+            <div class="col-4">
+              <div class="form-group">
+                <label for="rate">Outlet *</label>
+                <select class="form-control" style="width: 100%;" id="outlets" name="outlets"></select>
+                <select id="direct_store" name="direct_store"></select>
+                <!--input class="form-control" type="text" placeholder="Outlet" id="direct_store" name="direct_store"-->
+              </div>
+            </div>
+            <div class="col-4">
+              <div class="form-group">
+                <label for="rate">DO Type *</label>
+                <select class="form-control" id="do_type" name="do_type" required>
+                  <option value="" selected disabled hidden>Please Select</option>
+                  <?php while($rowdo_type=mysqli_fetch_assoc($do_type)){ ?>
+                    <option value="<?=$rowdo_type['type'] ?>"><?=$rowdo_type['type'] ?></option>
+                  <?php } ?>
+                </select>
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-4">
+              <div class="form-group">
+                <label>DO No.</label>
+                <div class="input-group">
+                  <input class="form-control" type="text" placeholder="DO No." id="do_no" name="do_no">
+                  <div class="input-group-append">
+                      <button class="btn btn-outline-secondary" type="button" id="openModalBtn">
+                        <i class="fas fa-plus"></i>
+                      </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-4">
+              <div class="form-group">
+                <label>PO No.</label>
+                <input class="form-control" type="text" placeholder="PO Number" id="po_no" name="po_no">
+              </div>
+            </div>
+            <div class="col-4">
+              <div class="form-group">
+                <label>Actual Carton *</label>
+                <input class="form-control" type="number" placeholder="Actual Carton" id="actual_ctn" name="actual_ctn" required>
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-4">
+              <div class="form-group">
+                <label>On-Hold *</label>
+                <select class="form-control" id="on_hold" name="on_hold" required>
+                  <option value="Yes">Yes</option>
+                  <option value="No">No</option>
+                </select>
+              </div>
+            </div>
+          </div>  
+          <div class="col-8">
+            <div class="form-group">
+              <label class="labelStatus">Notes</label>
+              <textarea class="form-control" id="description" name="description" placeholder="Enter your description"></textarea>
+            </div>
+          </div>
+        </div>
+
+        <div class="modal-footer justify-content-between bg-gray-dark color-palette">
+          <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+          <button type="submit" class="btn btn-primary" id="saveButton">Save changes</button>
+        </div>
+      </form>
     </div>
   </div>
 </div>
@@ -550,8 +724,9 @@ $(function () {
     var rowId = $(this).data('id');
     var bookingDate = $(this).data('booking-date');
     var customerId = $(this).data('customer-id');
+    loadModalContent(rowId, bookingDate, customerId);
 
-    $.ajax({
+    /*$.ajax({
         url: 'php/getActualCtnData.php',
         type: 'POST',
         data: { id: rowId, bookingDate: bookingDate, customerId: customerId },
@@ -560,7 +735,7 @@ $(function () {
 
             if (response.status == 'success') {
                 var tableContent = '<h2>'+response.message[0].customer_name+'</h2><table class="table" style="width:100%;">';
-                tableContent += '<thead><tr><th></th><th>Outlet</th><th>Booking Date</th><th>Number of Carton</th><th>DO No.</th><th>PO No.</th><th>Notes</th></tr></thead><tbody>';
+                tableContent += '<thead><tr><th></th><th>Outlet</th><th>Booking Date</th><th>Number of Carton</th><th>DO No.</th><th>PO No.</th><th>Notes</th><th></th></tr></thead><tbody>';
 
                 // Loop through each item in the 'message' array
                 for (var i = 0; i < response.message.length; i++) {
@@ -583,6 +758,10 @@ $(function () {
                     tableContent += '<td>' + rowData.do_number + '</td>';
                     tableContent += '<td>' + rowData.po_number + '</td>';
                     tableContent += '<td>' + rowData.note + '</td>';
+                    tableContent += '<td>';
+                    tableContent += '<button class="btn btn-danger btn-sm deleteButton" data-id="' + rowData.id + '"><i class="fas fa-times"></i></button> ';
+                    tableContent += '<button class="btn btn-primary btn-sm editButton" data-id="' + rowData.id + '"><i class="fas fa-pencil-alt"></i></button>';
+                    tableContent += '</td>';
                     tableContent += '</tr>';
                 }
 
@@ -608,7 +787,22 @@ $(function () {
         error: function (xhr, status, error) {
             console.error('Error retrieving actual_ctn data:', error);
         }
-    });
+    });*/
+  });
+
+  $('#myModal').on('click', '.deleteButton', function() {
+    var id = $(this).data('id');
+    var rowId = $(this).closest('tr').find('.details').data('id');
+    var bookingDate = $(this).closest('tr').find('.details').data('book');
+    var customerId = $(this).closest('tr').find('.details').data('cust');
+
+    deleteRow(id, rowId, bookingDate, customerId);
+    //deleteRow(id);
+  });
+
+  $('#myModal').on('click', '.editButton', function() {
+    var id = $(this).data('id');
+    editRow(id);
   });
 
   $.validator.setDefaults({
@@ -672,6 +866,25 @@ $(function () {
           else{
             toastr["error"]("Something wrong when pull data", "Failed:");
           }
+        });
+      }
+      else if($('#doModal').hasClass('show')){
+        $('#spinnerLoading').show();
+        $.post('php/doRequest.php', $('#doForm').serialize(), function(data){
+          var obj = JSON.parse(data); 
+          if(obj.status === 'success'){
+            $('#doModal').modal('hide');
+            toastr["success"](obj.message, "Success:");
+            $('#weightTable').DataTable().ajax.reload();
+          }
+          else if(obj.status === 'failed'){
+            toastr["error"](obj.message, "Failed:");
+          }
+          else{
+            toastr["error"]("Something wrong when edit", "Failed:");
+          }
+
+          $('#spinnerLoading').hide();
         });
       }
     }
@@ -946,6 +1159,71 @@ function formatNormal (row) {
   ;
 }
 
+function loadModalContent(rowId, bookingDate, customerId) {
+  $.ajax({
+    url: 'php/getActualCtnData.php',
+    type: 'POST',
+    data: { id: rowId, bookingDate: bookingDate, customerId: customerId },
+    success: function (data) {
+      var response = JSON.parse(data);
+
+      if (response.status == 'success') {
+        var tableContent = '<h2>' + response.message[0].customer_name + '</h2><table class="table" style="width:100%;">';
+        tableContent += '<thead><tr><th></th><th>Outlet</th><th>Booking Date</th><th>Number of Carton</th><th>DO No.</th><th>PO No.</th><th>Notes</th><th></th></tr></thead><tbody>';
+
+        // Loop through each item in the 'message' array
+        for (var i = 0; i < response.message.length; i++) {
+            var rowData = response.message[i];
+
+            tableContent += '<tr>';
+
+            // Conditionally add checkbox only when status is 'Posted'
+            if (rowData.status === 'Posted') {
+                var checkboxHtml = '<td class="details" data-id="'+rowId+'" data-cust="'+customerId+'" data-book="'+bookingDate+'"><input type="checkbox" class="postedCheckbox" id="checkbox_' + rowData.id + '"></td>';
+                tableContent += checkboxHtml;
+            } else {
+                // If status is not 'Posted', leave the cell empty
+                tableContent += '<td class="details" data-id="'+rowId+'" data-cust="'+customerId+'" data-book="'+bookingDate+'"></td>';
+            }
+
+            tableContent += '<td>' + rowData.outlet + '</td>';
+            tableContent += '<td>' + rowData.booking_date + '</td>';
+            tableContent += '<td>' + rowData.actual_carton + '</td>';
+            tableContent += '<td>' + rowData.do_number + '</td>';
+            tableContent += '<td>' + rowData.po_number + '</td>';
+            tableContent += '<td>' + rowData.note + '</td>';
+            tableContent += '<td>';
+            tableContent += '<button class="btn btn-danger btn-sm deleteButton" data-id="' + rowData.id + '"><i class="fas fa-times"></i></button> ';
+            tableContent += '<button class="btn btn-primary btn-sm editButton" data-id="' + rowData.id + '"><i class="fas fa-pencil-alt"></i></button>';
+            tableContent += '</td>';
+            tableContent += '</tr>';
+        }
+
+        tableContent += '</tbody></table>';
+
+        // Display the data
+        $('#modalContent').html(tableContent);
+
+        $('#confirmButton').on('click', function () {
+            confirmSelectedRows();
+        });
+
+        $('#printButton').on('click', function () {
+            printTable();
+        });
+
+        $('#myModal').modal('show');
+      } 
+      else {
+        toastr["error"](response.message, "Error:");
+      }
+    },
+    error: function (xhr, status, error) {
+      toastr["error"]('Error retrieving actual_ctn data: ' + error, "Error:");
+    }
+  });
+}
+
 function printTable() {
   // Open a new window for printing
   var printWindow = window.open('', '_blank');
@@ -976,7 +1254,6 @@ function confirmSelectedRows() {
   // Call the function to confirm the status for the selected rows
   confirmStatus(selectedRowIds);
 }
-
 
 function confirmStatus(rowIds) {
   // Update the status to Confirmed for the specified rows
@@ -1054,6 +1331,102 @@ function edit(id) {
   });
 }
 
+function editRow(id) {
+  $('#spinnerLoading').show();
+  $.post('php/getDO.php', {userID: id}, function(data){
+    var obj = JSON.parse(data);
+    
+    if(obj.status === 'success'){
+      $('#doModal').find('#id').val(obj.message.id);
+      $('#doModal').find('#booking_date').val(formatDate2(new Date(obj.message.booking_date)));
+      $('#doModal').find('#delivery_date').val(formatDate2(new Date(obj.message.delivery_date)));
+      $('#doModal').find('#cancellation_date').val(formatDate2(new Date(obj.message.cancellation_date)));
+      $('#doModal').find('#customerNo').val(obj.message.customer);
+      $('#doModal').find('#hypermarket').val(obj.message.hypermarket);
+      $('#doModal').find('#states').val(obj.message.states);
+      
+      $('#zones').empty();
+      var dataIndexToMatch = obj.message.states;
+
+      $('#zoneHidden option').each(function() {
+        var dataIndex = $(this).data('index');
+
+        if (dataIndex == dataIndexToMatch) {
+          $('#doModal').find('#zones').append($(this).clone());
+          $('#doModal').find('#zones').val(obj.message.zone);
+          $('#doModal').find('#zones').trigger('change');
+        }
+      });
+      
+      $('#doModal').find('#hypermarket').trigger('change');
+      $('#doModal').find('#do_type').val(obj.message.do_type);
+      $('#doModal').find('#do_no').val(obj.message.do_number);
+      $('#doModal').find('#po_no').val(obj.message.po_number);
+      $('#doModal').find('#description').val(obj.message.note);
+      $('#doModal').find('#actual_ctn').val(obj.message.actual_carton);
+      $('#doModal').find('#need_grn').val(obj.message.need_grn);
+      $('#doModal').find('#loadingTime').val(obj.message.loading_time);
+
+      if(obj.message.hypermarket == '0'){
+        $('#doModal').find('#hypermarket').trigger('change');
+        $('#doModal').find('#outlets').empty().val(obj.message.outlet);
+        $('#doModal').find('#outlets').attr('required', false);
+        $('#doModal').find('#direct_store').attr('required', true);
+        $('#doModal').find('#direct_store').val(obj.message.direct_store);
+        $('#doModal').find('#outlets').hide();
+        $('#doModal').find('#direct_store').data('select2').$container.show();
+        //$('#doModal').find('.select2-container').show();
+      }
+      else{
+        $('#doModal').find('#hypermarket').trigger('change');
+        //$('#doModal').find('#zones').empty().val(obj.message.zone);
+        $('#doModal').find('#outlets').attr('required', true);
+        $('#doModal').find('#outlets').show();
+        $('#doModal').find('#direct_store').val('');
+        $('#doModal').find('#direct_store').data('select2').$container.hide();
+        //$('#doModal').find('.select2-container').hide();
+      }
+
+      var doDetails = obj.message.do_details || []; // Assuming do_details is an array of objects
+      $('#jsonDataField').val(JSON.stringify(doDetails));
+      $('#doPoTable tbody').empty();
+
+      // Populate doPoTable with data from doDetails
+      for (var i = 0; i < doDetails.length; i++) {
+        var newRow = '<tr>' +
+          '<td><input type="text" class="form-control" value="' + doDetails[i].doNumber + '"></td>' +
+          '<td><input type="text" class="form-control" value="' + doDetails[i].poNumber + '"></td>' +
+          '<td><button type="button" class="btn btn-danger removeRowBtn">Remove</button></td>' +
+          '</tr>';
+        $('#doPoTable tbody').append(newRow);
+      }
+      
+      $('#doModal').modal('show');
+
+      $('#doForm').validate({
+        errorElement: 'span',
+        errorPlacement: function (error, element) {
+          error.addClass('invalid-feedback');
+          element.closest('.form-group').append(error);
+        },
+        highlight: function (element, errorClass, validClass) {
+          $(element).addClass('is-invalid');
+        },
+        unhighlight: function (element, errorClass, validClass) {
+          $(element).removeClass('is-invalid');
+        }
+      });
+    }
+    else if(obj.status === 'failed'){
+      toastr["error"](obj.message, "Failed:");
+    }
+    else{
+      toastr["error"]("Something wrong when pull data", "Failed:");
+    }
+    $('#spinnerLoading').hide();
+  });
+}
+
 function deactivate(id) {
   if (confirm('Are you sure you want to delete this items?')) {
     $('#spinnerLoading').show();
@@ -1074,6 +1447,55 @@ function deactivate(id) {
     });
   }
 }
+
+function deleteRow(id, rowId, bookingDate, customerId) {
+  if (confirm('Are you sure you want to delete this DO?')) {
+    $('#spinnerLoading').show();
+    $.ajax({
+      url: 'php/deleteDO.php', // Your PHP script to delete the row
+      type: 'POST',
+      data: { userID: id },
+      success: function (response) {
+        var data = JSON.parse(response);
+        if (data.status == 'success') {
+          toastr["success"]('Row deleted successfully.', "Success:");
+          $('#weightTable').DataTable().ajax.reload();
+          loadModalContent(rowId, bookingDate, customerId); // Reload modal content
+          $('#spinnerLoading').hide();
+        } 
+        else {
+          toastr["error"]('Failed to delete the row.', "Error:");
+          $('#spinnerLoading').hide();
+        }
+      },
+      error: function (xhr, status, error) {
+        toastr["error"]('Error deleting row: ' + error, "Error:");
+        $('#spinnerLoading').hide();
+      }
+    });
+  }
+}
+
+/*function deleteRow(id) {
+  if (confirm('Are you sure you want to delete this DO?')) {
+    $('#spinnerLoading').show();
+    $.post('php/deleteDO.php', {userID: id}, function(data){
+      var obj = JSON.parse(data);
+
+      if(obj.status === 'success'){
+        toastr["success"](obj.message, "Success:");
+        $('#weightTable').DataTable().ajax.reload();
+      }
+      else if(obj.status === 'failed'){
+        toastr["error"](obj.message, "Failed:");
+      }
+      else{
+        toastr["error"]("Something wrong when activate", "Failed:");
+      }
+      $('#spinnerLoading').hide();
+    });
+  }
+}*/
 
 function picked(id) {
   $.post('php/checkingFormNo.php', {userID: id}, function(data){

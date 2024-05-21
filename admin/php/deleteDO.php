@@ -47,7 +47,7 @@ if(isset($_POST['userID'])){
 									}
 	
 									// Update actual_ctn in booking table
-									if ($update_stmt4 = $db->prepare("UPDATE booking SET actual_ctn=actual_ctn-? WHERE id=?")) {
+									if ($update_stmt4 = $db->prepare("UPDATE booking SET actual_ctn=? WHERE id=?")) {
 										$update_stmt4->bind_param('ss', $actual_carton_diff, $id2);
 										if ($update_stmt4->execute()) {
 											$update_stmt4->close();
