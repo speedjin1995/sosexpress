@@ -38,6 +38,10 @@ if(isset($_POST['id'], $_POST['totalAmount'])){
         $price = $_POST['price'];
     }
 
+    if(isset($_POST['unit'])){
+        $unit = $_POST['unit'];
+    }
+
     if(isset($particular) && $particular != null && count($particular) > 0){
         for($i=0; $i<count($particular); $i++){
             $notes = '';
@@ -49,10 +53,10 @@ if(isset($_POST['id'], $_POST['totalAmount'])){
             $pricing_details[] = array(
                 "particular" => $notes,
                 "quantity_in" => $quantity_in[$i],
-                //"quantity_delivered" => $quantity_delivered[$i],
                 "size" => $size[$i],
                 "unit_price" => $unit_price[$i],
                 "price" => $price[$i],
+                "size" => $unit[$i]
             );
         }
     }

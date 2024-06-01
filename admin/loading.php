@@ -57,6 +57,12 @@ else{
   <?php } ?>
 </select>
 
+<select class="form-control" style="width: 100%;" id="unitHidden" style="display: none;">
+  <?php while($row4=mysqli_fetch_assoc($units)){ ?>
+    <option value="<?=$row4['id'] ?>"><?=$row4['units'] ?></option>
+  <?php } ?>
+</select>
+
 <div class="content-header">
   <div class="container-fluid">
     <div class="row mb-2">
@@ -674,7 +680,7 @@ else{
     </td>
     <td>
       <div class="input-group">
-        <input type="text" class="form-control" id="size"  placeholder="Enter ..." required>
+        <input type="text" class="form-control" id="size" required>
         <div class="input-group-append">
           <span class="input-group-text" id="exclamation-icon" data-toggle="tooltip" data-placement="top" title="Tooltip message">
             <i class="fas fa-exclamation-circle"></i>
@@ -683,11 +689,7 @@ else{
       </div>
     </td>
     <td>
-      <select class="form-control" style="width: 100%;" id="unit" required>
-        <?php while($row4=mysqli_fetch_assoc($units)){ ?>
-          <option value="<?=$row4['id'] ?>"><?=$row4['units'] ?></option>
-        <?php } ?>
-      </select>
+      <input type="text" class="form-control" id="unit" required>
     </td>
     <td>
       <input class="form-control" type="number" placeholder="Unit Price" id="unit_price" required>
@@ -734,6 +736,7 @@ var do_number = '';
 $(function () {
   $("#zoneHidden").hide();
   $("#branchHidden").hide();
+  $('#unitHidden').hide();
   $('#direct_store').hide();
   $('[data-toggle="tooltip"]').tooltip()
 
@@ -1325,18 +1328,18 @@ $(function () {
     var pricingJson = JSON.parse(pricingJSON);
 
     $("#exclamation-icon" + pricingCount).hover(function () {
-        var tooltipContent = '<ul>';
-        pricingJson.forEach(function (item) {
-            tooltipContent += '<li>Size: ' + item.size + ', Price: ' + item.price + ', Notes: ' + (item.notes ? item.notes : 'N/A') + '</li>';
-        });
-        tooltipContent += '</ul>';
-        $(this).attr('data-original-title', tooltipContent);
-        $(this).tooltip({
-            html: true, // Set html option to true
-            placement: 'top', // Adjust tooltip placement if needed
-        }).tooltip('show');
+      var tooltipContent = '<ul>';
+      pricingJson.forEach(function (item) {
+        tooltipContent += '<li>Size: ' + item.size + ', Price: ' + item.price + ', Notes: ' + (item.notes ? item.notes : 'N/A') + '</li>';
+      });
+      tooltipContent += '</ul>';
+      $(this).attr('data-original-title', tooltipContent);
+      $(this).tooltip({
+          html: true, // Set html option to true
+          placement: 'top', // Adjust tooltip placement if needed
+      }).tooltip('show');
     }, function () {
-        $(this).tooltip('hide');
+      $(this).tooltip('hide');
     });
 
     $("#other_reason" + pricingCount).hide();
@@ -1356,6 +1359,21 @@ $(function () {
       var itemPrice = parseFloat($(this).find('input[name="price"]').val()) || 0;
       totalAmount += itemPrice;
       $('#totalAmount').val(parseFloat(totalAmount).toFixed(2));
+    });
+  });
+
+  $("#pricingTable").on('change', 'input[id^="size"]', function(){
+    var size = $(this).val() || '';
+    var pricingJson = JSON.parse(pricingJSON);
+    var element = $(this).parents('.details');
+    pricingJson.forEach(function (item) {
+      if(size == item.size){
+        var optionText = $('#unitHidden option[value="' + item.unit + '"]').text();
+        var formattedPrice = parseFloat(item.price || '0.00').toFixed(2);
+        element.find('input[id^="unit"]').val(optionText || '');
+        element.find('input[id^="unit_price"]').val(Number(formattedPrice));
+        element.find('input[id^="unit_price"]').trigger('change');
+      }
     });
   });
 
