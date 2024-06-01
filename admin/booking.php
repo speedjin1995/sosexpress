@@ -141,7 +141,13 @@ else{
         <div class="card card-primary">
           <div class="card-header">
             <div class="row">
-              <div class="col-6">Booking</div>
+              <div class="col-4">Booking</div>
+              <div class="col-2">
+                <button type="button" class="btn btn-block bg-gradient-success btn-sm" id="download">
+                  <i class="fas fa-file-excel"></i>
+                  Download Template
+                </button>
+              </div>
               <div class="col-2">
                 <button type="button" class="btn btn-block bg-gradient-warning btn-sm" id="print">
                   <i class="fas fa-print"></i>
@@ -597,6 +603,30 @@ else{
             <!-- Add additional buttons if needed -->
           </div>
       </div>
+  </div>
+</div>
+
+<div class="modal fade" id="uploadModal">
+  <div class="modal-dialog modal-xl" style="max-width: 90%;">
+    <div class="modal-content">
+      <form role="form" id="uploadForm">
+        <div class="modal-header bg-gray-dark color-palette">
+          <h4 class="modal-title">Upload Excel File</h4>
+          <button type="button" class="close bg-gray-dark color-palette" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <input type="file" id="fileInput">
+          <button id="previewButton">Preview Data</button>
+          <div id="previewTable"></div>
+        </div>
+        <div class="modal-footer justify-content-between bg-gray-dark color-palette">
+          <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+          <button type="submit" class="btn btn-primary" id="saveButton">Save changes</button>
+        </div>
+      </form>
+    </div>
   </div>
 </div>
 
@@ -1115,6 +1145,10 @@ $(function () {
     });
   });
 
+  $('#download').on('click', function () {
+    window.open("php/exportTemplate.php");
+  });
+
   $('#print').on('click', function () {
     var selectedIds = []; // An array to store the selected 'id' values
     var vehicle = [];
@@ -1150,6 +1184,20 @@ $(function () {
       alert("Please select at least one Booking to Pickup.");
     }
   });
+
+  $('#uploadModal').find('#previewButton').on('click', function(){
+    var fileInput = document.getElementById('fileInput');
+    var file = fileInput.files[0];
+    var reader = new FileReader();
+    
+    reader.onload = function(e) {
+      var data = e.target.result;
+      // Process data and display preview
+      displayPreview(data);
+    };
+
+    reader.readAsBinaryString(file);
+});
 });
 
 function format (row) {
@@ -1174,11 +1222,13 @@ function format (row) {
     returnString += '<div class="row"><div class="col-3"><button type="button" class="btn btn-warning btn-sm" title="Edit" onclick="edit('+row.id+
   ')"><i class="fas fa-pen"></i></button></div><div class="col-3"><button type="button" class="btn btn-danger btn-sm" title="Delete" onclick="deactivate('+row.id+
   ')"><i class="fas fa-trash"></i></button></div><div class="col-3"><button type="button" class="btn btn-info btn-sm" title="Picked" onclick="picked('+row.id+
-  ')"><i class="fas fa-truck"></i></button></div></div></div></div>';
+  ')"><i class="fas fa-truck"></i></button></div><div class="col-3"><button type="button" class="btn btn-success btn-sm" title="Import Excel" onclick="importExcel('+row.id+
+  ')"><i class="fas fa-file-excel"></i></button></div></div></div></div>';
   }
   else if(row.status == 'Picked'){
     returnString +='<div class="row"><div class="col-3"><button type="button" class="btn btn-info btn-sm" title="Invoice" onclick="invoice('+row.id+
-  ')"><i class="fas fa-receipt"></i></button></div></div></div></div>';
+  ')"><i class="fas fa-receipt"></i></button></div><div class="col-3"><button type="button" class="btn btn-success btn-sm" title="Import Excel" onclick="importExcel('+row.id+
+  ')"><i class="fas fa-file-excel"></i></button></div></div></div></div>';
   }
   
   
@@ -1342,6 +1392,38 @@ function confirmStatus(rowIds) {
       //$('#myModal').modal('hide');
       toastr["error"](error, "Failed:");
     }
+  });
+}
+
+function importExcel(id) {
+  $('#spinnerLoading').show();
+  $.post('php/getBooking.php', {userID: id}, function(data){
+    var obj = JSON.parse(data);
+    
+    if(obj.status === 'success'){
+      $('#uploadModal').modal('show');
+      $('#uploadForm').validate({
+        errorElement: 'span',
+        errorPlacement: function (error, element) {
+          error.addClass('invalid-feedback');
+          element.closest('.form-group').append(error);
+        },
+        highlight: function (element, errorClass, validClass) {
+          $(element).addClass('is-invalid');
+        },
+        unhighlight: function (element, errorClass, validClass) {
+          $(element).removeClass('is-invalid');
+        }
+      });
+    }
+    else if(obj.status === 'failed'){
+      toastr["error"](obj.message, "Failed:");
+    }
+    else{
+      toastr["error"]("Something wrong when pull data", "Failed:");
+    }
+
+    $('#spinnerLoading').hide();
   });
 }
 
@@ -1558,26 +1640,43 @@ function deleteRow(id, rowId, bookingDate, customerId) {
   }
 }
 
-/*function deleteRow(id) {
-  if (confirm('Are you sure you want to delete this DO?')) {
-    $('#spinnerLoading').show();
-    $.post('php/deleteDO.php', {userID: id}, function(data){
-      var obj = JSON.parse(data);
+// Function to display preview table
+function displayPreview(data) {
+  // Parse the Excel data
+  var workbook = XLSX.read(data, { type: 'binary' });
 
-      if(obj.status === 'success'){
-        toastr["success"](obj.message, "Success:");
-        $('#weightTable').DataTable().ajax.reload();
-      }
-      else if(obj.status === 'failed'){
-        toastr["error"](obj.message, "Failed:");
-      }
-      else{
-        toastr["error"]("Something wrong when activate", "Failed:");
-      }
-      $('#spinnerLoading').hide();
-    });
+  // Get the first sheet
+  var sheetName = workbook.SheetNames[0];
+  var sheet = workbook.Sheets[sheetName];
+
+  // Convert the sheet to an array of objects
+  var jsonData = XLSX.utils.sheet_to_json(sheet, { header: 1 });
+
+  // Get the headers
+  var headers = jsonData[0];
+
+  // Create HTML table headers
+  var htmlTable = '<table style="width:100%;"><thead><tr>';
+  headers.forEach(function(header) {
+      htmlTable += '<th>' + header + '</th>';
+  });
+  htmlTable += '</tr></thead><tbody>';
+
+  // Iterate over the data and create table rows
+  for (var i = 1; i < jsonData.length; i++) {
+      htmlTable += '<tr>';
+      var rowData = jsonData[i];
+      rowData.forEach(function(cellData) {
+          htmlTable += '<td>' + cellData + '</td>';
+      });
+      htmlTable += '</tr>';
   }
-}*/
+
+  htmlTable += '</tbody></table>';
+
+  var previewTable = document.getElementById('previewTable');
+  previewTable.innerHTML = htmlTable;
+}
 
 function picked(id) {
   $.post('php/checkingFormNo.php', {userID: id}, function(data){

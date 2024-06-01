@@ -625,7 +625,7 @@ to get the desired effect
 <script src="plugins/summernote/summernote-bs4.min.js"></script>
 <script src="plugins/dropzone/min/dropzone.min.js"></script>
 <script src="plugins/bs-stepper/js/bs-stepper.min.js"></script>
-
+<script src="plugins/sheets/xlsx.full.min.js"></script>
 <script>
 $(function () {
   toastr.options = {
