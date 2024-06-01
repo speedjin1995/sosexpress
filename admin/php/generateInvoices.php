@@ -166,12 +166,12 @@ else{
 				}
 			}
 
-			$booking_stmt->close();
-			$do_stmt->close();
-			$return_stmt->close();
-			$select_stmt->close();
-			$select_stmt2->close();
-			$insert_stmt2->close();
+			//$booking_stmt->close();
+			//$do_stmt->close();
+			//$return_stmt->close();
+			//$select_stmt->close();
+			//$select_stmt2->close();
+			//$insert_stmt2->close();
 			$db->close();
 
 			echo json_encode(

@@ -1567,10 +1567,12 @@ function format (row) {
   ')"><i class="fas fa-trash"></i></button></div></div></div></div>';
   }
   else if(row.status == 'Printed'){
-    returnString +='<div class="row"><div class="col-3"><button type="button" class="btn btn-warning btn-sm" title="Edit" onclick="edit('+row.id+
-  ')"><i class="fas fa-pen"></i></button></div><div class="col-3"><button type="button" class="btn btn-danger btn-sm" title="Reject" onclick="reject('+row.id+
-  ')">RJ</button></div><div class="col-3"><button type="button" class="btn btn-danger btn-sm" title="Delete" onclick="deactivate('+row.id+
-  ')"><i class="fas fa-trash"></i></button></div><div class="col-3"><button type="button" class="btn btn-info btn-sm" title="Delivered" onclick="delivered('+row.id+
+    returnString +='<div class="row"><div class="col-2"><button type="button" class="btn btn-warning btn-sm" title="Edit" onclick="edit('+row.id+
+  ')"><i class="fas fa-pen"></i></button></div><div class="col-2"><button type="button" class="btn btn-danger btn-sm" title="Reject" onclick="reject('+row.id+
+  ')">RJ</button></div><div class="col-2"><button type="button" class="btn btn-danger btn-sm" title="Delete" onclick="deactivate('+row.id+
+  ')"><i class="fas fa-trash"></i></button></div><div class="col-2"><button type="button" class="btn btn-info btn-sm" title="Revert" onclick="revert('+row.id+
+  ')"><i class="fas fa-sync"></i></button></div><div class="col-2"><button type="button" class="btn btn-primary btn-sm" title="In Back" onclick="inback('+row.id+
+  ')"><i class="fas fa-pallet"></i></button></div><div class="col-2"><button type="button" class="btn btn-success btn-sm" title="Delivered" onclick="delivered('+row.id+
   ')"><i class="fas fa-truck"></i></button></div></div></div></div>';
   }
   else if(row.status == 'Delivered'){
@@ -1757,6 +1759,25 @@ function deactivate(id) {
   }
 }
 
+function revert(id) {
+  $('#spinnerLoading').show();
+  $.post('php/revertLoading.php', {userID: id}, function(data){
+    var obj = JSON.parse(data);
+
+    if(obj.status === 'success'){
+      toastr["success"](obj.message, "Success:");
+      $('#weightTable').DataTable().ajax.reload();
+    }
+    else if(obj.status === 'failed'){
+      toastr["error"](obj.message, "Failed:");
+    }
+    else{
+      toastr["error"]("Something wrong when activate", "Failed:");
+    }
+    $('#spinnerLoading').hide();
+  });
+}
+
 function picked(id) {
   $('#spinnerLoading').show();
   $.post('php/loadedDO.php', {userID: id}, function(data){
@@ -1778,6 +1799,24 @@ function picked(id) {
 
 function delivered(id) {
   $.post('php/deliveredDO.php', {userID: id}, function(data){
+    var obj = JSON.parse(data);
+
+    if(obj.status === 'success'){
+      toastr["success"](obj.message, "Success:");
+      $('#weightTable').DataTable().ajax.reload();
+    }
+    else if(obj.status === 'failed'){
+      toastr["error"](obj.message, "Failed:");
+    }
+    else{
+      toastr["error"]("Something wrong when activate", "Failed:");
+    }
+    $('#spinnerLoading').hide();
+  });
+}
+
+function inback(id) {
+  $.post('php/inbackDO.php', {userID: id}, function(data){
     var obj = JSON.parse(data);
 
     if(obj.status === 'success'){

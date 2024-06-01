@@ -101,6 +101,7 @@ else{
                   <label>Shipment Type</label>
                   <select class="form-control select2" id="pickupMethod" name="pickupMethod">
                     <!--option value="" selected disabled hidden>Please Select</option-->
+                    <option value="" selected disabled hidden>Please Select</option>
                     <option value="SOS Pickup">SOS Pickup</option>
                     <option value="Outstation Pickup">Outstation Pickup</option>
                     <option value="Send By Own">Send By Own</option>
@@ -613,6 +614,55 @@ $(function () {
     allowClear: true,
     placeholder: "Please Select"
   });
+  
+  $('#direct_store').select2({
+    ajax: {
+      url: 'php/getDirectStore.php',
+      dataType: 'json',
+      data: function (params) {
+        var query = {
+          search: params.term,
+          states: $('#states').val(),
+          zones: $('#zones').val(),
+          type: 'public'
+        };
+        return query;
+      },
+      delay: 250,
+      processResults: function (data) {
+        var resultsArray = [];
+
+        // Assuming data.message is an object
+        for (var key in data.message) {
+          if (data.message.hasOwnProperty(key)) {
+            resultsArray.push({
+              id: data.message[key].name, // Use the property key as the id
+              text: data.message[key].name // Use the name property as the text
+            });
+          }
+        }
+
+        return {
+          results: resultsArray
+        };
+      },
+      cache: true,
+    },
+    minimumInputLength: 1,
+    placeholder: 'Search for options...',
+    tags: true,
+    createTag: function (params) {
+      if ($.trim(params.term) === '') {
+        return null;
+      }
+      return {
+        id: params.term,
+        text: params.term
+      };
+    },
+  });
+
+  $('#direct_store').data('select2').$container.hide();
 
   //Date picker
   $('#fromDatePicker').datetimepicker({
@@ -795,14 +845,20 @@ $(function () {
     var rowId = $(this).closest('tr').find('.details').data('id');
     var bookingDate = $(this).closest('tr').find('.details').data('book');
     var customerId = $(this).closest('tr').find('.details').data('cust');
-
     deleteRow(id, rowId, bookingDate, customerId);
-    //deleteRow(id);
   });
 
   $('#myModal').on('click', '.editButton', function() {
     var id = $(this).data('id');
     editRow(id);
+  });
+  
+  $('#myModal').on('click', '.revertButton', function() {
+    var id = $(this).data('id');
+    var rowId = $(this).closest('tr').find('.details').data('id');
+    var bookingDate = $(this).closest('tr').find('.details').data('book');
+    var customerId = $(this).closest('tr').find('.details').data('cust');
+    refreshRow(id, rowId, bookingDate, customerId);
   });
 
   $.validator.setDefaults({
@@ -1168,8 +1224,8 @@ function loadModalContent(rowId, bookingDate, customerId) {
       var response = JSON.parse(data);
 
       if (response.status == 'success') {
-        var tableContent = '<h2>' + response.message[0].customer_name + '</h2><table class="table" style="width:100%;">';
-        tableContent += '<thead><tr><th></th><th>Outlet</th><th>Booking Date</th><th>Number of Carton</th><th>DO No.</th><th>PO No.</th><th>Notes</th><th></th></tr></thead><tbody>';
+        var tableContent = '<h2>' + response.message[0].customer_name + ' ('+bookingDate+')</h2><table class="table" style="width:100%;">';
+        tableContent += '<thead><tr><th></th><th>DO No.</th><th>PO No.</th><th>State</th><th>Hypermarket</th><th>Outlet</th><th>Quantity</th><th></th></tr></thead><tbody>';
 
         // Loop through each item in the 'message' array
         for (var i = 0; i < response.message.length; i++) {
@@ -1186,15 +1242,21 @@ function loadModalContent(rowId, bookingDate, customerId) {
                 tableContent += '<td class="details" data-id="'+rowId+'" data-cust="'+customerId+'" data-book="'+bookingDate+'"></td>';
             }
 
-            tableContent += '<td>' + rowData.outlet + '</td>';
-            tableContent += '<td>' + rowData.booking_date + '</td>';
-            tableContent += '<td>' + rowData.actual_carton + '</td>';
             tableContent += '<td>' + rowData.do_number + '</td>';
             tableContent += '<td>' + rowData.po_number + '</td>';
-            tableContent += '<td>' + rowData.note + '</td>';
+            tableContent += '<td>' + rowData.states + '</td>';
+            tableContent += '<td>' + rowData.hypermarket + '</td>';
+            tableContent += '<td>' + rowData.outlet + '</td>';
+            tableContent += '<td>' + rowData.actual_carton + '</td>';
+            
             tableContent += '<td>';
             tableContent += '<button class="btn btn-danger btn-sm deleteButton" data-id="' + rowData.id + '"><i class="fas fa-times"></i></button> ';
             tableContent += '<button class="btn btn-primary btn-sm editButton" data-id="' + rowData.id + '"><i class="fas fa-pencil-alt"></i></button>';
+            
+            if (rowData.status === 'Confirmed') {
+                tableContent += '<button class="btn btn-warning btn-sm revertButton" data-id="' + rowData.id + '"><i class="fas fa-sync"></i></button>';
+            }
+            
             tableContent += '</td>';
             tableContent += '</tr>';
         }
@@ -1320,6 +1382,26 @@ function edit(id) {
           $(element).removeClass('is-invalid');
         }
       });
+    }
+    else if(obj.status === 'failed'){
+      toastr["error"](obj.message, "Failed:");
+    }
+    else{
+      toastr["error"]("Something wrong when pull data", "Failed:");
+    }
+    $('#spinnerLoading').hide();
+  });
+}
+
+function refreshRow(id, rowId, bookingDate, customerId){
+  $('#spinnerLoading').show();
+  $.post('php/revertDO.php', {userID: id}, function(data){
+    var obj = JSON.parse(data);
+    
+    if(obj.status === 'success'){
+      toastr["success"]('Row reverted successfully.', "Success:");
+      $('#weightTable').DataTable().ajax.reload();
+      loadModalContent(rowId, bookingDate, customerId);
     }
     else if(obj.status === 'failed'){
       toastr["error"](obj.message, "Failed:");

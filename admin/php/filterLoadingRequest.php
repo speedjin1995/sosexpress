@@ -17,7 +17,7 @@ $searchQuery = " ";
 if($_POST['fromDate'] != null && $_POST['fromDate'] != ''){
   $dateTime = DateTime::createFromFormat('d/m/Y', $_POST['fromDate']);
   $fromDateTime = $dateTime->format('Y-m-d 00:00:00');
-  $searchQuery = " and do_request.booking_date >= '".$fromDateTime."'";
+  $searchQuery .= " and do_request.booking_date >= '".$fromDateTime."'";
 }
 
 if($_POST['toDate'] != null && $_POST['toDate'] != ''){
@@ -27,11 +27,11 @@ if($_POST['toDate'] != null && $_POST['toDate'] != ''){
 }
 
 if($_POST['state'] != null && $_POST['state'] != '' && $_POST['state'] != '-'){
-  $searchQuery = " and do_request.states = '".$_POST['state']."'";
+  $searchQuery .= " and do_request.states = '".$_POST['state']."'";
 }
 
 if($_POST['customer'] != null && $_POST['customer'] != '' && $_POST['customer'] != '-'){
-  $searchQuery = " and do_request.customer = '".$_POST['customer']."'";
+  $searchQuery .= " and do_request.customer = '".$_POST['customer']."'";
 }
 
 if($_POST['zones'] != null && $_POST['zones'] != '' && $_POST['zones'] != '-'){
@@ -42,31 +42,31 @@ if($_POST['zones'] != null && $_POST['zones'] != '' && $_POST['zones'] != '-'){
 
   // Check if the zones column contains "-"
   if ($check_zones_result->num_rows > 0) {
-    $searchQuery = " and do_request.zone = '".$_POST['zones']."'";
+    $searchQuery .= " and do_request.zone = '".$_POST['zones']."'";
   }
 
   $check_zones_stmt->close();
 }
 
 if($_POST['hypermarket'] != null && $_POST['hypermarket'] != '' && $_POST['hypermarket'] != '-'){
-  $searchQuery = " and do_request.hypermarket like '%".$_POST['hypermarket']."%'";
+  $searchQuery .= " and do_request.hypermarket = '".$_POST['hypermarket']."'";
 }
 
 if($_POST['outlets'] != null && $_POST['outlets'] != '' && $_POST['outlets'] != '-'){
-  $searchQuery = " and do_request.outlet like '%".$_POST['outlets']."%'";
+  $searchQuery .= " and do_request.outlet = '".$_POST['outlets']."'";
 }
 
 if($_POST['status'] != null && $_POST['status'] != '' && $_POST['status'] != '-'){
   if($_POST['status'] == 'Posted'){
-    $searchQuery = " and do_request.status IN ('Posted','Confirmed')";
+    $searchQuery .= " and do_request.status IN ('Posted','Confirmed')";
   }
   else{
-    $searchQuery = " and do_request.status = '".$_POST['status']."'";
+    $searchQuery .= " and do_request.status = '".$_POST['status']."'";
   }
 }
 
 if($searchValue != ''){
-  $searchQuery = " and (hypermarket.name like '%".$searchValue."%' or 
+  $searchQuery .= " and (hypermarket.name like '%".$searchValue."%' or 
        outlet.name like '%".$searchValue."%' or
        customers.customer_name like'%".$searchValue."%' ) ";
 }
@@ -122,8 +122,7 @@ $response = array(
  "draw" => intval($draw),
  "iTotalRecords" => $totalRecords,
  "iTotalDisplayRecords" => $totalRecordwithFilter,
- "aaData" => $data,
- "query" => $empQuery
+ "aaData" => $data
 );
 
 
