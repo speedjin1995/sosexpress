@@ -54,9 +54,9 @@ if(isset($_GET['invoice']) && $_GET['invoice'] != null && $_GET['invoice'] != ''
 }
 
 // Fetch records from database
-$query = $db->query("SELECT invoice.invoice_no, customers.customer_code, customers.customer_name, customers.short_name, customers.customer_address,
+$query = $db->query("SELECT invoice.invoice_no, customers.customer_code, customers.customer_name, customers.account_name, customers.short_name, customers.customer_address,
 invoice.total_amount, users.name, invoice.created_datetime, invoice_cart.id, invoice_cart.invoice_id, invoice_cart.items, 
-invoice_cart.amount FROM invoice, invoice_cart, customers, users WHERE customers.id = invoice.customer AND 
+invoice_cart.amount, invoice_cart.unit FROM invoice, invoice_cart, customers, users WHERE customers.id = invoice.customer AND 
 invoice.id = invoice_cart.invoice_id AND users.id = invoice.created_by".$searchQuery);
 
 $rowIndex = 2; // Start from the second row
@@ -67,8 +67,8 @@ if($query->num_rows > 0){
         $entity = $row['customer_name'].$row['customer_address'];
         $entity = trim(preg_replace('/\s\s+/', ' ', $entity));
 
-        $lineData = array('Invoice', $row['invoice_no'], substr($row['created_datetime'], 0, 10), $row['customer_name'], $row['customer_code'], 'New Product Code'
-        , $row['items'], 'Jobs', $row['amount'], '1', $row['amount'], '', '', '', '01112', $entity, '', '', '', '', '', '', '');
+        $lineData = array('Invoice', $row['invoice_no'], substr($row['created_datetime'], 0, 10), $row['account_name'], $row['customer_code'], 'IMPORT FROM EXCEL'
+        , $row['items'], $row['unit'], $row['amount'], '1', $row['amount'], '', '', '', '49230', $entity, '', '', '', '', '', '', '');
 
         array_walk($lineData, 'filterData'); 
         $sheet->fromArray($lineData, NULL, 'A'.$rowIndex);

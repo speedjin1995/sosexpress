@@ -10,6 +10,7 @@ if(!isset($_SESSION['userID'])){
 else{
   $user = $_SESSION['userID'];
   $pricing_type = $db->query("SELECT * FROM pricing_type WHERE deleted = '0'");
+  $units = $db->query("SELECT * FROM units WHERE deleted = '0'");
 }
 ?>
 
@@ -108,6 +109,10 @@ else{
                     <div class="form-group col-6">
                         <label for="name">Customer Name *</label>
                         <input type="text" class="form-control" name="name" id="name" placeholder="Enter Customer Name" required>
+                    </div>
+                    <div class="form-group col-6">
+                        <label for="name">Account Name *</label>
+                        <input type="text" class="form-control" name="account" id="account" placeholder="Enter Account Name" required>
                     </div>
                     <div class="form-group col-6">
                         <label for="name">Short Name </label>
@@ -228,6 +233,13 @@ else{
     </td>
     <td>
         <input id="price" type="number" class="form-control" placeholder="Enter ..." required>
+    </td>
+    <td>
+        <select class="form-control" style="width: 100%;" id="unit" name="unit" required>
+            <?php while($row4=mysqli_fetch_assoc($units)){ ?>
+                <option value="<?=$row4['id'] ?>"><?=$row4['units'] ?></option>
+            <?php } ?>
+        </select>
     </td>
     <td><button class="btn btn-danger btn-sm" id="remove"><i class="fa fa-times"></i></button></td>
   </tr>
@@ -385,6 +397,7 @@ $(function () {
         $('#addModal').find('#username').val("");
         $('#addModal').find('#code').val("");
         $('#addModal').find('#name').val("");
+        $('#addModal').find('#account').val("");
         $('#addModal').find('#shortname').val("");
         $('#addModal').find('#reg_no').val("");
         $('#addModal').find('#pic').val("");
@@ -442,6 +455,7 @@ $(function () {
         $("#pricingTable").find('#description:last').attr('name', 'description['+pricingCount+']').attr("id", "description" + pricingCount);
         $("#pricingTable").find('#size:last').attr('name', 'size['+pricingCount+']').attr("id", "size" + pricingCount);
         $("#pricingTable").find('#price:last').attr('name', 'price['+pricingCount+']').attr("id", "price" + pricingCount);
+        $("#pricingTable").find('#unit:last').attr('name', 'unit['+pricingCount+']').attr("id", "unit" + pricingCount);
 
         pricingCount++;
     });
@@ -496,6 +510,7 @@ function edit(id){
             $('#addModal').find('#username').val(obj.message.username);
             $('#addModal').find('#code').val(obj.message.customer_code);
             $('#addModal').find('#name').val(obj.message.customer_name);
+            $('#addModal').find('#account').val(obj.message.account_name);
             $('#addModal').find('#reg_no').val(obj.message.reg_no);
             $('#addModal').find('#address').val(obj.message.customer_address);
             $('#addModal').find('#pickupaddress').val(obj.message.pickup_address);

@@ -38,6 +38,7 @@ else{
   $drivers = $db->query("SELECT * FROM drivers WHERE deleted = '0'");
   $drivers2 = $db->query("SELECT * FROM drivers WHERE deleted = '0'");
   $users = $db->query("SELECT * FROM users WHERE deleted = '0'");
+  $units = $db->query("SELECT * FROM units WHERE deleted = '0'");
 }
 ?>
 
@@ -383,8 +384,8 @@ else{
               <tr>
                 <th>Notes</th>
                 <th>Quantity</th>
-                <!--th>Quantity <br>Delivered</th-->
                 <th>Price/Size</th>
+                <th>UOM</th>
                 <th>Unit Price</th>
                 <th>Amount</th>
                 <th>Delete</th>
@@ -393,7 +394,7 @@ else{
             <tbody id="pricingTable"></tbody>
             <tfoot id="pricingFoot">
               <tr>
-                <th colspan="4" style="text-align:right;">Total Amount</th>
+                <th colspan="5" style="text-align:right;">Total Amount</th>
                 <th><input type="number" class="form-control" id="totalAmount" name="totalAmount" value="0.00" readonly></th>
                 <th></th>
               </tr>
@@ -671,9 +672,6 @@ else{
     <td>
       <input type="number" class="form-control" id="quantity_in"  placeholder="Enter ..." required>
     </td>
-    <!--td>
-      <input type="number" class="form-control" id="quantity_delivered"  placeholder="Enter ..." required>
-    </td-->
     <td>
       <div class="input-group">
         <input type="text" class="form-control" id="size"  placeholder="Enter ..." required>
@@ -683,6 +681,13 @@ else{
           </span>
         </div>
       </div>
+    </td>
+    <td>
+      <select class="form-control" style="width: 100%;" id="unit" required>
+        <?php while($row4=mysqli_fetch_assoc($units)){ ?>
+          <option value="<?=$row4['id'] ?>"><?=$row4['units'] ?></option>
+        <?php } ?>
+      </select>
     </td>
     <td>
       <input class="form-control" type="number" placeholder="Unit Price" id="unit_price" required>
@@ -1118,22 +1123,6 @@ $(function () {
             $('#spinnerLoading').hide();
           }
         });
-        /*$.post('php/loading.php', $('#extendForm').serialize(), function(data){
-          var obj = JSON.parse(data); 
-          if(obj.status === 'success'){
-            $('#extendModal').modal('hide');
-            toastr["success"](obj.message, "Success:");
-            $('#weightTable').DataTable().ajax.reload();
-          }
-          else if(obj.status === 'failed'){
-            toastr["error"](obj.message, "Failed:");
-          }
-          else{
-            toastr["error"]("Something wrong when edit", "Failed:");
-          }
-
-          $('#spinnerLoading').hide();
-        });*/
       }
       else if($('#updateModal').hasClass('show')){
         $('#spinnerLoading').show();
@@ -1328,10 +1317,10 @@ $(function () {
 
     $("#pricingTable").find('#particular:last').attr('name', 'particular['+pricingCount+']').attr("id", "particular" + pricingCount);
     $("#pricingTable").find('#quantity_in:last').attr('name', 'quantity_in['+pricingCount+']').attr("id", "quantity_in" + pricingCount);
-    //$("#pricingTable").find('#quantity_delivered:last').attr('name', 'quantity_delivered['+pricingCount+']').attr("id", "quantity_delivered" + pricingCount);
     $("#pricingTable").find('#size:last').attr('name', 'size['+pricingCount+']').attr("id", "size" + pricingCount);
     $("#pricingTable").find('#unit_price:last').attr('name', 'unit_price['+pricingCount+']').attr("id", "unit_price" + pricingCount);
     $("#pricingTable").find('#price').attr('name', 'price['+pricingCount+']').attr("id", "price" + pricingCount);
+    $("#pricingTable").find('#unit').attr('name', 'unit['+pricingCount+']').attr("id", "unit" + pricingCount);
 
     var pricingJson = JSON.parse(pricingJSON);
 

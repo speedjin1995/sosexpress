@@ -11,11 +11,12 @@ else{
     $userId = $_SESSION['userID'];
 }
 
-if(isset($_POST['username'], $_POST['code'], $_POST['name'], $_POST['reg_no'], $_POST['address'], $_POST['phone'], 
+if(isset($_POST['username'], $_POST['code'], $_POST['name'], $_POST['account'], $_POST['reg_no'], $_POST['address'], $_POST['phone'], 
 $_POST['email'], $_POST['payment_term'], $_POST['pickupaddress'])){
     $username = filter_input(INPUT_POST, 'username', FILTER_SANITIZE_STRING);
     $code = filter_input(INPUT_POST, 'code', FILTER_SANITIZE_STRING);
     $name = filter_input(INPUT_POST, 'name', FILTER_SANITIZE_STRING);
+    $account = filter_input(INPUT_POST, 'account', FILTER_SANITIZE_STRING);
     $reg_no = filter_input(INPUT_POST, 'reg_no', FILTER_SANITIZE_STRING);
 	$address = filter_input(INPUT_POST, 'address', FILTER_SANITIZE_STRING);
     $pickupaddress = filter_input(INPUT_POST, 'pickupaddress', FILTER_SANITIZE_STRING);
@@ -50,6 +51,10 @@ $_POST['email'], $_POST['payment_term'], $_POST['pickupaddress'])){
 
     if(isset($_POST['price'])){
         $price = $_POST['price'];
+    }
+
+    if(isset($_POST['unit'])){
+        $unit = $_POST['unit'];
     }
 
     if(isset($_POST['phone2']) && $_POST['phone2'] != null && $_POST['phone2'] != ''){
@@ -112,14 +117,15 @@ $_POST['email'], $_POST['payment_term'], $_POST['pickupaddress'])){
                         'type' => $type[$i],
                         'size' => $size[$i],
                         'price' => $price[$i],
-                        'notes' => $notes
+                        'notes' => $notes,
+                        'unit' => $unit[$i] ?? ''
                     );
                 }
             }
 
-            if ($update_stmt = $db->prepare("UPDATE customers SET username=?, customer_code=?, customer_name=?, short_name=?, reg_no=?, pic=?, customer_address=?, pickup_address=?, customer_phone=?, customer_phone2=?, customer_phone3=?, customer_phone4=?, customer_email=?, customer_email2=?, customer_email3=?, customer_email4=?, working_hours=?, payment_term=?, payment_details=?, pricing=?, notes=? WHERE id=?")) {
+            if ($update_stmt = $db->prepare("UPDATE customers SET username=?, customer_code=?, customer_name=?, short_name=?, reg_no=?, pic=?, customer_address=?, pickup_address=?, customer_phone=?, customer_phone2=?, customer_phone3=?, customer_phone4=?, customer_email=?, customer_email2=?, customer_email3=?, customer_email4=?, working_hours=?, payment_term=?, payment_details=?, pricing=?, notes=?, account_name=? WHERE id=?")) {
                 $data = json_encode($pricing);
-                $update_stmt->bind_param('ssssssssssssssssssssss', $username, $code, $name, $shortname, $reg_no, $pic, $address, $pickupaddress, $phone, $phone2, $phone3, $phone4, $email, $email2, $email3, $email4, $workingHours, $payment_term, $term, $data, $note, $_POST['id']);
+                $update_stmt->bind_param('sssssssssssssssssssssss', $username, $code, $name, $shortname, $reg_no, $pic, $address, $pickupaddress, $phone, $phone2, $phone3, $phone4, $email, $email2, $email3, $email4, $workingHours, $payment_term, $term, $data, $note, $account, $_POST['id']);
                 
                 // Execute the prepared query.
                 if (! $update_stmt->execute()) {
@@ -166,9 +172,9 @@ $_POST['email'], $_POST['payment_term'], $_POST['pickupaddress'])){
                 }
             }
 
-            if ($insert_stmt = $db->prepare("INSERT INTO customers (username, password, salt, customer_code, customer_name, pickup_address, short_name, reg_no, pic, customer_address, customer_phone, customer_phone2, customer_phone3, customer_phone4, customer_email, customer_email2, customer_email3, customer_email4, working_hours, payment_term, payment_details, pricing, notes) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")) {
+            if ($insert_stmt = $db->prepare("INSERT INTO customers (username, password, salt, customer_code, customer_name, pickup_address, short_name, reg_no, pic, customer_address, customer_phone, customer_phone2, customer_phone3, customer_phone4, customer_email, customer_email2, customer_email3, customer_email4, working_hours, payment_term, payment_details, pricing, notes, account_name) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")) {
                 $data = json_encode($pricing);
-                $insert_stmt->bind_param('sssssssssssssssssssssss', $username, $password, $random_salt, $code, $name, $pickupaddress, $shortname, $reg_no, $pic, $address, $phone, $phone2, $phone3, $phone4, $email, $email2, $email3, $email4, $workingHours, $payment_term, $term, $data, $note);
+                $insert_stmt->bind_param('ssssssssssssssssssssssss', $username, $password, $random_salt, $code, $name, $pickupaddress, $shortname, $reg_no, $pic, $address, $phone, $phone2, $phone3, $phone4, $email, $email2, $email3, $email4, $workingHours, $payment_term, $term, $data, $note, $account);
                 
                 // Execute the prepared query.
                 if (! $insert_stmt->execute()) {

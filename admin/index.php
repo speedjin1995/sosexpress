@@ -503,6 +503,12 @@ to get the desired effect
                     </a>
                   </li>
                   <li class="nav-item">
+                    <a href="#units" data-file="units.php" class="nav-link link">
+                      <i class="nav-icon fas fa-balance-scale"></i>
+                      <p>Units</p>
+                    </a>
+                  </li>
+                  <li class="nav-item">
                     <a href="#documents" data-file="documents.php" class="nav-link link">
                       <i class="nav-icon fas fa-file"></i>
                       <p>Documents</p>

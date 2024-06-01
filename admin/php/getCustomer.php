@@ -26,6 +26,7 @@ if(isset($_POST['userID'])){
                 $message['username'] = $row['username'];
                 $message['customer_code'] = $row['customer_code'];
                 $message['customer_name'] = $row['customer_name'];
+                $message['account_name'] = $row['account_name'];
                 $message['customer_address'] = $row['customer_address'];
                 $message['pickup_address'] = $row['pickup_address'];
                 $message['customer_phone'] = $row['customer_phone'];
