@@ -973,6 +973,25 @@ $(function () {
           $('#spinnerLoading').hide();
         });
       }
+      else if($('#uploadModal').hasClass('show')){
+        $('#spinnerLoading').show();
+        $.post('php/uploadDO.php', $('#uploadForm').serialize(), function(data){
+          var obj = JSON.parse(data); 
+          if(obj.status === 'success'){
+            $('#uploadModal').modal('hide');
+            toastr["success"](obj.message, "Success:");
+            $('#weightTable').DataTable().ajax.reload();
+          }
+          else if(obj.status === 'failed'){
+            toastr["error"](obj.message, "Failed:");
+          }
+          else{
+            toastr["error"]("Something wrong when edit", "Failed:");
+          }
+
+          $('#spinnerLoading').hide();
+        });
+      }
     }
   });
 
@@ -1666,8 +1685,8 @@ function displayPreview(data) {
   for (var i = 1; i < jsonData.length; i++) {
       htmlTable += '<tr>';
       var rowData = jsonData[i];
-      rowData.forEach(function(cellData) {
-          htmlTable += '<td>' + cellData + '</td>';
+      rowData.forEach(function(cellData, index) {
+          htmlTable += '<td><input type="text" id="'+headers[index]+i+'" name="'+headers[index]+'['+(i-1)+']" value="' + cellData + '" /></td>';
       });
       htmlTable += '</tr>';
   }
