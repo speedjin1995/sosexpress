@@ -1577,8 +1577,8 @@ function format (row) {
     returnString +='<div class="row"><div class="col-2"><button type="button" class="btn btn-warning btn-sm" title="Edit" onclick="edit('+row.id+
   ')"><i class="fas fa-pen"></i></button></div><div class="col-2"><button type="button" class="btn btn-danger btn-sm" title="Reject" onclick="reject('+row.id+
   ')">RJ</button></div><div class="col-2"><button type="button" class="btn btn-danger btn-sm" title="Delete" onclick="deactivate('+row.id+
-  ')"><i class="fas fa-trash"></i></button></div><div class="col-2"><button type="button" class="btn btn-info btn-sm" title="Revert" onclick="revert('+row.id+
-  ')"><i class="fas fa-sync"></i></button></div><div class="col-2"><button type="button" class="btn btn-primary btn-sm" title="In Back" onclick="inback('+row.id+
+  ')"><i class="fas fa-trash"></i></button></div><div class="col-2"><button type="button" class="btn btn-info btn-sm" title="In Back" onclick="revert('+row.id+
+  ')"><i class="fas fa-sync"></i></button></div><div class="col-2"><button type="button" class="btn btn-primary btn-sm" title="Second Delivery" onclick="inback('+row.id+
   ')"><i class="fas fa-pallet"></i></button></div><div class="col-2"><button type="button" class="btn btn-success btn-sm" title="Delivered" onclick="delivered('+row.id+
   ')"><i class="fas fa-truck"></i></button></div></div></div></div>';
   }
