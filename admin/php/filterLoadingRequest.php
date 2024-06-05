@@ -35,17 +35,17 @@ if($_POST['customer'] != null && $_POST['customer'] != '' && $_POST['customer'] 
 }
 
 if($_POST['zones'] != null && $_POST['zones'] != '' && $_POST['zones'] != '-'){
-  $check_zones_stmt = $db->prepare("SELECT * FROM zones WHERE id=? AND zones <> '-'");
+  /*$check_zones_stmt = $db->prepare("SELECT * FROM zones WHERE id=? AND zones <> '-'");
   $check_zones_stmt->bind_param('s', $zones);
   $check_zones_stmt->execute();
   $check_zones_result = $check_zones_stmt->get_result();
 
   // Check if the zones column contains "-"
-  if ($check_zones_result->num_rows > 0) {
+  if ($check_zones_result->num_rows > 0) {*/
     $searchQuery .= " and do_request.zone = '".$_POST['zones']."'";
-  }
+  /*}
 
-  $check_zones_stmt->close();
+  $check_zones_stmt->close();*/
 }
 
 if($_POST['hypermarket'] != null && $_POST['hypermarket'] != '' && $_POST['hypermarket'] != '-'){
