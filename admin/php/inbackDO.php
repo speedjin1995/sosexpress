@@ -14,7 +14,13 @@ if (isset($_POST['userID'])) {
     $totalDiscount = "0.00";
     $payment_term = 'Cash';
     $del = "Invoiced";
+    $del2 = "Posted";
     $today = date("Y-m-d 00:00:00");
+
+    if ($stmtU = $db->prepare("UPDATE do_request SET status=? WHERE id=?")) {
+        $stmtU->bind_param('ss', $del2, $id);
+        $stmtU->execute();
+    }
 
     // Step 1: Copy the original record to a new record
     $copy_query = "
@@ -94,7 +100,8 @@ if (isset($_POST['userID'])) {
                 )
             );
         }
-    } else {
+    } 
+    else {
         echo json_encode(
             array(
                 "status" => "failed",

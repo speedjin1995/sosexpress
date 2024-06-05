@@ -60,6 +60,10 @@ if($_POST['status'] != null && $_POST['status'] != '' && $_POST['status'] != '-'
   $searchQuery = " and do_request.status = '".$_POST['status']."'";
 }
 
+if($_POST['doNumber'] != null && $_POST['doNumber'] != '' && $_POST['doNumber'] != '-'){
+  $searchQuery .= " and do_request.do_number like '%".$_POST['doNumber']."%'";
+}
+
 if($searchValue != ''){
   $searchQuery = " and (hypermarket.name like '%".$searchValue."%' or 
        outlet.name like '%".$searchValue."%' or

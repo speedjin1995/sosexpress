@@ -147,7 +147,13 @@ else{
             </div>
 
             <div class="row">
-              <div class="col-9"></div>
+              <div class="col-3">
+                <div class="form-group">
+                  <label>DO No.</label>
+                  <input class="form-control" type="text" placeholder="DO Number" id="doSearch" name="doSearch">
+                </div>
+              </div>
+              <div class="col-6"></div>
               <div class="col-3">
                 <button type="button" class="btn btn-block bg-gradient-warning btn-sm"  id="filterSearch">
                   <i class="fas fa-search"></i>
@@ -498,6 +504,7 @@ $(function () {
   var hypermarketI = $('#hypermarketFilter').val() ? $('#hypermarketFilter').val() : '';
   var outletsI = $('#outletsFilter').val() ? $('#outletsFilter').val() : '';
   var statusI = $('#statusFilter').val() ? $('#statusFilter').val() : '';
+  var doSearchI = $('#doSearch').val() ? $('#doSearch').val() : '';
 
   var table = $("#weightTable").DataTable({
     "responsive": true,
@@ -521,7 +528,8 @@ $(function () {
         zones: zonesI,
         hypermarket: hypermarketI,
         outlets: outletsI,
-        status: statusI
+        status: statusI,
+        doNumber: doSearchI
       } 
     },
     'columns': [
@@ -717,6 +725,7 @@ $(function () {
     var hypermarketFilter = $('#hypermarketFilter').val() ? $('#hypermarketFilter').val() : '';
     var outletsFilter = $('#outletsFilter').val() ? $('#outletsFilter').val() : '';
     var statusFilter = $('#statusFilter').val() ? $('#statusFilter').val() : '';
+    var doSearchI = $('#doSearch').val() ? $('#doSearch').val() : '';
 
     //Destroy the old Datatable
     $("#weightTable").DataTable().clear().destroy();
@@ -742,7 +751,8 @@ $(function () {
           zones: zonesFilter,
           hypermarket: hypermarketFilter,
           outlets: outletsFilter,
-          status: statusFilter
+          status: statusFilter,
+          doNumber: doSearchI
         } 
       },
       'columns': [
