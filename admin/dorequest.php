@@ -676,7 +676,7 @@ $(function () {
           $('#outletsFilter').html('');
           $('#outletsFilter').append('<option selected="selected">-</option>');
           for(var i=0; i<obj.message.length; i++){
-            $('#outletsFilter').append('<option value="'+obj.message[i].id+'">'+obj.message[i].name+'</option>')
+            $('#outletsFilter').append('<option value="'+obj.message[i].id+'">'+obj.message[i].name+'</option>');
           }
         }
         else if(obj.status === 'failed'){
@@ -701,7 +701,7 @@ $(function () {
           $('#outletsFilter').html('');
           $('#outletsFilter').append('<option selected="selected">-</option>');
           for(var i=0; i<obj.message.length; i++){
-            $('#outletsFilter').append('<option value="'+obj.message[i].id+'">'+obj.message[i].name+'</option>')
+            $('#outletsFilter').append('<option value="'+obj.message[i].id+'">'+obj.message[i].name+'</option>');
           }
         }
         else if(obj.status === 'failed'){

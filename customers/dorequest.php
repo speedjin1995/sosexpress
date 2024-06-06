@@ -89,7 +89,7 @@ else{
               <div class="col-3">
                 <div class="form-group">
                   <label>States</label>
-                  <select class="form-control" id="stateFilter" name="stateFilter" style="width: 100%;">
+                  <select class="form-control select2" id="stateFilter" name="stateFilter" style="width: 100%;">
                     <option selected="selected">-</option>
                     <?php while($rowStatus2=mysqli_fetch_assoc($states2)){ ?>
                       <option value="<?=$rowStatus2['id'] ?>"><?=$rowStatus2['states'] ?></option>
@@ -100,14 +100,14 @@ else{
 
               <div class="form-group col-3">
                 <label>Zones</label>
-                <select class="form-control" id="zonesFilter" name="zonesFilter" style="width: 100%;"></select>
+                <select class="form-control select2" id="zonesFilter" name="zonesFilter" style="width: 100%;"></select>
               </div>
             </div>
 
             <div class="row">
               <div class="form-group col-3">
                 <label>Hypermarket</label>
-                <select class="form-control" id="hypermarketFilter" name="hypermarketFilter" style="width: 100%;">
+                <select class="form-control select2" id="hypermarketFilter" name="hypermarketFilter" style="width: 100%;">
                   <option selected="selected">-</option>
                   <?php while($rowhypermarket2=mysqli_fetch_assoc($hypermarket2)){ ?>
                     <option value="<?=$rowhypermarket2['id'] ?>"><?=$rowhypermarket2['name'] ?></option>
@@ -117,7 +117,7 @@ else{
 
               <div class="form-group col-3">
                 <label>Outlets</label>
-                <select class="form-control" id="outletsFilter" name="outletsFilter" style="width: 100%;"></select>
+                <select class="form-control select2" id="outletsFilter" name="outletsFilter" style="width: 100%;"></select>
               </div>
             </div>
 
@@ -328,6 +328,11 @@ $(function () {
   const tomorrow = new Date(today);
   tomorrow.setDate(tomorrow.getDate() + 1);
 
+  $('.select2').select2({
+    allowClear: true,
+    placeholder: "Please Select"
+  });
+
   <?php
     if($rowH=mysqli_fetch_assoc($holiday)){
       echo "$('#newBooking').hide();";
@@ -509,8 +514,10 @@ $(function () {
         var obj = JSON.parse(data);
         
         if(obj.status === 'success'){
+          $('#outletsFilter').html('');
+          $('#outletsFilter').append('<option selected="selected">-</option>');
           for(var i=0; i<obj.message.length; i++){
-            $('#outletsFilter').append('<option value="'+obj.message[i].id+'">'+obj.message[i].name+'</option>')
+            $('#outletsFilter').append('<option value="'+obj.message[i].id+'">'+obj.message[i].name+'</option>');
           }
         }
         else if(obj.status === 'failed'){
@@ -532,8 +539,10 @@ $(function () {
         var obj = JSON.parse(data);
         
         if(obj.status === 'success'){
+          $('#outletsFilter').html('');
+          $('#outletsFilter').append('<option selected="selected">-</option>');
           for(var i=0; i<obj.message.length; i++){
-            $('#outletsFilter').append('<option value="'+obj.message[i].id+'">'+obj.message[i].name+'</option>')
+            $('#outletsFilter').append('<option value="'+obj.message[i].id+'">'+obj.message[i].name+'</option>');
           }
         }
         else if(obj.status === 'failed'){
@@ -555,8 +564,10 @@ $(function () {
         var obj = JSON.parse(data);
         
         if(obj.status === 'success'){
+          $('#outletsFilter').html('');
+          $('#outletsFilter').append('<option selected="selected">-</option>');
           for(var i=0; i<obj.message.length; i++){
-            $('#outletsFilter').append('<option value="'+obj.message[i].id+'">'+obj.message[i].name+'</option>')
+            $('#outletsFilter').append('<option value="'+obj.message[i].id+'">'+obj.message[i].name+'</option>');
           }
         }
         else if(obj.status === 'failed'){
@@ -752,7 +763,7 @@ $(function () {
     $('#extendModal').find('#direct_store').val("");
     $('#extendModal').find('#outlets').attr('required', true);
     $('#extendModal').find('#outlets').show();
-    $('#extendModal').find("#direct_store").hide();
+    $('#extendModal').find("#direct_store").data('select2').$container.hide();
     //$('#extendModal').find('.select2-container').hide();
     $('#extendModal').modal('show');
     
@@ -1001,7 +1012,7 @@ function edit(id) {
         $('#extendModal').find('#direct_store').attr('required', true);
         $('#extendModal').find('#direct_store').val(obj.message.direct_store);
         $('#extendModal').find('#outlets').hide();
-        $('#extendModal').find("#direct_store").show();
+        $('#extendModal').find('#direct_store').data('select2').$container.show();
         //$('#extendModal').find('.select2-container').show();
       }
       else{
