@@ -154,6 +154,7 @@ else{
                   <option value="Posted" selected>Posted</option>
                   <option value="Printed">Printed</option>
                   <option value="Delivered">Delivered</option>
+                  <option value="Invoiced">Invoiced</option>
                   <option value="Cancelled">Cancelled</option>
                 </select>
               </div>
@@ -870,7 +871,13 @@ $(function () {
         className: 'select-checkbox',
         orderable: false,
         render: function (data, type, row) {
-          return '<input type="checkbox" class="select-checkbox" id="checkbox_' + data + '" value="'+data+'"/>';
+            if (row.status == 'Posted' || row.status == 'Confirmed') { // Assuming 'isInvoiced' is a boolean field in your row data
+              return '<input type="checkbox" class="select-checkbox" id="checkbox_' + data + '" value="'+data+'"/>';
+            } 
+            else {
+              return ''; // Return an empty string or any other placeholder if the item is invoiced
+            }
+          //return '<input type="checkbox" class="select-checkbox" id="checkbox_' + data + '" value="'+data+'"/>';
         }
       },
       //{ data: 'no' },
@@ -1079,7 +1086,13 @@ $(function () {
           className: 'select-checkbox',
           orderable: false,
           render: function (data, type, row) {
-            return '<input type="checkbox" class="select-checkbox" id="checkbox_' + data + '" value="'+data+'"/>';
+            if (row.status == 'Posted' || row.status == 'Confirmed') { // Assuming 'isInvoiced' is a boolean field in your row data
+                return '<input type="checkbox" class="select-checkbox" id="checkbox_' + data + '" value="'+data+'"/>';
+            } 
+            else {
+                return ''; // Return an empty string or any other placeholder if the item is invoiced
+            }
+            //return '<input type="checkbox" class="select-checkbox" id="checkbox_' + data + '" value="'+data+'"/>';
           }
         },
         //{ data: 'no' },
@@ -1599,6 +1612,19 @@ function format (row) {
   else if(row.status == 'Invoiced'){
     returnString +='<div class="row"><div class="col-3"></div><div class="col-3"></div><div class="col-3"></div></div></div></div>';
   }
+
+  if(row.pricing_details.length > 0){
+    returnString += '<h4>Pricing</h4><table style="width: 100%;"><thead><tr><th>Notes</th><th>Quantity</th><th>Price/Size</th><th>Unit Price</th><th>Amount</th></tr></thead><tbody>'
+    var total = 0;
+
+    for(var i=0; i<row.pricing_details.length; i++){
+      var item = row.pricing_details[i];
+      returnString += '<tr><td>'+item.particular+'</td><td>'+item.quantity_in+'</td><td>'+item.size+'</td><td>'+item.unit_price+'</td><th>'+item.price+'</td></tr></thead><tbody>'
+      total += parseFloat(item.price);
+    }
+
+    returnString += '</tbody><tfoot><th colspan="4" style="text-align:right;">Total Amount</th><th>'+total.toFixed(2)+'</th></tfoot></table>';
+  }
   
   return returnString;
 }
@@ -1688,6 +1714,50 @@ function edit(id) {
         $('#extendModal').find('#direct_store').val('');
         $('#extendModal').find("#direct_store").hide();
         //$('#extendModal').find('.select2-container').hide();
+      }
+      
+      $('#extendModal').find('#pricingTable').html('');
+      $('#extendModal').find('#totalAmount').val('0.00');
+      pricingCount = 0;
+      var total = 0;
+
+      if(obj.message.pricing_details.length > 0){
+        for(var i=0; i<obj.message.pricing_details.length; i++){
+          var item = obj.message.pricing_details[i];
+          var $addContents = $("#pricingDetails").clone();
+          $("#pricingTable").append($addContents.html());
+
+          $("#pricingTable").find('.details:last').attr("id", "detail" + pricingCount);
+          $("#pricingTable").find('.details:last').attr("data-index", pricingCount);
+          $("#pricingTable").find('#remove:last').attr("id", "remove" + pricingCount);
+          $("#pricingTable").find('#exclamation-icon:last').attr("id", "exclamation-icon" + pricingCount);
+
+          $("#pricingTable").find('#particular:last').attr('name', 'particular['+pricingCount+']').attr("id", "particular" + pricingCount).val(item.particular);
+          $("#pricingTable").find('#quantity_in:last').attr('name', 'quantity_in['+pricingCount+']').attr("id", "quantity_in" + pricingCount).val(item.quantity_in);
+          $("#pricingTable").find('#size:last').attr('name', 'size['+pricingCount+']').attr("id", "size" + pricingCount).val(item.size);
+          $("#pricingTable").find('#unit_price:last').attr('name', 'unit_price['+pricingCount+']').attr("id", "unit_price" + pricingCount).val(item.unit_price);
+          $("#pricingTable").find('#price').attr('name', 'price['+pricingCount+']').attr("id", "price" + pricingCount).val(item.price);
+          $("#pricingTable").find('#unit').attr('name', 'unit['+pricingCount+']').attr("id", "unit" + pricingCount).val(item.unit);
+
+          total += parseFloat(item.price);
+          $('#extendModal').find('#totalAmount').val(total.toFixed(2));
+          var pricingJ = JSON.parse(pricingJSON);
+
+          $("#exclamation-icon" + pricingCount).hover(function () {
+            var tooltipContent = '<ul>';
+            pricingJ.forEach(function (item) {
+              tooltipContent += '<li>Size: ' + item.size + ', Price: ' + item.price + ', Notes: ' + (item.notes ? item.notes : 'N/A') + '</li>';
+            });
+            tooltipContent += '</ul>';
+            $(this).attr('data-original-title', tooltipContent);
+            $(this).tooltip({
+                html: true, // Set html option to true
+                placement: 'top', // Adjust tooltip placement if needed
+            }).tooltip('show');
+          }, function () {
+            $(this).tooltip('hide');
+          });
+        }
       }
       
       $('#extendModal').modal('show');

@@ -13,6 +13,7 @@ if(isset($_POST['id'], $_POST['totalAmount'])){
     $grn_receive = null;
     $pricing_details = array();
     $pricing = '';
+    $status = 'Printed';
 
     if(isset($_POST['particular'])){
         $particular = $_POST['particular'];
@@ -56,7 +57,7 @@ if(isset($_POST['id'], $_POST['totalAmount'])){
                 "size" => $size[$i],
                 "unit_price" => $unit_price[$i],
                 "price" => $price[$i],
-                "size" => $unit[$i]
+                "unit" => $unit[$i]
             );
         }
     }
@@ -75,6 +76,7 @@ if(isset($_POST['id'], $_POST['totalAmount'])){
 
     if(isset($_POST['grn_received']) && $_POST['grn_received'] != null && $_POST['grn_received'] != ''){
         $grn_receive = filter_input(INPUT_POST, 'grn_received', FILTER_SANITIZE_STRING);
+        $status = 'Invoiced';
     }
 
     $ds = DIRECTORY_SEPARATOR;  
@@ -97,8 +99,8 @@ if(isset($_POST['id'], $_POST['totalAmount'])){
         }
     }
     
-    if ($update_stmt = $db->prepare("UPDATE do_request SET grn_upload=?, sent_date=?, back_date=?, grn_receive=?, pricing_details=?, total_price=? WHERE id=?")){
-        $update_stmt->bind_param('sssssss', $jobLog, $sent_date, $back_date, $grn_receive, $pricing, $totalAmount, $id);
+    if ($update_stmt = $db->prepare("UPDATE do_request SET grn_upload=?, sent_date=?, back_date=?, grn_receive=?, pricing_details=?, total_price=?, status=? WHERE id=?")){
+        $update_stmt->bind_param('ssssssss', $jobLog, $sent_date, $back_date, $grn_receive, $pricing, $totalAmount, $status, $id);
         
         // Execute the prepared query.
         if (! $update_stmt->execute()){

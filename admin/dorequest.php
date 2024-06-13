@@ -19,8 +19,8 @@ else{
     $role = $row['role_code'];
   }
 
-  $customers = $db->query("SELECT * FROM customers WHERE deleted = '0'");
-  $customers2 = $db->query("SELECT * FROM customers WHERE deleted = '0'");
+  $customers = $db->query("SELECT * FROM customers WHERE deleted = '0' ORDER BY customer_name");
+  $customers2 = $db->query("SELECT * FROM customers WHERE deleted = '0' ORDER BY customer_name");
   $hypermarket = $db->query("SELECT * FROM hypermarket WHERE deleted = '0'");
   $hypermarket2 = $db->query("SELECT * FROM hypermarket WHERE deleted = '0'");
   $states = $db->query("SELECT * FROM states WHERE deleted = '0'");
@@ -265,7 +265,7 @@ else{
             <div class="col-4">
               <div class="form-group">
                 <label class="labelStatus">Customer *</label>
-                <select class="form-control" id="customerNo" name="customerNo" required>
+                <select class="form-control select2" id="customerNo" name="customerNo" required>
                   <option value="" selected disabled hidden>Please Select</option>
                   <?php while($rowCustomer=mysqli_fetch_assoc($customers)){ ?>
                     <option value="<?=$rowCustomer['id'] ?>"><?=$rowCustomer['customer_name'] ?></option>
@@ -837,8 +837,9 @@ $(function () {
       data: function (params) {
         var query = {
           search: params.term,
-          states: $('#states').val(),
-          zones: $('#zones').val(),
+          states: $('#states').val() ? $('#states').val() : '',
+          zones: $('#zones').val() ? $('#zones').val() : '',
+          hyper: $('#hypermarket').val() ? $('#hypermarket').val() : '',
           type: 'public'
         };
         return query;
@@ -937,7 +938,7 @@ $(function () {
     $('#extendModal').find('#booking_date').val(formatDate2(today));
     $('#extendModal').find('#delivery_date').val(formatDate2(today));
     $('#extendModal').find('#cancellation_date').val(formatDate2(today));
-    $('#extendModal').find('#customerNo').val("");
+    $('#extendModal').find('#customerNo').val("").trigger('change');
     $('#extendModal').find('#hypermarket').val("");
     $('#extendModal').find('#states').val("");
     $('#extendModal').find('#zones').empty().val("");
@@ -1196,7 +1197,7 @@ function format (row) {
   ')"><i class="fas fa-trash"></i></button></div></div></div></div>';
   }
   else if(row.status == 'Confirmed'){
-    returnString +='<div class="row"><<div class="col-3"><button type="button" class="btn btn-warning btn-sm" title="Edit" onclick="edit('+row.id+
+    returnString +='<div class="row"><div class="col-3"><button type="button" class="btn btn-warning btn-sm" title="Edit" onclick="edit('+row.id+
   ')"><i class="fas fa-pen"></i></button></div><div class="col-3"><button type="button" class="btn btn-danger btn-sm" title="Delete" onclick="deactivate('+row.id+
   ')"><i class="fas fa-trash"></i></button></div></div></div></div>';
   }
@@ -1257,7 +1258,7 @@ function edit(id) {
       $('#extendModal').find('#booking_date').val(formatDate2(new Date(obj.message.booking_date)));
       $('#extendModal').find('#delivery_date').val(formatDate2(new Date(obj.message.delivery_date)));
       $('#extendModal').find('#cancellation_date').val(formatDate2(new Date(obj.message.cancellation_date)));
-      $('#extendModal').find('#customerNo').val(obj.message.customer);
+      $('#extendModal').find('#customerNo').val(obj.message.customer).trigger('change');
       $('#extendModal').find('#hypermarket').val(obj.message.hypermarket);
       $('#extendModal').find('#states').val(obj.message.states);
       

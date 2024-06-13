@@ -115,7 +115,8 @@ while($row = mysqli_fetch_assoc($empRecords)) {
     "need_grn"=>$row['need_grn'],
     "loading_time"=>$row['loading_time'],
     "direct_store"=>$row['direct_store'],
-    "status"=>$row['status']
+    "status"=>$row['status'],
+    "pricing_details" => ($row['pricing_details'] != null && $row['pricing_details'] != '') ? json_decode($row['pricing_details'], true) : []
   );
 
  $counter++;

@@ -41,6 +41,7 @@ if(isset($_POST['userID'])){
                 $message["loading_time"] = $row['loading_time'];
                 $message["direct_store"] = $row['direct_store'];
                 $message["status"] = $row['status'];
+                $message["pricing_details"] = ($row['pricing_details'] != null && $row['pricing_details'] != '') ? json_decode($row['pricing_details'], true) : [];
 
                 if ($pricing_stmt = $db->prepare("SELECT pricing FROM customers WHERE id=?")) {
                     $pricing_stmt->bind_param('s', $message["customer"]);

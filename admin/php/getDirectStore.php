@@ -19,6 +19,11 @@ if(isset($_GET['search'])){
         $zones = $_GET['zones'];
         $searchQuery .= " AND zones = '$zones'";
     }
+    
+    if(isset($_GET['hyper']) && $_GET['hyper'] != null && $_GET['hyper'] != '' && $_GET['hyper'] != '-'){
+        $hyper = $_GET['hyper'];
+        $searchQuery .= " AND hypermarket = '$hyper'";
+    }
 
     if ($update_stmt = $db->prepare("SELECT * FROM outlet WHERE $searchQuery")) {
         if (! $update_stmt->execute()) {
