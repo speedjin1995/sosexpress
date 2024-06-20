@@ -619,7 +619,7 @@ else{
         <div class="modal-body">
           <input type="file" id="fileInput">
           <button id="previewButton">Preview Data</button>
-          <div id="previewTable" style="overflow: auto;"></div>
+          <div id="previewTable"></div>
         </div>
         <div class="modal-footer justify-content-between bg-gray-dark color-palette">
           <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
@@ -1216,7 +1216,7 @@ $(function () {
     };
 
     reader.readAsBinaryString(file);
-  });
+});
 });
 
 function format (row) {

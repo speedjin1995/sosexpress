@@ -25,7 +25,7 @@ if (isset($_POST['userID'])) {
             $results = $update_stmt2->get_result();
 
             if ($rows = $results->fetch_assoc()) {
-                if($rows['pricing_details'] != null && $rows['pricing_details'] != '' &&  $rows['pricing_details'] != '[]'){
+                if($rows['pricing_details'] != null && $rows['pricing_details'] != '' && $rows['pricing_details'] != '[]'){
                     if ($stmtU = $db->prepare("UPDATE do_request SET status=? WHERE id=?")) {
                         $stmtU->bind_param('ss', $del2, $id);
                         $stmtU->execute();
