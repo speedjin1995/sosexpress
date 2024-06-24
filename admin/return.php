@@ -21,7 +21,7 @@ else{
 
   $customers = $db->query("SELECT * FROM customers WHERE deleted = '0'");
   $customers2 = $db->query("SELECT * FROM customers WHERE deleted = '0'");
-  $reasons = $db->query("SELECT * FROM reasons WHERE deleted = '0'");
+  $reasons = $db->query("SELECT * FROM reasons WHERE deleted = '0' AND category = 'REJECT'");
   $hypermarket = $db->query("SELECT * FROM hypermarket WHERE deleted = '0'");
   $hypermarket2 = $db->query("SELECT * FROM hypermarket WHERE deleted = '0'");
   $users = $db->query("SELECT * FROM users WHERE deleted = '0'");

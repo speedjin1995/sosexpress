@@ -70,8 +70,16 @@ else{
     					<input type="hidden" class="form-control" id="id" name="id">
     				</div>
     				<div class="form-group">
-    					<label for="lotsNumber">Reason *</label>
+    					<label for="pricing">Reason *</label>
     					<input type="text" class="form-control" name="pricing" id="pricing" placeholder="Enter Reason" required>
+    				</div>
+                    <div class="form-group">
+    					<label for="modules">Module *</label>
+                        <select class="form-control" style="width: 100%;" id="modules" name="modules" required>
+                            <option selected="selected">-</option>
+                            <option value="REJECT">Reject Reason</option>
+                            <option value="INBACK">Out & Inback Reason</option>
+                        </select>
     				</div>
     			</div>
             </div>
@@ -142,6 +150,7 @@ $(function () {
     $('#addLots').on('click', function(){
         $('#lotModal').find('#id').val("");
         $('#lotModal').find('#pricing').val("");
+        $('#lotModal').find('#modules').val("");
         $('#lotModal').modal('show');
         
         $('#lotForm').validate({
@@ -168,6 +177,7 @@ function edit(id){
         if(obj.status === 'success'){
             $('#lotModal').find('#id').val(obj.message.id);
             $('#lotModal').find('#pricing').val(obj.message.type);
+            $('#lotModal').find('#modules').val(obj.message.category);
             $('#lotModal').modal('show');
             
             $('#lotForm').validate({

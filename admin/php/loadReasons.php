@@ -37,7 +37,8 @@ while($row = mysqli_fetch_assoc($empRecords)) {
     $data[] = array( 
       "counter"=>$counter,
       "id"=>$row['id'],
-      "type"=>$row['type']
+      "type"=>$row['type'],
+      "category"=>$row['category']
     );
 
     $counter++;

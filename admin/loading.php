@@ -31,7 +31,8 @@ else{
   $zones = $db->query("SELECT * FROM zones WHERE deleted = '0'");
   $zones2 = $db->query("SELECT * FROM zones WHERE deleted = '0'");
   $outlet = $db->query("SELECT * FROM outlet WHERE deleted = '0'");
-  $reasons = $db->query("SELECT * FROM reasons WHERE deleted = '0'");
+  $reasons = $db->query("SELECT * FROM reasons WHERE deleted = '0' AND category = 'REJECT'");
+  $reasons2 = $db->query("SELECT * FROM reasons WHERE deleted = '0' AND category = 'INBACK'");
   $vehicles = $db->query("SELECT * FROM vehicles WHERE deleted = '0'");
   $vehicles2 = $db->query("SELECT * FROM vehicles WHERE deleted = '0'");
   $vehicles3 = $db->query("SELECT * FROM vehicles WHERE deleted = '0'");
@@ -387,6 +388,15 @@ else{
               </div>
             </div>
           </div>
+          
+          <div class="row">
+            <div class="col-12">
+              <div class="form-group">
+                <label>Notes</label>
+                <textarea class="form-control" id="notes" name="notes" placeholder="Note"></textarea>
+              </div>
+            </div>
+          </div>
 
           <div class="row">
             <h4>Particular</h4>
@@ -582,6 +592,44 @@ else{
   </div>
 </div>
 
+<div class="modal fade" id="reasonModal">
+  <div class="modal-dialog modal-xl" style="max-width: 50%;">
+    <div class="modal-content">
+
+      <form role="form" id="reasonForm">
+        <div class="modal-header bg-gray-dark color-palette">
+          <h4 class="modal-title">Enter Reason</h4>
+          <button type="button" class="close bg-gray-dark color-palette" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+
+        <div class="modal-body">
+          <input type="hidden" class="form-control" id="id" name="id">
+          <div class="row">
+            <div class="col-12">
+              <div class="form-group">
+                <label>Reasons </label>
+                <select class="form-control" id="reasons" name="reasons" required>
+                  <option value="" selected disabled hidden>Please Select</option>
+                  <?php while($rowreasons2=mysqli_fetch_assoc($reasons2)){ ?>
+                    <option value="<?=$rowreasons2['id'] ?>"><?=$rowreasons2['type'] ?></option>
+                  <?php } ?>
+                </select>
+              </div>
+            </div>
+          </div>  
+        </div>
+
+        <div class="modal-footer justify-content-between bg-gray-dark color-palette">
+          <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+          <button type="submit" class="btn btn-primary" id="saveButton">Save changes</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
 <div class="modal fade" id="viewModal">
   <div class="modal-dialog modal-xl">
     <div class="modal-content">
@@ -693,6 +741,7 @@ else{
             <i class="fas fa-exclamation-circle"></i>
           </span>
         </div>
+        <button class="btn btn-warning similarRequests" id="similarRequestsButton" style="display: none;" onclick="handleSimilarRequests()"><i class="fas fa-exclamation-circle" style="color: red;"></i></button>
       </div>
     </td>
     <td style="display:none;">
@@ -734,8 +783,29 @@ else{
   </tr>
 </script>
 
+<div class="modal fade" id="similarPricingModal">
+  <div class="modal-dialog modal-xl">
+    <form id="similarPricingForm">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="similarPricingModalLabel">Similar Pricings</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body" id="similarPricingModalBody"></div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+          <button type="submit" class="btn btn-primary" id="saveButton">Save changes</button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+
 <script>
 var pricingCount = $("#pricingTable").find(".details").length;
+var similarCount = 0;
 var pricingCount2 = $("#pricingTable2").find(".details").length;
 var pricingJSON = '[]';
 var do_number = '';
@@ -1215,6 +1285,66 @@ $(function () {
           }
         });
       }
+      else if($('#reasonModal').hasClass('show')){
+        $.post('php/doReason.php', $('#reasonForm').serialize(), function(data){
+          var obj = JSON.parse(data);
+      
+          if(obj.status === 'success'){
+            $.post('php/inbackDO.php', {userID: $('#reasonModal').find('#id').val()}, function(data){
+            var obj = JSON.parse(data);
+
+            if(obj.status === 'success'){
+              $('#reasonModal').modal('hide');
+              toastr["success"](obj.message, "Success:");
+              $('#weightTable').DataTable().ajax.reload();
+            }
+            else if(obj.status === 'failed'){
+              toastr["error"](obj.message, "Failed:");
+            }
+            else{
+              toastr["error"]("Something wrong when activate", "Failed:");
+            }
+            $('#spinnerLoading').hide();
+          });
+          }
+          else if(obj.status === 'failed'){
+            toastr["error"](obj.message, "Failed:");
+          }
+          else{
+            toastr["error"]("Something wrong when pull data", "Failed:");
+          }
+        });
+      }
+      else if($('#similarPricingModal').hasClass('show')){
+        $.post('php/doReason.php', $('#similarPricingForm').serialize(), function(data){
+          var obj = JSON.parse(data);
+      
+          if(obj.status === 'success'){
+            $.post('php/updatePricing.php', {userID: $('#similarPricingModal').find('#id').val()}, function(data){
+            var obj = JSON.parse(data);
+
+            if(obj.status === 'success'){
+              $('#similarPricingModal').modal('hide');
+              toastr["success"](obj.message, "Success:");
+              $('#weightTable').DataTable().ajax.reload();
+            }
+            else if(obj.status === 'failed'){
+              toastr["error"](obj.message, "Failed:");
+            }
+            else{
+              toastr["error"]("Something wrong when activate", "Failed:");
+            }
+            $('#spinnerLoading').hide();
+          });
+          }
+          else if(obj.status === 'failed'){
+            toastr["error"](obj.message, "Failed:");
+          }
+          else{
+            toastr["error"]("Something wrong when pull data", "Failed:");
+          }
+        });
+      }
     }
   });
   
@@ -1367,6 +1497,13 @@ $(function () {
 
     $("#other_reason" + pricingCount).hide();
     pricingCount++;
+
+    if (similarCount > 0) {
+      $('.similarRequests').show();
+    } 
+    else {
+      $('.similarRequests').hide();
+    }
   });
 
   $("#pricingTable").on('click', 'button[id^="remove"]', function () {
@@ -1577,8 +1714,7 @@ function format (row) {
   '</p></div><div class="col-md-3"><p>Actual Carton: '+row.actual_carton+
   '</p></div></div><div class="row"><div class="col-md-3"><p>Loading Time: '+row.loading_time+
   '</p></div><div class="col-md-3"><p>Status: '+row.status+
-  '</p></div><div class="col-md-3"><p>Note: '+row.note+
-  '</p></div><div class="col-md-3">';
+  '</p></div><div class="col-md-3"></div><div class="col-md-3">';
   
   if(row.status == 'Created'){
     returnString += '<div class="row"><div class="col-3"><button type="button" class="btn btn-warning btn-sm" title="Edit" onclick="edit('+row.id+
@@ -1612,6 +1748,11 @@ function format (row) {
   else if(row.status == 'Invoiced'){
     returnString +='<div class="row"><div class="col-3"></div><div class="col-3"></div><div class="col-3"></div></div></div></div>';
   }
+
+  returnString += '<div class="row"><div class="col-md-6"><p>Note: '+row.note+
+  '</p></div><div class="col-md-6"><p>Reason: '+row.reason+
+  '</p></div></div>';
+  
 
   if(row.pricing_details.length > 0){
     returnString += '<h4>Pricing</h4><table style="width: 100%;"><thead><tr><th>Notes</th><th>Quantity</th><th>Price/Size</th><th>Unit Price</th><th>Amount</th></tr></thead><tbody>'
@@ -1661,7 +1802,7 @@ function formatNormal (row) {
 
 function edit(id) {
   $('#spinnerLoading').show();
-  $.post('php/getDO.php', {userID: id}, function(data){
+  $.post('php/getLoading.php', {userID: id}, function(data){
     var obj = JSON.parse(data);
     
     if(obj.status === 'success'){
@@ -1695,6 +1836,7 @@ function edit(id) {
       $('#extendModal').find('#actual_ctn').val(obj.message.actual_carton);
       $('#extendModal').find('#need_grn').val(obj.message.need_grn);
       $('#extendModal').find('#loadingTime').val(obj.message.loading_time);
+      $('#extendModal').find('#notes').val(obj.message.note);
 
       if(obj.message.hypermarket == '0'){
         $('#extendModal').find('#hypermarket').trigger('change');
@@ -1719,6 +1861,7 @@ function edit(id) {
       $('#extendModal').find('#pricingTable').html('');
       $('#extendModal').find('#totalAmount').val('0.00');
       pricingCount = 0;
+      similarCount = 0;
       var total = 0;
 
       if(obj.message.pricing_details.length > 0){
@@ -1761,6 +1904,14 @@ function edit(id) {
       }
       
       $('#extendModal').modal('show');
+
+      similarCount = obj.message.similar_requests_count;
+      if (obj.message.similar_requests_count > 0) {
+        $('#similarRequestsButton').show();
+      } 
+      else {
+        $('#similarRequestsButton').hide();
+      }
 
       $('#extendForm').validate({
         errorElement: 'span',
@@ -1903,20 +2054,22 @@ function delivered(id) {
 }
 
 function inback(id) {
-  $.post('php/inbackDO.php', {userID: id}, function(data){
-    var obj = JSON.parse(data);
-
-    if(obj.status === 'success'){
-      toastr["success"](obj.message, "Success:");
-      $('#weightTable').DataTable().ajax.reload();
+  $('#reasonModal').find('#id').val(id);
+  $('#reasonModal').find('#reasons').val('');
+  $('#reasonModal').modal('show');
+  
+  $('#reasonForm').validate({
+    errorElement: 'span',
+    errorPlacement: function (error, element) {
+      error.addClass('invalid-feedback');
+      element.closest('.form-group').append(error);
+    },
+    highlight: function (element, errorClass, validClass) {
+      $(element).addClass('is-invalid');
+    },
+    unhighlight: function (element, errorClass, validClass) {
+      $(element).removeClass('is-invalid');
     }
-    else if(obj.status === 'failed'){
-      toastr["error"](obj.message, "Failed:");
-    }
-    else{
-      toastr["error"]("Something wrong when activate", "Failed:");
-    }
-    $('#spinnerLoading').hide();
   });
 }
 
@@ -1937,4 +2090,90 @@ function invoice(id) {
     $('#spinnerLoading').hide();
   });
 }
+
+function handleSimilarRequests() {
+  var id = $('#extendModal').find('#id').val();
+
+  $.ajax({
+    url: 'php/getSimilarPricing.php', // Replace with your server script URL
+    type: 'POST',
+    data: { id: id },
+    success: function(response) {
+      // Handle the response from the server
+      var data = JSON.parse(response);
+      if (data.status === 'success') {
+        // Process the list of similar pricing
+        var similarPricingList = data.message;
+        console.log('Similar Pricing List:', similarPricingList);
+        
+        // Example: Update UI with similar pricing data
+        updateUI(similarPricingList);
+      } else {
+        // Handle error case
+        console.error('Failed to retrieve similar pricing:', data.message);
+        alert('Failed to retrieve similar pricing. Please try again.');
+      }
+    },
+    error: function(xhr, status, error) {
+      console.error('AJAX Error:', error);
+      alert('Error communicating with the server. Please try again later.');
+    }
+  });
+}
+
+// Function to update UI with similar pricing data (example)
+function updateUI(similarPricingList) {
+  // Start building the table content
+  var modalContent = `
+    <h3>Similar Pricing List</h3>
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          <th>DO No.</th>
+          <th>PO No.</th>
+          <th>Size</th>
+          <th>Price</th>
+          <th>Particular</th>
+        </tr>
+      </thead>
+      <tbody>`;
+  
+  // Loop through each item and create table rows
+  similarPricingList.forEach(function(item) {
+    modalContent += `
+      <tr>
+        <td>${item.do_no}</td>
+        <td>${item.po_no}</td>
+        <td>${item.size}</td>
+        <td>
+          <input type="hidden" name="id[]" value="${item.id}">
+          <input type="text" name="price[]" value="${item.price}" class="form-control">
+        </td>
+        <td>${item.particular}</td>
+      </tr>`;
+  });
+
+  modalContent += `
+      </tbody>
+    </table>`;
+
+  // Set the modal content and show the modal
+  $('#similarPricingModalBody').html(modalContent);
+  $('#similarPricingModal').modal('show');
+  
+  $('#similarPricingForm').validate({
+    errorElement: 'span',
+    errorPlacement: function (error, element) {
+      error.addClass('invalid-feedback');
+      element.closest('.form-group').append(error);
+    },
+    highlight: function (element, errorClass, validClass) {
+      $(element).addClass('is-invalid');
+    },
+    unhighlight: function (element, errorClass, validClass) {
+      $(element).removeClass('is-invalid');
+    }
+  });
+}
+
 </script>

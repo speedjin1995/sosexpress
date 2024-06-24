@@ -37,13 +37,13 @@ if (isset($_POST['userID'])) {
                             booking_date, delivery_date, cancellation_date, customer, hypermarket, direct_store, 
                             states, zone, outlet, do_type, do_number, do_details, po_number, note, actual_carton, 
                             need_grn, loading_time, pricing_details, total_price, hold, checker, sent_date, back_date, 
-                            grn_receive, grn_upload, status, deleted
+                            grn_receive, grn_upload, status, reason, deleted
                         )
                         SELECT 
                             booking_date, delivery_date, cancellation_date, customer, hypermarket, direct_store, 
                             states, zone, outlet, do_type, do_number, do_details, po_number, note, actual_carton, 
                             need_grn, loading_time, pricing_details, total_price, hold, checker, sent_date, back_date, 
-                            grn_receive, grn_upload, status, deleted 
+                            grn_receive, grn_upload, status, reason, deleted 
                         FROM do_request 
                         WHERE id=?";
                     

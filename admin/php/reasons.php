@@ -10,10 +10,11 @@ if(!isset($_SESSION['userID'])){
 
 if(isset($_POST['pricing'])){
     $pricing = filter_input(INPUT_POST, 'pricing', FILTER_SANITIZE_STRING);
+    $modules = filter_input(INPUT_POST, 'modules', FILTER_SANITIZE_STRING);
 
     if($_POST['id'] != null && $_POST['id'] != ''){
-        if ($update_stmt = $db->prepare("UPDATE reasons SET type=? WHERE id=?")) {
-            $update_stmt->bind_param('ss', $pricing, $_POST['id']);
+        if ($update_stmt = $db->prepare("UPDATE reasons SET type=?, category=? WHERE id=?")) {
+            $update_stmt->bind_param('sss', $pricing, $modules, $_POST['id']);
             
             // Execute the prepared query.
             if (! $update_stmt->execute()) {
@@ -38,8 +39,8 @@ if(isset($_POST['pricing'])){
         }
     }
     else{
-        if ($insert_stmt = $db->prepare("INSERT INTO reasons (type) VALUES (?)")) {
-            $insert_stmt->bind_param('s', $pricing);
+        if ($insert_stmt = $db->prepare("INSERT INTO reasons (type, category) VALUES (?, ?)")) {
+            $insert_stmt->bind_param('ss', $pricing, $modules);
             
             // Execute the prepared query.
             if (! $insert_stmt->execute()) {

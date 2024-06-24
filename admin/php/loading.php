@@ -11,6 +11,7 @@ if(isset($_POST['id'], $_POST['totalAmount'])){
     $sent_date = null;
 	$back_date = null;
     $grn_receive = null;
+    $noting = null;
     $pricing_details = array();
     $pricing = '';
     $status = 'Printed';
@@ -78,6 +79,10 @@ if(isset($_POST['id'], $_POST['totalAmount'])){
         $grn_receive = filter_input(INPUT_POST, 'grn_received', FILTER_SANITIZE_STRING);
         $status = 'Invoiced';
     }
+    
+    if(isset($_POST['notes']) && $_POST['notes'] != null && $_POST['notes'] != ''){
+        $noting = $_POST['notes'];
+    }
 
     $ds = DIRECTORY_SEPARATOR;  
     $storeFolder = '../grns';  // Removed '../' from the store folder path
@@ -99,8 +104,8 @@ if(isset($_POST['id'], $_POST['totalAmount'])){
         }
     }
     
-    if ($update_stmt = $db->prepare("UPDATE do_request SET grn_upload=?, sent_date=?, back_date=?, grn_receive=?, pricing_details=?, total_price=?, status=? WHERE id=?")){
-        $update_stmt->bind_param('ssssssss', $jobLog, $sent_date, $back_date, $grn_receive, $pricing, $totalAmount, $status, $id);
+    if ($update_stmt = $db->prepare("UPDATE do_request SET grn_upload=?, sent_date=?, back_date=?, grn_receive=?, pricing_details=?, total_price=?, status=?, note=? WHERE id=?")){
+        $update_stmt->bind_param('sssssssss', $jobLog, $sent_date, $back_date, $grn_receive, $pricing, $totalAmount, $status, $noting, $id);
         
         // Execute the prepared query.
         if (! $update_stmt->execute()){

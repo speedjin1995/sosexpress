@@ -586,8 +586,8 @@ else{
   </div>
 </div>
 
-<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="true">
-  <div class="modal-dialog" role="document">
+<div class="modal fade" id="myModal">
+  <div class="modal-dialog modal-xl" style="max-width: 95%;">
       <div class="modal-content">
           <div class="modal-header">
               <h5 class="modal-title" id="modalLabel">DO Listing</h5>
@@ -600,7 +600,6 @@ else{
             <button type="button" class="btn btn-success" id="printButton">Print</button>
             <button type="button" class="btn btn-primary" id="confirmButton">Confirm</button>
             <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
-            <!-- Add additional buttons if needed -->
           </div>
       </div>
   </div>
@@ -652,8 +651,9 @@ $(function () {
       data: function (params) {
         var query = {
           search: params.term,
-          states: $('#states').val(),
-          zones: $('#zones').val(),
+          states: $('#states').val() ? $('#states').val() : '',
+          zones: $('#zones').val() ? $('#zones').val() : '',
+          hyper: $('#hypermarket').val() ? $('#hypermarket').val() : '',
           type: 'public'
         };
         return query;
@@ -1063,35 +1063,6 @@ $(function () {
       }
     });
   });
-  
-  $('#customerNo').on('change', function(){
-    var dataIndex = $(this).find(":selected").attr('data-address');
-
-    if (dataIndex) {
-      $('#address').val(dataIndex); // Set the selected branch's text (address) into the textarea
-    } 
-    else {
-      $('#address').val(''); // Clear the textarea or provide a default value
-    }
-
-    if($('#booking_date').val() && $('#customerNo').val()){
-      $.post('php/existBooking.php', {bookingDate: $(booking_date).val(), customerNo: $('#customerNo').val()}, function(data){
-        var obj = JSON.parse(data);
-        
-        if(obj.status === 'success'){
-          $('#saveButton').prop('disabled', false);
-        }
-        else if(obj.status === 'failed'){
-          toastr["error"](obj.message, "Failed:");
-          $('#saveButton').prop('disabled', true);
-        }
-        else{
-          toastr["error"]("Something wrong when pull data", "Failed:");
-        }
-        $('#spinnerLoading').hide();
-      });
-    }
-  });
 
   $('#filterSearch').on('click', function(){
     //$('#spinnerLoading').show();
@@ -1216,7 +1187,133 @@ $(function () {
     };
 
     reader.readAsBinaryString(file);
-});
+  });
+
+  $('#doModal').find('#states').on('change', function(){
+    $('#doModal').find('#zones').empty();
+    var dataIndexToMatch = $(this).val();
+
+    $('#zoneHidden option').each(function() {
+      var dataIndex = $(this).data('index');
+
+      if (dataIndex == dataIndexToMatch) {
+        $('#doModal').find('#zones').append($(this).clone());
+        $('#doModal').find('#zones').trigger('change');
+      }
+    });
+
+    if($('#doModal').find('#states').val() && $('#doModal').find('#zones').val() && $('#doModal').find('#hypermarket').val() && $('#doModal').find('#hypermarket').val() != '0'){
+      $('#doModal').find('#outlets').empty();
+      $('#doModal').find("#direct_store").attr('required', false);
+      $('#doModal').find('#outlets').attr('required', true);
+      $('#doModal').find('#outlets').show();
+      $('#doModal').find('#direct_store').data('select2').$container.hide();
+
+      $.post('php/listOutlets.php', {states: $('#doModal').find('#states').val(), zones: $('#doModal').find('#zones').val(), hypermarket: $('#doModal').find('#hypermarket').val()}, function(data){
+        var obj = JSON.parse(data);
+        
+        if(obj.status === 'success'){
+          $('#doModal').find('#outlets').html('');
+          for(var i=0; i<obj.message.length; i++){
+            $('#doModal').find('#outlets').append('<option value="'+obj.message[i].id+'">'+obj.message[i].name+'</option>')
+          }
+        }
+        else if(obj.status === 'failed'){
+          toastr["error"](obj.message, "Failed:");
+        }
+        else{
+          toastr["error"]("Something wrong when pull data", "Failed:");
+        }
+        $('#spinnerLoading').hide();
+      });
+    }
+    else{
+      $('#doModal').find('#outlets').attr('required', false);
+      $('#doModal').find('#outlets').hide();
+      $('#doModal').find('#direct_store').data('select2').$container.show();
+      $('#doModal').find("#direct_store").attr('required', true);
+      $('#doModal').find("#direct_store").val('');
+      //$('#doModal').find('.select2-container').show();
+    }
+  });
+
+  $('#doModal').find('#zones').on('change', function(){
+    if($('#doModal').find('#states').val() && $('#doModal').find('#zones').val() && $('#doModal').find('#hypermarket').val() && $('#doModal').find('#hypermarket').val() != '0'){
+      $('#doModal').find('#outlets').empty();
+      $('#doModal').find("#direct_store").attr('required', false);
+      $('#doModal').find('#outlets').attr('required', true);
+      $('#doModal').find('#outlets').show();
+      $('#doModal').find('#direct_store').data('select2').$container.hide();
+      //$('#doModal').find('.select2-container').hide();
+
+      $.post('php/listOutlets.php', {states: $('#doModal').find('#states').val(), zones: $('#doModal').find('#zones').val(), hypermarket: $('#doModal').find('#hypermarket').val()}, function(data){
+        var obj = JSON.parse(data);
+        
+        if(obj.status === 'success'){
+          $('#doModal').find('#outlets').html('');
+          for(var i=0; i<obj.message.length; i++){
+            $('#doModal').find('#outlets').append('<option value="'+obj.message[i].id+'">'+obj.message[i].name+'</option>')
+          }
+        }
+        else if(obj.status === 'failed'){
+          toastr["error"](obj.message, "Failed:");
+        }
+        else{
+          toastr["error"]("Something wrong when pull data", "Failed:");
+        }
+        $('#spinnerLoading').hide();
+      });
+    }
+    else{
+      $('#doModal').find('#outlets').attr('required', false);
+      $('#doModal').find('#outlets').hide();
+      $('#doModal').find('#direct_store').data('select2').$container.show();
+      $('#doModal').find("#direct_store").attr('required', true);
+      $('#doModal').find("#direct_store").val('');
+      //$('#doModal').find('.select2-container').show();
+    }
+  });
+
+  $('#doModal').find('#hypermarket').on('change', function(){
+    if($('#doModal').find('#states').val() && $('#doModal').find('#zones').val() && $('#doModal').find('#hypermarket').val() && $('#doModal').find('#hypermarket').val() != '0'){
+      $('#doModal').find('#outlets').empty();
+      $('#doModal').find("#direct_store").attr('required', false);
+      $('#doModal').find('#outlets').attr('required', true);
+      $('#doModal').find('#outlets').show();
+      $('#doModal').find('#direct_store').data('select2').$container.hide();
+      //$('#doModal').find('.select2-container').hide();
+
+      $.post('php/listOutlets.php', {states: $('#doModal').find('#states').val(), zones: $('#doModal').find('#zones').val(), hypermarket: $('#doModal').find('#hypermarket').val()}, function(data){
+        var obj = JSON.parse(data);
+        
+        if(obj.status === 'success'){
+          $('#doModal').find('#outlets').html('');
+          for(var i=0; i<obj.message.length; i++){
+            $('#doModal').find('#outlets').append('<option value="'+obj.message[i].id+'">'+obj.message[i].name+'</option>')
+          }
+        }
+        else if(obj.status === 'failed'){
+          toastr["error"](obj.message, "Failed:");
+        }
+        else{
+          toastr["error"]("Something wrong when pull data", "Failed:");
+        }
+        $('#spinnerLoading').hide();
+      });
+    }
+    else{
+      $('#doModal').find('#outlets').attr('required', false);
+      $('#doModal').find('#outlets').hide();
+      $('#doModal').find('#direct_store').data('select2').$container.show();
+      $('#doModal').find("#direct_store").attr('required', true);
+      //$('#doModal').find('.select2-container').show();
+      $('#doModal').find("#direct_store").val('');
+    }
+  });
+
+  $('#doModal').on('hidden.bs.modal', function() {
+    location.reload();
+  });
 });
 
 function format (row) {
@@ -1515,16 +1612,17 @@ function refreshRow(id, rowId, bookingDate, customerId){
 }
 
 function editRow(id) {
-  $('#spinnerLoading').show();
+  //$('#spinnerLoading').show();
   $.post('php/getDO.php', {userID: id}, function(data){
     var obj = JSON.parse(data);
     
     if(obj.status === 'success'){
+      $('#myModal').hide();
       $('#doModal').find('#id').val(obj.message.id);
       $('#doModal').find('#booking_date').val(formatDate2(new Date(obj.message.booking_date)));
       $('#doModal').find('#delivery_date').val(formatDate2(new Date(obj.message.delivery_date)));
       $('#doModal').find('#cancellation_date').val(formatDate2(new Date(obj.message.cancellation_date)));
-      $('#doModal').find('#customerNo').val(obj.message.customer);
+      $('#doModal').find('#customerNo').val(obj.message.customer).trigger('change');
       $('#doModal').find('#hypermarket').val(obj.message.hypermarket);
       $('#doModal').find('#states').val(obj.message.states);
       
@@ -1606,7 +1704,7 @@ function editRow(id) {
     else{
       toastr["error"]("Something wrong when pull data", "Failed:");
     }
-    $('#spinnerLoading').hide();
+    //$('#spinnerLoading').hide();
   });
 }
 
