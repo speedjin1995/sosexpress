@@ -62,7 +62,31 @@ if(isset($_POST['id'])){
 
             $key = array_search($outlet_name, $outletList);
 
-            if($do_details == null || $do_details == '' || $do_details == '[]'){
+            $dateTime = new DateTime($delivery_date);
+            $formattedDate = date_format($dateTime, 'd/m');
+
+            $dateTime2 = new DateTime($cancellation_date);
+            $formattedDate2 = date_format($dateTime2, 'd/m');
+
+            array_push($results[$key]['items'], array(
+                'index' => $index,
+                'customer' => $customer_name,
+                'term' => $term,
+                'notes' => $note,
+                'po' => $po_number,
+                'do' => $do_number,
+                'carton' => $actual_carton,
+                'outlet' => $outlet_name,
+                'status' => ($status == 'confirmed') ? '/' : '',
+                'hold' => ($hold == 'No') ? '/' : '',
+                'pricing' => json_decode($pricing, true),
+                'delivery' => $formattedDate,
+                'cancellation' => $formattedDate2 
+            ));
+
+            $index++;
+
+            /*if($do_details == null || $do_details == '' || $do_details == '[]'){
                 $dateTime = new DateTime($delivery_date);
                 $formattedDate = date_format($dateTime, 'd/m');
 
@@ -115,7 +139,7 @@ if(isset($_POST['id'])){
 
                     $index++;
                 }
-            }
+            }*/
         }
 
         $message = '<html>

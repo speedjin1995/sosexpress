@@ -207,13 +207,12 @@ else{
               <thead>
                 <tr>
                   <th><input type="checkbox" id="selectAllCheckbox" class="selectAllCheckbox"></th>
-                  <!--th>No</th-->
+                  <th>Status</th>
+                  <th>Delivery<br>Date</th>
                   <th>Customer</th>
                   <th>Hypermarket</th>
                   <th>Outlet</th>
-                  <th>Delivery<br>Date</th>
-                  <th>Number of<br>Carton</th>
-                  <th>Status</th>
+                  <th>No. of<br>Carton</th>
                   <th></th>
                 </tr>
               </thead>
@@ -243,7 +242,7 @@ else{
               <div class="form-group">
                 <label>Booking Date *</label>
                 <div class='input-group date' id="bookingDate" data-target-input="nearest">
-                  <input type='text' class="form-control datetimepicker-input" data-target="#bookingDate" id="booking_date" name="bookingDate" readonly/>
+                  <input type='text' class="form-control datetimepicker-input" data-target="#bookingDate" id="booking_date" name="bookingDate" />
                   <div class="input-group-append" data-target="#bookingDate" data-toggle="datetimepicker">
                     <div class="input-group-text"><i class="fa fa-calendar"></i></div>
                   </div>
@@ -254,7 +253,7 @@ else{
               <div class="form-group">
                 <label>Delivery Date *</label>
                   <div class='input-group date' id="deliveryDate" data-target-input="nearest">
-                    <input type='text' class="form-control datetimepicker-input" data-target="#deliveryDate" id="delivery_date" name="deliveryDate" readonly/>
+                    <input type='text' class="form-control datetimepicker-input" data-target="#deliveryDate" id="delivery_date" name="deliveryDate" />
                     <div class="input-group-append" data-target="#deliveryDate" data-toggle="datetimepicker">
                       <div class="input-group-text"><i class="fa fa-calendar"></i></div>
                     </div>
@@ -265,7 +264,7 @@ else{
               <div class="form-group">
                 <label>Cancellation Date *</label>
                   <div class='input-group date' id="cancellationDate" data-target-input="nearest">
-                    <input type='text' class="form-control datetimepicker-input" data-target="#cancellationDate" id="cancellation_date" name="cancellationDate" readonly/>
+                    <input type='text' class="form-control datetimepicker-input" data-target="#cancellationDate" id="cancellation_date" name="cancellationDate" />
                     <div class="input-group-append" data-target="#cancellationDate" data-toggle="datetimepicker">
                       <div class="input-group-text"><i class="fa fa-calendar"></i></div>
                     </div>
@@ -275,7 +274,7 @@ else{
             <div class="col-3">
               <div class="form-group">
                 <label class="labelStatus">Customer *</label>
-                <select class="form-control" id="customerNo" name="customerNo" readonly>
+                <select class="form-control" id="customerNo" name="customerNo" >
                   <option value="" selected disabled hidden>Please Select</option>
                   <?php while($rowCustomer=mysqli_fetch_assoc($customers)){ ?>
                     <option value="<?=$rowCustomer['id'] ?>"><?=$rowCustomer['customer_name'] ?></option>
@@ -288,7 +287,7 @@ else{
             <div class="col-3">
               <div class="form-group">
                 <label class="labelStatus">Hypermarket *</label>
-                <select class="form-control" id="hypermarket" name="hypermarket" readonly>
+                <select class="form-control" id="hypermarket" name="hypermarket" >
                   <option value="" selected disabled hidden>Please Select</option>
                   <?php while($rowhypermarket=mysqli_fetch_assoc($hypermarket)){ ?>
                     <option value="<?=$rowhypermarket['id'] ?>"><?=$rowhypermarket['name'] ?></option>
@@ -299,7 +298,7 @@ else{
             <div class="col-3">
               <div class="form-group">
                 <label class="labelStatus">States *</label>
-                <select class="form-control" id="states" name="states" readonly>
+                <select class="form-control" id="states" name="states" >
                   <option value="" selected disabled hidden>Please Select</option>
                   <?php while($rowCustomer=mysqli_fetch_assoc($states)){ ?>
                     <option value="<?=$rowCustomer['id'] ?>"><?=$rowCustomer['states'] ?></option>
@@ -310,13 +309,13 @@ else{
             <div class="col-3">
               <div class="form-group">
                 <label for="rate">Zones *</label>
-                <select class="form-control" style="width: 100%;" id="zones" name="zones" readonly></select>
+                <select class="form-control" style="width: 100%;" id="zones" name="zones" ></select>
               </div>
             </div>
             <div class="col-3">
               <div class="form-group">
                 <label for="rate">Outlet *</label>
-                <select class="form-control" style="width: 100%;" id="outlets" name="outlets" readonly></select>
+                <select class="form-control" style="width: 100%;" id="outlets" name="outlets" ></select>
                 <input class="form-control" type="text" placeholder="DO No." id="direct_store" name="direct_store" >
               </div>
             </div>
@@ -325,7 +324,7 @@ else{
             <div class="col-3">
               <div class="form-group">
                 <label for="rate">DO Type *</label>
-                <select class="form-control" id="do_type" name="do_type" readonly>
+                <select class="form-control" id="do_type" name="do_type" >
                   <option value="" selected disabled hidden>Please Select</option>
                   <option value="DO">DO</option>
                   <option value="Consignment">Consignment</option>
@@ -336,19 +335,30 @@ else{
             <div class="col-3">
               <div class="form-group">
                 <label>DO No.</label>
-                <input class="form-control" type="text" placeholder="DO No." id="do_no" name="do_no" readonly>
+                <input class="form-control" type="text" placeholder="DO No." id="do_no" name="do_no" >
               </div>
             </div>
             <div class="col-3">
               <div class="form-group">
                 <label>PO No.</label>
-                <input class="form-control" type="text" placeholder="PO Number" id="po_no" name="po_no" readonly>
+                <input class="form-control" type="text" placeholder="PO Number" id="po_no" name="po_no" >
               </div>
             </div>
             <div class="col-3">
               <div class="form-group">
                 <label>Actual Carton *</label>
-                <input class="form-control" type="number" placeholder="Actual Carton" id="actual_ctn" name="actual_ctn" readonly>
+                <input class="form-control" type="number" placeholder="Actual Carton" id="actual_ctn" name="actual_ctn" >
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-3">
+              <div class="form-group">
+                <label>On-Hold *</label>
+                <select class="form-control" id="on_hold" name="on_hold" required>
+                  <option value="Yes">Yes</option>
+                  <option value="No">No</option>
+                </select>
               </div>
             </div>
           </div>
@@ -741,7 +751,7 @@ else{
             <i class="fas fa-exclamation-circle"></i>
           </span>
         </div>
-        <button class="btn btn-warning similarRequests" id="similarRequestsButton" style="display: none;" onclick="handleSimilarRequests()"><i class="fas fa-exclamation-circle" style="color: red;"></i></button>
+        <button type="button" class="btn btn-warning similarRequests" id="similarRequestsButton" style="display: none;" onclick="handleSimilarRequests()"><i class="fas fa-exclamation-circle" style="color: red;"></i></button>
       </div>
     </td>
     <td style="display:none;">
@@ -753,7 +763,7 @@ else{
     <td>
       <input type="number" class="form-control" id="price" placeholder="Enter ..." required>
     </td>
-    <td><button class="btn btn-danger btn-sm" id="remove"><i class="fa fa-times"></i></button></td>
+    <td><button type="button" class="btn btn-danger btn-sm" id="remove"><i class="fa fa-times"></i></button></td>
   </tr>
 </script>
 
@@ -950,13 +960,22 @@ $(function () {
           //return '<input type="checkbox" class="select-checkbox" id="checkbox_' + data + '" value="'+data+'"/>';
         }
       },
-      //{ data: 'no' },
+      {
+        data: 'status',
+        render: function(data, type, row) {
+          if (row.hold == 'No') {
+            return data; // Show only the status
+          } else {
+            return data + ' (On-hold)'; // Show status with '(On-hold)'
+          }
+        }
+      },
+      { data: 'delivery_date' },
       { data: 'customer_name' },
       { data: 'hypermarket' },
       { data: 'outlet' },
-      { data: 'delivery_date' },
       { data: 'actual_carton' },
-      { data: 'status' },
+      
       { 
         className: 'dt-control',
         orderable: false,
@@ -1165,13 +1184,21 @@ $(function () {
             //return '<input type="checkbox" class="select-checkbox" id="checkbox_' + data + '" value="'+data+'"/>';
           }
         },
-        //{ data: 'no' },
+        {
+          data: 'status',
+          render: function(data, type, row) {
+            if (row.hold == 'No') {
+              return data; // Show only the status
+            } else {
+              return data + ' (On-hold)'; // Show status with '(On-hold)'
+            }
+          }
+        },
+        { data: 'delivery_date' },
         { data: 'customer_name' },
         { data: 'hypermarket' },
         { data: 'outlet' },
-        { data: 'delivery_date' },
         { data: 'actual_carton' },
-        { data: 'status' },
         { 
           className: 'dt-control',
           orderable: false,
@@ -1527,7 +1554,7 @@ $(function () {
     var pricingJson = JSON.parse(pricingJSON);
     var element = $(this).parents('.details');
     pricingJson.forEach(function (item) {
-      if(size == item.size){
+      if(item.size.includes(size)){
         var optionText = $('#unitHidden option[value="' + item.unit + '"]').text();
         var formattedPrice = parseFloat(item.price || '0.00').toFixed(2);
         element.find('input[id^="unit"]').val(optionText || '');
@@ -1699,76 +1726,91 @@ $(function () {
   });
 });
 
-function format (row) {
-  var returnString = '<div class="row"><div class="col-md-3"><p>Booking Date: '+row.booking_date+
-  '</p></div><div class="col-md-3"><p>Delivery Date: '+row.delivery_date+
-  '</p></div><div class="col-md-3"><p>Cancellation Date: '+row.cancellation_date+
-  '</p></div><div class="col-md-3"><p>Customer: '+row.customer_name+
-  '</p></div></div><div class="row"><div class="col-md-3"><p>States: '+row.states+
-  '</p></div><div class="col-md-3"><p>Zones: '+row.zones+
-  '</p></div><div class="col-md-3"><p>Hypermarket: '+row.hypermarket+
-  '</p></div><div class="col-md-3"><p>Outlets: '+(row.direct_store != null ? row.direct_store:row.outlet)+
-  '</p></div></div><div class="row"><div class="col-md-3"><p>DO Type: '+row.do_type+
-  '</p></div><div class="col-md-3"><p>DO No: '+row.do_number+
-  '</p></div><div class="col-md-3"><p>PO No: '+row.po_number+
-  '</p></div><div class="col-md-3"><p>Actual Carton: '+row.actual_carton+
-  '</p></div></div><div class="row"><div class="col-md-3"><p>Loading Time: '+row.loading_time+
-  '</p></div><div class="col-md-3"><p>Status: '+row.status+
-  '</p></div><div class="col-md-3"></div><div class="col-md-3">';
-  
-  if(row.status == 'Created'){
-    returnString += '<div class="row"><div class="col-3"><button type="button" class="btn btn-warning btn-sm" title="Edit" onclick="edit('+row.id+
-  ')"><i class="fas fa-pen"></i></button></div><div class="col-3"><button type="button" class="btn btn-danger btn-sm" title="Delete" onclick="deactivate('+row.id+
-  ')"><i class="fas fa-trash"></i></button></div><div class="col-3"><button type="button" class="btn btn-info btn-sm" title="Post for loading" onclick="picked('+row.id+
-  ')"><i class="fas fa-pallet"></i></button></div></div></div></div>';
+function format(row) {
+  var returnString = '<div class="row"><div class="col-md-3"><p>Booking Date: ' + row.booking_date +
+    '</p></div><div class="col-md-3"><p>Delivery Date: ' + row.delivery_date +
+    '</p></div><div class="col-md-3"><p>Cancellation Date: ' + row.cancellation_date +
+    '</p></div><div class="col-md-3"><p>Customer: ' + row.customer_name +
+    '</p></div></div><div class="row"><div class="col-md-3"><p>States: ' + row.states +
+    '</p></div><div class="col-md-3"><p>Zones: ' + row.zones +
+    '</p></div><div class="col-md-3"><p>Hypermarket: ' + row.hypermarket +
+    '</p></div><div class="col-md-3"><p>Outlets: ' + (row.direct_store != null ? row.direct_store : row.outlet) +
+    '</p></div></div><div class="row"><div class="col-md-3"><p>DO Type: ' + row.do_type +
+    '</p></div><div class="col-md-3"><p>DO No: ' + row.do_number +
+    ' <i class="fas fa-exclamation-circle" id="exclamation-icon' + row.id + '"></i></p></div><div class="col-md-3"><p>PO No: ' + row.po_number +
+    '</p></div><div class="col-md-3"><p>Actual Carton: ' + row.actual_carton +
+    '</p></div></div><div class="row"><div class="col-md-3"><p>Loading Time: ' + row.loading_time +
+    '</p></div><div class="col-md-3"><p>Status: ' + row.status +
+    '</p></div><div class="col-md-3"></div><div class="col-md-3">';
+
+  if (row.status == 'Created') {
+    returnString += '<div class="row"><div class="col-3"><button type="button" class="btn btn-warning btn-sm" title="Edit" onclick="edit(' + row.id +
+      ')"><i class="fas fa-pen"></i></button></div><div class="col-3"><button type="button" class="btn btn-danger btn-sm" title="Delete" onclick="deactivate(' + row.id +
+      ')"><i class="fas fa-trash"></i></button></div><div class="col-3"><button type="button" class="btn btn-info btn-sm" title="Post for loading" onclick="picked(' + row.id +
+      ')"><i class="fas fa-pallet"></i></button></div></div></div></div>';
   }
-  else if(row.status == 'Posted'){
-    returnString +='<div class="row"><div class="col-3"><button type="button" class="btn btn-warning btn-sm" title="Edit" onclick="edit('+row.id+
-  ')"><i class="fas fa-pen"></i></button></div><div class="col-3"><button type="button" class="btn btn-danger btn-sm" title="Delete" onclick="deactivate('+row.id+
-  ')"><i class="fas fa-trash"></i></button></div></div></div></div>';
+  else if (row.status == 'Posted') {
+    returnString += '<div class="row"><div class="col-3"><button type="button" class="btn btn-warning btn-sm" title="Edit" onclick="edit(' + row.id +
+      ')"><i class="fas fa-pen"></i></button></div><div class="col-3"><button type="button" class="btn btn-danger btn-sm" title="Delete" onclick="deactivate(' + row.id +
+      ')"><i class="fas fa-trash"></i></button></div></div></div></div>';
   }
-  else if(row.status == 'Confirmed'){
-    returnString +='<div class="row"><div class="col-3"><button type="button" class="btn btn-warning btn-sm" title="Edit" onclick="edit('+row.id+
-  ')"><i class="fas fa-pen"></i></button></div><div class="col-3"><button type="button" class="btn btn-danger btn-sm" title="Delete" onclick="deactivate('+row.id+
-  ')"><i class="fas fa-trash"></i></button></div></div></div></div>';
+  else if (row.status == 'Confirmed') {
+    returnString += '<div class="row"><div class="col-3"><button type="button" class="btn btn-warning btn-sm" title="Edit" onclick="edit(' + row.id +
+      ')"><i class="fas fa-pen"></i></button></div><div class="col-3"><button type="button" class="btn btn-danger btn-sm" title="Delete" onclick="deactivate(' + row.id +
+      ')"><i class="fas fa-trash"></i></button></div></div></div></div>';
   }
-  else if(row.status == 'Printed'){
-    returnString +='<div class="row"><div class="col-2"><button type="button" class="btn btn-warning btn-sm" title="Edit" onclick="edit('+row.id+
-  ')"><i class="fas fa-pen"></i></button></div><div class="col-2"><button type="button" class="btn btn-danger btn-sm" title="Reject" onclick="reject('+row.id+
-  ')">RJ</button></div><div class="col-2"><button type="button" class="btn btn-danger btn-sm" title="Delete" onclick="deactivate('+row.id+
-  ')"><i class="fas fa-trash"></i></button></div><div class="col-2"><button type="button" class="btn btn-info btn-sm" title="In Back" onclick="revert('+row.id+
-  ')"><i class="fas fa-sync"></i></button></div><div class="col-2"><button type="button" class="btn btn-primary btn-sm" title="Second Delivery" onclick="inback('+row.id+
-  ')"><i class="fas fa-pallet"></i></button></div><div class="col-2"><button type="button" class="btn btn-success btn-sm" title="Delivered" onclick="delivered('+row.id+
-  ')"><i class="fas fa-truck"></i></button></div></div></div></div>';
+  else if (row.status == 'Printed') {
+    returnString += '<div class="row"><div class="col-2"><button type="button" class="btn btn-warning btn-sm" title="Edit" onclick="edit(' + row.id +
+      ')"><i class="fas fa-pen"></i></button></div><div class="col-2"><button type="button" class="btn btn-danger btn-sm" title="Reject" onclick="reject(' + row.id +
+      ')">RJ</button></div><div class="col-2"><button type="button" class="btn btn-danger btn-sm" title="Delete" onclick="deactivate(' + row.id +
+      ')"><i class="fas fa-trash"></i></button></div><div class="col-2"><button type="button" class="btn btn-info btn-sm" title="In Back" onclick="revert(' + row.id +
+      ')"><i class="fas fa-sync"></i></button></div><div class="col-2"><button type="button" class="btn btn-primary btn-sm" title="Second Delivery" onclick="inback(' + row.id +
+      ')"><i class="fas fa-pallet"></i></button></div><div class="col-2"><button type="button" class="btn btn-success btn-sm" title="Delivered" onclick="delivered(' + row.id +
+      ')"><i class="fas fa-truck"></i></button></div></div></div></div>';
   }
-  else if(row.status == 'Delivered'){
-    returnString +='<div class="row"><div class="col-3"><button type="button" class="btn btn-info btn-sm" title="Incoiving" onclick="invoice('+row.id+
-  ')"><i class="fas fa-receipt"></i></button></div></div></div></div>';
+  else if (row.status == 'Delivered') {
+    returnString += '<div class="row"><div class="col-3"><button type="button" class="btn btn-info btn-sm" title="Invoicing" onclick="invoice(' + row.id +
+      ')"><i class="fas fa-receipt"></i></button></div></div></div></div>';
   }
-  else if(row.status == 'Invoiced'){
-    returnString +='<div class="row"><div class="col-3"></div><div class="col-3"></div><div class="col-3"></div></div></div></div>';
+  else if (row.status == 'Invoiced') {
+    returnString += '<div class="row"><div class="col-3"></div><div class="col-3"></div><div class="col-3"></div></div></div></div>';
   }
 
-  returnString += '<div class="row"><div class="col-md-6"><p>Note: '+row.note+
-  '</p></div><div class="col-md-6"><p>Reason: '+row.reason+
-  '</p></div></div>';
-  
+  returnString += '<div class="row"><div class="col-md-6"><p>Note: ' + row.note +
+    '</p></div><div class="col-md-6"><p>Reason: ' + row.reason +
+    '</p></div></div>';
 
-  if(row.pricing_details.length > 0){
+  if (row.pricing_details.length > 0) {
     returnString += '<h4>Pricing</h4><table style="width: 100%;"><thead><tr><th>Notes</th><th>Quantity</th><th>Price/Size</th><th>Unit Price</th><th>Amount</th></tr></thead><tbody>'
     var total = 0;
 
-    for(var i=0; i<row.pricing_details.length; i++){
+    for (var i = 0; i < row.pricing_details.length; i++) {
       var item = row.pricing_details[i];
-      returnString += '<tr><td>'+item.particular+'</td><td>'+item.quantity_in+'</td><td>'+item.size+'</td><td>'+item.unit_price+'</td><th>'+item.price+'</td></tr></thead><tbody>'
+      returnString += '<tr><td>' + item.particular + '</td><td>' + item.quantity_in + '</td><td>' + item.size + '</td><td>' + item.unit_price + '</td><th>' + item.price + '</td></tr></thead><tbody>'
       total += parseFloat(item.price);
     }
 
-    returnString += '</tbody><tfoot><th colspan="4" style="text-align:right;">Total Amount</th><th>'+total.toFixed(2)+'</th></tfoot></table>';
+    returnString += '</tbody><tfoot><th colspan="4" style="text-align:right;">Total Amount</th><th>' + total.toFixed(2) + '</th></tfoot></table>';
   }
-  
+
+  $("#exclamation-icon" + row.id).hover(function () {
+    var tooltipContent = '<ul>';
+    row.do_details.forEach(function (item) {
+      tooltipContent += '<li>DO: ' + item.doNumber + ', PO: ' + item.poNumber + '</li>';
+    });
+    tooltipContent += '</ul>';
+    $(this).attr('data-original-title', tooltipContent);
+    $(this).tooltip({
+        html: true, // Set html option to true
+        placement: 'top', // Adjust tooltip placement if needed
+    }).tooltip('show');
+  }, function () {
+    $(this).tooltip('hide');
+  });
+
   return returnString;
 }
+
 
 function formatNormal (row) {
   return '<div class="row"><div class="col-md-3"><p>Customer Name: '+row.customer_name+
@@ -1806,6 +1848,26 @@ function edit(id) {
     var obj = JSON.parse(data);
     
     if(obj.status === 'success'){
+      var isReadOnly = obj.message.status != 'Posted' && obj.message.status != 'Confirmed';
+
+      setReadOnly('#extendModal #booking_date', isReadOnly);
+      setReadOnly('#extendModal #delivery_date', isReadOnly);
+      setReadOnly('#extendModal #cancellation_date', isReadOnly);
+      setDisabled('#extendModal #customerNo', isReadOnly);
+      setDisabled('#extendModal #hypermarket', isReadOnly);
+      setDisabled('#extendModal #states', isReadOnly);
+      setDisabled('#extendModal #on_hold', isReadOnly);
+      setDisabled('#extendModal #zones', isReadOnly);
+      setDisabled('#extendModal #do_type', isReadOnly);
+      setDisabled('#extendModal #outlets', isReadOnly);
+      setReadOnly('#extendModal #do_no', isReadOnly);
+      setReadOnly('#extendModal #po_no', isReadOnly);
+      setReadOnly('#extendModal #description', isReadOnly);
+      setReadOnly('#extendModal #actual_ctn', isReadOnly);
+      setReadOnly('#extendModal #need_grn', isReadOnly);
+      setReadOnly('#extendModal #loadingTime', isReadOnly);
+      setReadOnly('#extendModal #notes', isReadOnly);
+
       $('#extendModal').find('#id').val(obj.message.id);
       $('#extendModal').find('#booking_date').val(formatDate2(new Date(obj.message.booking_date)));
       $('#extendModal').find('#delivery_date').val(formatDate2(new Date(obj.message.delivery_date)));
@@ -1813,6 +1875,7 @@ function edit(id) {
       $('#extendModal').find('#customerNo').val(obj.message.customer);
       $('#extendModal').find('#hypermarket').val(obj.message.hypermarket);
       $('#extendModal').find('#states').val(obj.message.states);
+      $('#extendModal').find('#on_hold').val(obj.message.hold);
       pricingJSON = obj.message.pricing;
 
       $('#extendModal').find('#zones').empty();
@@ -2176,4 +2239,12 @@ function updateUI(similarPricingList) {
   });
 }
 
+// Set or remove readonly attribute based on status
+function setReadOnly(selector, readOnly) {
+  $(selector).prop('readonly', readOnly);
+}
+
+function setDisabled(selector, disabled) {
+  $(selector).attr('disabled', disabled);
+}
 </script>

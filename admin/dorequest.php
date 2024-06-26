@@ -416,8 +416,8 @@ else{
   </div>
 </div>
 
-<div class="modal fade" id="doModal" tabindex="-1" role="dialog" aria-labelledby="doModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg" role="document">
+<div class="modal fade" id="doModal">
+  <div class="modal-dialog modal-xl" style="max-width: 90%;">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="doModalLabel">Enter DO and PO Numbers</h5>
@@ -1261,6 +1261,7 @@ function edit(id) {
       $('#extendModal').find('#customerNo').val(obj.message.customer).trigger('change');
       $('#extendModal').find('#hypermarket').val(obj.message.hypermarket);
       $('#extendModal').find('#states').val(obj.message.states);
+      $('#extendModal').find('#on_hold').val(obj.message.hold);
       
       $('#zones').empty();
       var dataIndexToMatch = obj.message.states;
@@ -1285,14 +1286,17 @@ function edit(id) {
       $('#extendModal').find('#loadingTime').val(obj.message.loading_time);
 
       if(obj.message.hypermarket == '0'){
+        // Define the value and text for the new option
+        var newOption = new Option(obj.message.direct_store, obj.message.direct_store, false, false);
+        
+        // Append the new option to the select element
         $('#extendModal').find('#hypermarket').trigger('change');
         $('#extendModal').find('#outlets').empty().val(obj.message.outlet);
         $('#extendModal').find('#outlets').attr('required', false);
         $('#extendModal').find('#direct_store').attr('required', true);
-        $('#extendModal').find('#direct_store').val(obj.message.direct_store);
-        $('#extendModal').find('#outlets').hide();
         $('#extendModal').find('#direct_store').data('select2').$container.show();
-        //$('#extendModal').find('.select2-container').show();
+        $('#extendModal').find('#direct_store').append(newOption).trigger('change');
+        $('#extendModal').find('#outlets').hide();
       }
       else{
         $('#extendModal').find('#hypermarket').trigger('change');

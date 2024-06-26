@@ -86,8 +86,8 @@ $records = mysqli_fetch_assoc($sel);
 $totalRecordwithFilter = $records['allcount'];
 
 ## Fetch records
-$empQuery = "select do_request.id, do_request.booking_date, do_request.delivery_date, do_request.cancellation_date, customers.customer_name, do_request.pricing_details, 
-hypermarket.name as hypermarket, do_request.direct_store, states.states, zones.zones, outlet.name as outlet, do_type, do_number, po_number, note, actual_carton, 
+$empQuery = "select do_request.id, do_request.booking_date, do_request.delivery_date, do_request.cancellation_date, customers.customer_name, do_request.pricing_details, do_request.do_details, 
+hypermarket.name as hypermarket, do_request.direct_store, states.states, zones.zones, outlet.name as outlet, do_type, do_number, po_number, note, actual_carton, do_request.hold, 
 do_request.reason, need_grn, loading_time, loading_time, status from do_request, hypermarket, outlet, states, customers, zones WHERE do_request.customer = customers.id AND 
 do_request.hypermarket = hypermarket.id AND do_request.states = states.id AND do_request.zone = zones.id AND do_request.outlet = outlet.id".$searchQuery." 
 order by ".$columnName." ".$columnSortOrder." limit ".$row.",".$rowperpage;
@@ -133,7 +133,9 @@ while($row = mysqli_fetch_assoc($empRecords)) {
     "do_number"=>$row['do_number'],
     "po_number"=>$row['po_number'],
     "note"=>$row['note'],
+    "do_details"=>$row['do_details'] ?? [],
     "actual_carton"=>$row['actual_carton'],
+    "hold"=>$row['hold'],
     "need_grn"=>$row['need_grn'],
     "loading_time"=>$row['loading_time'],
     "direct_store"=>$row['direct_store'],

@@ -629,6 +629,37 @@ else{
   </div>
 </div>
 
+<div class="modal fade" id="poModal">
+  <div class="modal-dialog modal-xl" style="max-width: 90%;">
+      <div class="modal-content">
+          <div class="modal-header">
+              <h5 class="modal-title" id="doModalLabel">Enter DO and PO Numbers</h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+          </div>
+          <div class="modal-body">
+            <table class="table" id="doPoTable">
+                <thead>
+                    <tr>
+                        <th scope="col">DO Number</th>
+                        <th scope="col">PO Number</th>
+                        <th scope="col">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Rows will be dynamically added here -->
+                </tbody>
+            </table>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-success" id="addRowBtn">Add Row</button>
+            <button type="button" class="btn btn-primary" id="saveRowsBtn">Save</button>
+          </div>
+      </div>
+  </div>
+</div>
+
 <script>
 $(function () {
   $("#zoneHidden").hide();
@@ -1311,6 +1342,39 @@ $(function () {
     }
   });
 
+  $('#openModalBtn').on('click', function () {
+    if($('#doPoTable tbody tr').length > 0){
+      $('#doModal').modal('show');
+    }
+    else{
+      $('#doPoTable tbody').empty();
+      addRow2($('#do_no').val(), $('#po_no').val()); // Pass default values to the addRow function
+      $('#poModal').modal('show');
+    }
+  });
+
+  $('#doPoTable').on('click', '.removeRowBtn', function () {
+    $(this).closest('tr').remove();
+  });
+
+  $('#saveRowsBtn').on('click', function () {
+    var rowsData = [];
+
+    // Iterate through each row in the table
+    $('#doPoTable tbody tr').each(function () {
+      var doNumber = $(this).find('td:nth-child(1) input').val();
+      var poNumber = $(this).find('td:nth-child(2) input').val();
+
+      // Add row data to the array
+      rowsData.push({ doNumber: doNumber, poNumber: poNumber });
+    });
+
+    // Convert the array to JSON
+    var jsonData = JSON.stringify(rowsData);
+    $('#jsonDataField').val(jsonData);
+    $('#poModal').modal('hide');
+  });
+
   $('#doModal').on('hidden.bs.modal', function() {
     location.reload();
   });
@@ -1543,6 +1607,18 @@ function importExcel(id) {
   });
 }
 
+function addRow2(defaultDONumber, defaultPONumber) {
+    var newRow = '<tr>' +
+        '<td><input type="text" class="form-control" placeholder="Enter DO Number" value="' + defaultDONumber + '"></td>' +
+        '<td><input type="text" class="form-control" placeholder="Enter PO Number" value="' + defaultPONumber + '"></td>' +
+        '<td><button type="button" class="btn btn-danger removeRowBtn">Remove</button></td>' +
+        '</tr>';
+  
+    // Append the new row to the table
+    $('#doPoTable tbody').append(newRow);
+    $('#doPoTable tbody tr:last-child td:first-child input').focus();
+}
+
 function edit(id) {
   $('#spinnerLoading').show();
   $.post('php/getBooking.php', {userID: id}, function(data){
@@ -1649,14 +1725,16 @@ function editRow(id) {
       $('#doModal').find('#loadingTime').val(obj.message.loading_time);
 
       if(obj.message.hypermarket == '0'){
+        // Define the value and text for the new option
+        var newOption = new Option(obj.message.direct_store, obj.message.direct_store, false, false);
+        
+        // Append the new option to the select element
         $('#doModal').find('#hypermarket').trigger('change');
         $('#doModal').find('#outlets').empty().val(obj.message.outlet);
         $('#doModal').find('#outlets').attr('required', false);
         $('#doModal').find('#direct_store').attr('required', true);
-        $('#doModal').find('#direct_store').val(obj.message.direct_store);
-        $('#doModal').find('#outlets').hide();
         $('#doModal').find('#direct_store').data('select2').$container.show();
-        //$('#doModal').find('.select2-container').show();
+        $('#doModal').find('#direct_store').append(newOption).trigger('change');
       }
       else{
         $('#doModal').find('#hypermarket').trigger('change');

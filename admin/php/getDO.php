@@ -42,6 +42,7 @@ if(isset($_POST['userID'])){
                 $message["direct_store"] = $row['direct_store'];
                 $message["status"] = $row['status'];
                 $message["reason"] = $row["reason"];
+                $message["hold"] = $row["hold"];
                 $message["pricing_details"] = ($row['pricing_details'] != null && $row['pricing_details'] != '') ? json_decode($row['pricing_details'], true) : [];
 
                 if ($pricing_stmt = $db->prepare("SELECT pricing FROM customers WHERE id=?")) {
