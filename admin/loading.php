@@ -1343,33 +1343,22 @@ $(function () {
         });
       }
       else if($('#similarPricingModal').hasClass('show')){
-        $.post('php/doReason.php', $('#similarPricingForm').serialize(), function(data){
+        $.post('php/updatePricing.php', $('#similarPricingForm').serialize(), function(data){
           var obj = JSON.parse(data);
-      
-          if(obj.status === 'success'){
-            $.post('php/updatePricing.php', {userID: $('#similarPricingModal').find('#id').val()}, function(data){
-            var obj = JSON.parse(data);
 
-            if(obj.status === 'success'){
-              $('#similarPricingModal').modal('hide');
-              toastr["success"](obj.message, "Success:");
-              $('#weightTable').DataTable().ajax.reload();
-            }
-            else if(obj.status === 'failed'){
-              toastr["error"](obj.message, "Failed:");
-            }
-            else{
-              toastr["error"]("Something wrong when activate", "Failed:");
-            }
-            $('#spinnerLoading').hide();
-          });
+          if(obj.status === 'success'){
+            $('#extendModal').modal('show');
+            $('#similarPricingModal').modal('hide');
+            toastr["success"](obj.message, "Success:");
+            $('#weightTable').DataTable().ajax.reload();
           }
           else if(obj.status === 'failed'){
             toastr["error"](obj.message, "Failed:");
           }
           else{
-            toastr["error"]("Something wrong when pull data", "Failed:");
+            toastr["error"]("Something wrong when activate", "Failed:");
           }
+          $('#spinnerLoading').hide();
         });
       }
     }
@@ -1553,7 +1542,39 @@ $(function () {
     var size = $(this).val() || '';
     var pricingJson = JSON.parse(pricingJSON);
     var element = $(this).parents('.details');
-    pricingJson.forEach(function (item) {
+
+    // Iterate through the pricingJson array
+    for (var i = 0; i < pricingJson.length; i++) {
+      var item = pricingJson[i];
+      var matchLength = 0;
+      var maxMatchLength = 0;
+
+      // Compare size and item.size character by character
+      for (var j = 0; j < item.size.length && j < item.size.length; j++) {
+        if (size[j] === item.size[j]) {
+          matchLength++;
+        } else {
+          break;
+        }
+      }
+
+      // Update matchedItem if we found a longer match
+      if (matchLength > maxMatchLength) {
+          maxMatchLength = matchLength;
+          matchedItem = item;
+      }
+    }
+
+    // If a match is found, update the input fields
+    if (matchedItem) {
+      var optionText = $('#unitHidden option[value="' + matchedItem.unit + '"]').text();
+      var formattedPrice = parseFloat(matchedItem.price || '0.00').toFixed(2);
+      element.find('input[id^="unit"]').val(optionText || '');
+      element.find('input[id^="unit_price"]').val(Number(formattedPrice));
+      element.find('input[id^="unit_price"]').trigger('change');
+    }
+
+    /*pricingJson.forEach(function (item) {
       if(item.size.includes(size)){
         var optionText = $('#unitHidden option[value="' + item.unit + '"]').text();
         var formattedPrice = parseFloat(item.price || '0.00').toFixed(2);
@@ -1561,7 +1582,7 @@ $(function () {
         element.find('input[id^="unit_price"]').val(Number(formattedPrice));
         element.find('input[id^="unit_price"]').trigger('change');
       }
-    });
+    });*/
   });
 
   $("#pricingTable").on('change', 'input[id^="quantity_in"]', function(){
@@ -1866,6 +1887,7 @@ function edit(id) {
       setReadOnly('#extendModal #actual_ctn', isReadOnly);
       setReadOnly('#extendModal #need_grn', isReadOnly);
       setReadOnly('#extendModal #loadingTime', isReadOnly);
+      setReadOnly('#extendModal #direct_store', isReadOnly);
       setReadOnly('#extendModal #notes', isReadOnly);
 
       $('#extendModal').find('#id').val(obj.message.id);
@@ -2207,12 +2229,15 @@ function updateUI(similarPricingList) {
       <tr>
         <td>${item.do_no}</td>
         <td>${item.po_no}</td>
-        <td>${item.size}</td>
+        <td><input type="text" name="size[]" value="${item.size}" class="form-control"></td>
         <td>
+          <input type="hidden" name="quantity_in[]" value="${item.quantity_in}">
+          <input type="hidden" name="unit[]" value="${item.unit}">
+          <input type="hidden" name="unit_price[]" value="${item.unit_price}">
           <input type="hidden" name="id[]" value="${item.id}">
-          <input type="text" name="price[]" value="${item.price}" class="form-control">
+          <input type="number" name="price[]" value="${item.price}" class="form-control">
         </td>
-        <td>${item.particular}</td>
+        <td><input type="text" name="particular[]" value="${item.particular}" class="form-control"></td>
       </tr>`;
   });
 
@@ -2222,6 +2247,7 @@ function updateUI(similarPricingList) {
 
   // Set the modal content and show the modal
   $('#similarPricingModalBody').html(modalContent);
+  $('#extendModal').modal('hide');
   $('#similarPricingModal').modal('show');
   
   $('#similarPricingForm').validate({

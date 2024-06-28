@@ -199,12 +199,51 @@ else{
           <button type="submit" class="btn btn-primary" name="submit" id="submitPurchase">Save Change</button>
         </div>
       </form>
-    </div>
-    <!-- /.modal-content -->
-  </div>
-  <!-- /.modal-dialog -->
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
 </div>
 
+<div class="modal fade" id="generateModal">
+  <div class="modal-dialog modal-xl">
+    <div class="modal-content">
+      <form role="form" id="generateForm">
+        <div class="modal-header">
+          <h4 class="modal-title">Create Invoices</h4>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="container-fluid">
+            <div class="card card-primary">
+              <div class="card-body">
+                <div class="row">
+                  <h4>Generate Date</h4>
+                </div>
+                <div class="row">
+                  <div class="col-4">
+                    <div class="form-group">
+                      <label>Date</label>
+                      <div class="input-group date" id="input2Date" data-target-input="nearest">
+                        <input type="text" class="form-control datetimepicker-input" id="input2Date" name="input2Date" data-target="#input2Date" required/>
+                        <div class="input-group-append" data-target="#input2Date" data-toggle="datetimepicker">
+                          <div class="input-group-text"><i class="fa fa-calendar"></i></div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+              </div>
+            </div>
+          </div><!-- /.container-fluid -->
+        </div>
+        <div class="modal-footer justify-content-between">
+          <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+          <button type="submit" class="btn btn-primary" name="submit" id="generatePurchase">Save Change</button>
+        </div>
+      </form>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div>
 
 <script type="text/html" id="addContentsPurchase">
   <tr class="details">
@@ -222,6 +261,7 @@ var jobId = "";
 var jobStatus = "";
 
 $(function () {
+  const today = new Date();
   //Date picker
   $('#fromDatePicker').datetimepicker({
     icons: { time: 'far fa-clock' },
@@ -235,6 +275,18 @@ $(function () {
     defaultDate: new Date
   });
 
+  $('#inputDate').datetimepicker({
+    icons: { time: 'far fa-clock' },
+    format: 'DD/MM/YYYY',
+    defaultDate: new Date
+  });
+
+  $('#input2Date').datetimepicker({
+    icons: { time: 'far fa-clock' },
+    format: 'DD/MM/YYYY',
+    defaultDate: new Date
+  });
+  
   var fromDateI = $('#fromDate').val();
   var toDateI = $('#toDate').val();
   var customerNoI = $('#customerNoFilter').val() ? $('#customerNoFilter').val() : '';
@@ -306,6 +358,36 @@ $(function () {
 
           $('#spinnerLoading').hide();
         });
+      }
+      else if($('#generateModal').hasClass('show')){
+        var confirmation2 = confirm("Please make sure they is not any data entry during the invoice generation process!!");
+        
+        if (confirmation2) {
+          var confirmation = confirm("Want to generate invoices from booking, loading and return?");
+              
+          if (confirmation) {
+            $('#spinnerLoading').show();
+
+            $.post('php/generateInvoices.php', $('#generateForm').serialize(), function(data){
+              var obj = JSON.parse(data); 
+              if(obj.status === 'success'){
+                $('#generateModal').modal('hide');
+                toastr["success"](obj.message, "Success:");
+                $('#tableforPurchase').DataTable().ajax.reload();
+              }
+              else if(obj.status === 'failed'){
+                toastr["error"](obj.message, "Failed:");
+              }
+              else{
+                toastr["error"]("Something wrong when edit", "Failed:");
+              }
+
+              $('#spinnerLoading').hide();
+            });
+
+            $('#spinnerLoading').show();
+          }
+        }
       }
     }
   });
@@ -379,36 +461,36 @@ $(function () {
   
 
     $.post('php/getPurchases.php', {jobId: jobId}, function(data){
-    var obj = JSON.parse(data);
-    
-    if(obj.status === 'success'){
+      var obj = JSON.parse(data);
+      
+      if(obj.status === 'success'){
 
-      obj.message = obj.message.replace("\\\"", "\"");
-      var items = JSON.parse(obj.message);
+        obj.message = obj.message.replace("\\\"", "\"");
+        var items = JSON.parse(obj.message);
 
 
-      for(var i=0; i<items.length; i++) {
-        var $addContents = $("#addContentsPurchase").clone();
-        $("#TableId").append($addContents.html());
+        for(var i=0; i<items.length; i++) {
+          var $addContents = $("#addContentsPurchase").clone();
+          $("#TableId").append($addContents.html());
 
-        $("#TableId").find('.details:last').attr("id", "detail" + size);
-        $("#TableId").find('.details:last').attr("data-index", size);
-        $("#TableId").find('#remove:last').attr("id", "remove" + size);
+          $("#TableId").find('.details:last').attr("id", "detail" + size);
+          $("#TableId").find('.details:last').attr("data-index", size);
+          $("#TableId").find('#remove:last').attr("id", "remove" + size);
 
-        $("#TableId").find('#purchaseId:last').attr('name', 'purchaseId['+size+']').attr("id", "purchaseId" + size).val((size+1).toString());
-        $("#TableId").find('#itemName:last').val(items[i].extraChargesName);
-        $("#TableId").find('#itemName:last').attr('name', 'itemName['+size+']').attr("id", "itemName" + size);
-        $("#TableId").find('#itemPrice:last').attr('name', 'itemPrice['+size+']').attr("id", "itemPrice" + size);
+          $("#TableId").find('#purchaseId:last').attr('name', 'purchaseId['+size+']').attr("id", "purchaseId" + size).val((size+1).toString());
+          $("#TableId").find('#itemName:last').val(items[i].extraChargesName);
+          $("#TableId").find('#itemName:last').attr('name', 'itemName['+size+']').attr("id", "itemName" + size);
+          $("#TableId").find('#itemPrice:last').attr('name', 'itemPrice['+size+']').attr("id", "itemPrice" + size);
 
-        size++;
+          size++;
+        }
       }
-    }
-    else if(obj.status === 'failed'){
-        toastr["error"](obj.message, "Failed:");
-    }
-    else{
-        toastr["error"]("Something wrong when activate", "Failed:");
-    }
+      else if(obj.status === 'failed'){
+          toastr["error"](obj.message, "Failed:");
+      }
+      else{
+          toastr["error"]("Something wrong when activate", "Failed:");
+      }
     
     });
     
@@ -434,7 +516,7 @@ $(function () {
   $('#addPurchase').on('click', function(){
     size=0;
     $('#purchaseModal').find('#id').val("");
-    $('#purchaseModal').find('#inputDate').val(new Date);
+    $('#purchaseModal').find('#inputDate').val(formatDate2(today));
     $('#purchaseModal').find('#customerNo').val("");
     $('#purchaseModal').find('#totalAmount').val("0.00")
     $('#purchaseModal').modal('show');
@@ -456,12 +538,18 @@ $(function () {
   });
 
   $('#generateInvoice').on('click', function(){
-    var confirmation = confirm("Want to generate invoices from booking, loading and return?");
+    var confirmation2 = confirm("Please make sure they is not any data entry during the invoice generation process!!");
         
-    if (confirmation) {
-      $.post('php/generateInvoices.php', $('#purchaseForm').serialize(), function(data){
+    if (confirmation2) {
+      var confirmation = confirm("Want to generate invoices from booking, loading and return?");
+          
+      if (confirmation) {
+        $('#spinnerLoading').show();
+
+        $.post('php/generateInvoices.php', $('#generateForm').serialize(), function(data){
           var obj = JSON.parse(data); 
           if(obj.status === 'success'){
+            //$('#generateModal').modal('hide');
             toastr["success"](obj.message, "Success:");
             $('#tableforPurchase').DataTable().ajax.reload();
           }
@@ -474,13 +562,26 @@ $(function () {
 
           $('#spinnerLoading').hide();
         });
-    }
-  });
 
-  $('#inputDate').datetimepicker({
-    icons: { time: 'far fa-clock' },
-    format: 'YYYY-MM-DD HH:mm:ss',
-    defaultDate: new Date
+        $('#spinnerLoading').show();
+      }
+    }
+    /*$('#generateModal').find('#input2Date').val(formatDate2(today));
+    $('#generateModal').modal('show');
+
+    $('#generateForm').validate({
+      errorElement: 'span',
+      errorPlacement: function (error, element) {
+        error.addClass('invalid-feedback');
+        element.closest('.form-group').append(error);
+      },
+      highlight: function (element, errorClass, validClass) {
+        $(element).addClass('is-invalid');
+      },
+      unhighlight: function (element, errorClass, validClass) {
+        $(element).removeClass('is-invalid');
+      }
+    });*/
   });
 
   $("#TableId").on('click', 'button[id^="remove"]', function () {

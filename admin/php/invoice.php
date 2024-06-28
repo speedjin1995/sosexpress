@@ -10,8 +10,10 @@ if(!isset($_SESSION['userID'])){
 
 if(isset($_POST['customerNo'], $_POST['inputDate'], $_POST['totalAmount'])){
     $customerNo = filter_input(INPUT_POST, 'customerNo', FILTER_SANITIZE_STRING);
-    $inputDate = filter_input(INPUT_POST, 'inputDate', FILTER_SANITIZE_STRING);
+    $inputDate2 = filter_input(INPUT_POST, 'inputDate', FILTER_SANITIZE_STRING);
     $totalAmount = filter_input(INPUT_POST, 'totalAmount', FILTER_SANITIZE_STRING);
+    $dateTime = DateTime::createFromFormat('d/m/Y', $inputDate2);
+    $inputDate = $dateTime->format('Y-m-d 00:00:00');
     $today = date("Y-m-d 00:00:00");
     $uid = $_SESSION['userID'];
 

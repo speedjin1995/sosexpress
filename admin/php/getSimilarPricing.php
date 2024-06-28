@@ -41,6 +41,9 @@ if (isset($_POST['id'])) {
                                     "id" => $check_row['id'],
                                     "do_no" => $check_row['do_number'],
                                     "po_no" => $check_row['po_number'],
+                                    "quantity_in" => $pricing_details[$i]['quantity_in'],
+                                    "unit" => $pricing_details[$i]['unit'],
+                                    "unit_price" => $pricing_details[$i]['unit_price'],
                                     "size" => $pricing_details[$i]['size'],
                                     "price" => $pricing_details[$i]['price'],
                                     "particular" => $pricing_details[$i]['particular'] ?? ''

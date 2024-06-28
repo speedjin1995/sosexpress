@@ -3,72 +3,79 @@ require_once "db_connect.php";
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $ids = $_POST['id'];
-    $prices = $_POST['price'];
+    
+    if(isset($_POST['particular'])){
+        $particular = $_POST['particular'];
+    }
 
+    if(isset($_POST['quantity_in'])){
+        $quantity_in = $_POST['quantity_in'];
+    }
+
+    if(isset($_POST['size'])){
+        $size = $_POST['size'];
+    }
+
+    if(isset($_POST['unit_price'])){
+        $unit_price = $_POST['unit_price'];
+    }
+    
+    if(isset($_POST['price'])){
+        $price = $_POST['price'];
+    }
+
+    if(isset($_POST['unit'])){
+        $unit = $_POST['unit'];
+    }
+
+    $pricing_details = array();
     $update_successful = true;
 
-    foreach ($ids as $index => $id) {
-        $new_price = $prices[$index];
+    //foreach ($ids as $index => $id) {
+    if(isset($particular) && $particular != null && count($particular) > 0){
+        for($i=0; $i<count($particular); $i++){
+            $notes = '';
 
-        // Fetch the existing JSON data
-        if ($select_stmt = $db->prepare("SELECT price FROM do_request WHERE id=?")) {
-            $select_stmt->bind_param('i', $id);
-
-            if ($select_stmt->execute()) {
-                $result = $select_stmt->get_result();
-
-                if ($row = $result->fetch_assoc()) {
-                    $price_json = $row['price'];
-                    $price_data = json_decode($price_json, true);
-
-                    // Assuming you need to update the price for the first item in the JSON array
-                    if (is_array($price_data) && count($price_data) > 0) {
-                        $price_data[0]['price'] = $new_price;
-                        $price_data[0]['unit_price'] = $new_price; // if unit_price needs to be updated as well
-
-                        // Encode the updated data back to JSON
-                        $updated_price_json = json_encode($price_data);
-
-                        // Update the database with the new JSON string
-                        if ($update_stmt = $db->prepare("UPDATE do_request SET price=? WHERE id=?")) {
-                            $update_stmt->bind_param('si', $updated_price_json, $id);
-
-                            if (!$update_stmt->execute()) {
-                                $update_successful = false;
-                                break;
-                            }
-
-                            $update_stmt->close();
-                        } else {
-                            $update_successful = false;
-                            break;
-                        }
-                    } else {
-                        $update_successful = false;
-                        break;
-                    }
-                } else {
-                    $update_successful = false;
-                    break;
-                }
-            } else {
-                $update_successful = false;
-                break;
+            if(isset($particular[$i]) && $particular[$i] != null && $particular[$i]!=''){
+                $notes = $particular[$i];
             }
 
-            $select_stmt->close();
-        } else {
-            $update_successful = false;
-            break;
+            $pricing_details[] = array(
+                "particular" => $notes,
+                "quantity_in" => $quantity_in[$i],
+                "size" => $size[$i],
+                "unit_price" => $unit_price[$i],
+                "price" => $price[$i],
+                "unit" => $unit[$i] ?? ''
+            );
         }
     }
 
+    $pricing = json_encode($pricing_details);
+
+    // Fetch the existing JSON data
+    if ($update_stmt = $db->prepare("UPDATE do_request SET pricing_details=? WHERE id=?")) {
+        $update_stmt->bind_param('ss', $pricing, $ids[0]);
+
+        if (!$update_stmt->execute()) {
+            $update_successful = false;
+        }
+
+        $update_stmt->close();
+    } 
+    else {
+        $update_successful = false;
+    }
+    //}
+
     if ($update_successful) {
-        echo json_encode(array("status" => "success"));
-    } else {
+        echo json_encode(array("status" => "success", "message" => "Updated"));
+    } 
+    else {
         echo json_encode(array("status" => "failed", "message" => "Error updating prices"));
     }
-} else {
+} 
+else {
     echo json_encode(array("status" => "failed", "message" => "Invalid request method"));
 }
 ?>
