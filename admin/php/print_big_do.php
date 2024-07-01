@@ -2,10 +2,11 @@
 
 require_once 'db_connect.php';
  
-if(isset($_POST['id'], $_POST['driver'], $_POST['lorry'], $_POST['checker'])){
+if(isset($_POST['id'], $_POST['driver'], $_POST['lorry'], $_POST['checker'], $_POST['printDate2'])){
     $selectedIds = $_POST['id'];
     $arrayOfId = explode(",", $selectedIds);
     $driver = filter_input(INPUT_POST, 'driver', FILTER_SANITIZE_STRING);
+    $printDate2 = filter_input(INPUT_POST, 'printDate2', FILTER_SANITIZE_STRING);
     $lorry = filter_input(INPUT_POST, 'lorry', FILTER_SANITIZE_STRING);
     $checker = filter_input(INPUT_POST, 'checker', FILTER_SANITIZE_STRING);
     $driverName = '';
@@ -14,6 +15,9 @@ if(isset($_POST['id'], $_POST['driver'], $_POST['lorry'], $_POST['checker'])){
     $do = '';
     $todayDate = date('d/m/Y');
     $today = date("Y-m-d 00:00:00");
+
+    $dateTime = DateTime::createFromFormat('d/m/Y', $printDate2);
+    $printDateTime = $dateTime->format('Y-m-d 00:00:00');
 
     if ($update_stmt = $db->prepare("SELECT * FROM drivers WHERE id=?")) {
         $update_stmt->bind_param('s', $driver);
@@ -101,16 +105,31 @@ if(isset($_POST['id'], $_POST['driver'], $_POST['lorry'], $_POST['checker'])){
                 $poList = json_decode($do_details, true);
 
                 for($i=0; $i<count($poList); $i++){
-                    array_push($results[$key]['values'], array(
-                        'index' => $index,
-                        'notes' => $note,
-                        'po' => $poList[$i]['poNumber'],
-                        'do' => $poList[$i]['doNumber'],
-                        'carton' => $actual_carton,
-                        'outlet' => $outlet_name,
-                        'id' => $id,
-                        'customer' => $customer
-                    ));
+                    if($i == 0){
+                        array_push($results[$key]['values'], array(
+                            'index' => $index,
+                            'notes' => $note,
+                            'po' => $poList[$i]['poNumber'],
+                            'do' => $poList[$i]['doNumber'],
+                            'carton' => $actual_carton,
+                            'outlet' => $outlet_name,
+                            'id' => $id,
+                            'customer' => $customer
+                        ));
+                    }
+                    else{
+                        array_push($results[$key]['values'], array(
+                            'index' => $index,
+                            'notes' => $note,
+                            'po' => $poList[$i]['poNumber'],
+                            'do' => $poList[$i]['doNumber'],
+                            'carton' => '',
+                            'outlet' => $outlet_name,
+                            'id' => $id,
+                            'customer' => $customer
+                        ));
+                    }
+                    
 
                     $index++;
                 }
@@ -207,7 +226,7 @@ if(isset($_POST['id'], $_POST['driver'], $_POST['lorry'], $_POST['checker'])){
                                 <tr>
                                     <td style="width:70%"></td>
                                     <td style="width:30%">
-                                        <span>Date: '.$todayDate.'<span>
+                                        <span>Date: '.$printDate2.'<span>
                                     </td>
                                 </tr>
                             </tbody>
@@ -220,8 +239,8 @@ if(isset($_POST['id'], $_POST['driver'], $_POST['lorry'], $_POST['checker'])){
                         $message .= '<tr><td>'.$result[$j]['index'].'</td><td>'.$result[$j]['customer'].'</td><td>'.$result[$j]['notes'].'</td><td>'.$result[$j]['po'].'</td><td>'.$result[$j]['do'].'</td><td style="text-align: center;">'.$result[$j]['carton'].'</td></tr>';
                         $count += (int)$result[$j]['carton'];
 
-                        $update_stmt = $db->prepare("UPDATE do_request SET checker = ?, status = 'Printed' WHERE id = ?");
-                        $update_stmt->bind_param("si", $checker, $result[$j]['id']);
+                        $update_stmt = $db->prepare("UPDATE do_request SET checker = ?, veh_no = ?, printed_date = ?, status = 'Printed' WHERE id = ?");
+                        $update_stmt->bind_param("sssi", $checker, $lorry, $printDateTime, $result[$j]['id']);
                         $update_stmt->execute();
                         $update_stmt->close();
                     }

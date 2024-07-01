@@ -330,9 +330,9 @@ else{
                 <div class="input-group">
                   <input class="form-control" type="text" placeholder="DO No." id="do_no" name="do_no">
                   <div class="input-group-append">
-                      <button class="btn btn-outline-secondary" type="button" id="openModalBtn">
-                        <i class="fas fa-plus"></i>
-                      </button>
+                    <button class="btn btn-outline-secondary" type="button" id="openModalBtn">
+                      <i class="fas fa-plus"></i>
+                    </button>
                   </div>
                 </div>
               </div>
@@ -449,6 +449,8 @@ else{
 
 <script>
 var rowCounter = 0;
+var editoutlet = '';
+var iseditOutler = false;
 
 $(function () {
   $("#zoneHidden").hide();
@@ -548,7 +550,16 @@ $(function () {
       { data: 'outlet' },
       { data: 'delivery_date' },
       { data: 'actual_carton' },
-      { data: 'status' },
+      {
+        data: 'status',
+        render: function(data, type, row) {
+          if (row.hold == 'No') {
+            return data; // Show only the status
+          } else {
+            return data + ' (On-hold)'; // Show status with '(On-hold)'
+          }
+        }
+      },
       { 
         className: 'dt-control',
         orderable: false,
@@ -771,7 +782,16 @@ $(function () {
         { data: 'outlet' },
         { data: 'delivery_date' },
         { data: 'actual_carton' },
-        { data: 'status' },
+        {
+          data: 'status',
+          render: function(data, type, row) {
+            if (row.hold == 'No') {
+              return data; // Show only the status
+            } else {
+              return data + ' (On-hold)'; // Show status with '(On-hold)'
+            }
+          }
+        },
         { 
           className: 'dt-control',
           orderable: false,
@@ -1076,6 +1096,14 @@ $(function () {
           for(var i=0; i<obj.message.length; i++){
             $('#extendModal').find('#outlets').append('<option value="'+obj.message[i].id+'">'+obj.message[i].name+'</option>')
           }
+
+          $('#spinnerLoading').show();
+          setTimeout(() => {
+            if(iseditOutler){
+              $('#extendModal').find('#outlets').val(editoutlet);
+              $('#spinnerLoading').hide();
+            }
+          }, 500);
         }
         else if(obj.status === 'failed'){
           toastr["error"](obj.message, "Failed:");
@@ -1297,17 +1325,21 @@ function edit(id) {
         $('#extendModal').find('#direct_store').data('select2').$container.show();
         $('#extendModal').find('#direct_store').append(newOption).trigger('change');
         $('#extendModal').find('#outlets').hide();
+        iseditOutler = false;
       }
       else{
         $('#extendModal').find('#hypermarket').trigger('change');
         //$('#extendModal').find('#zones').empty().val(obj.message.zone);
         $('#extendModal').find('#outlets').attr('required', true);
         $('#extendModal').find('#outlets').show();
+        $('#extendModal').find('#outlets').val(obj.message.outlet);
         $('#extendModal').find('#direct_store').val('');
         $('#extendModal').find('#direct_store').data('select2').$container.hide();
         //$('#extendModal').find('.select2-container').hide();
+        editoutlet = obj.message.outlet;
+        iseditOutler = true;
       }
-
+      
       var doDetails = obj.message.do_details || []; // Assuming do_details is an array of objects
       $('#jsonDataField').val(JSON.stringify(doDetails));
       $('#doPoTable tbody').empty();

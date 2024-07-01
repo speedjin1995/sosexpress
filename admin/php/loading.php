@@ -15,6 +15,11 @@ if(isset($_POST['id'], $_POST['totalAmount'])){
     $pricing_details = array();
     $pricing = '';
 
+    if(isset($_POST['jsonDataField']) && $_POST['jsonDataField'] != null && $_POST['jsonDataField'] != ''){
+        $do_details = filter_input(INPUT_POST, 'jsonDataField', FILTER_SANITIZE_STRING);
+        $do_details = html_entity_decode($do_details);
+    }
+
     if(isset($_POST['particular'])){
         $particular = $_POST['particular'];
     }
@@ -103,39 +108,49 @@ if(isset($_POST['id'], $_POST['totalAmount'])){
         }
     }
 
-    if(isset($_POST['grn_received'])){
-        if ($update_stmt = $db->prepare("UPDATE do_request SET grn_upload=?, sent_date=?, back_date=?, grn_receive=?, pricing_details=?, total_price=?, status=?, note=? WHERE id=?")){
-            $update_stmt->bind_param('sssssssss', $jobLog, $sent_date, $back_date, $grn_receive, $pricing, $totalAmount, $status, $noting, $id);
-            
-            // Execute the prepared query.
-            if (! $update_stmt->execute()){
+    if(isset($_POST['grn_received']) && $_POST['grn_received'] != null && $_POST['grn_received'] != ''){
+        if(count($pricing_details) > 0){
+            if ($update_stmt = $db->prepare("UPDATE do_request SET grn_upload=?, sent_date=?, back_date=?, grn_receive=?, pricing_details=?, total_price=?, status=?, note=? WHERE id=?")){
+                $update_stmt->bind_param('sssssssss', $jobLog, $sent_date, $back_date, $grn_receive, $pricing, $totalAmount, $status, $noting, $id);
+                
+                // Execute the prepared query.
+                if (! $update_stmt->execute()){
+                    echo json_encode(
+                        array(
+                            "status"=> "failed", 
+                            "message"=> $update_stmt->error
+                        )
+                    );
+        
+                } 
+                else{
+                    echo json_encode(
+                        array(
+                            "status"=> "success", 
+                            "message"=> "Update Successfully!!"
+                        )
+                    );
+        
+                    $update_stmt->close();
+                    $db->close();
+                }
+            } 
+            else{
                 echo json_encode(
                     array(
                         "status"=> "failed", 
                         "message"=> $update_stmt->error
                     )
                 );
-    
-            } 
-            else{
-                echo json_encode(
-                    array(
-                        "status"=> "success", 
-                        "message"=> "Update Successfully!!"
-                    )
-                );
-    
-                $update_stmt->close();
-                $db->close();
             }
-        } 
+        }
         else{
             echo json_encode(
                 array(
                     "status"=> "failed", 
-                    "message"=> $update_stmt->error
+                    "message"=> "Please enter the price"
                 )
-            );
+            ); 
         }
     }
     else{

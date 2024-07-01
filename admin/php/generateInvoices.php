@@ -9,7 +9,9 @@ if(!isset($_SESSION['userID'])){
 else{
 	$custDet = array();
 	$checking = array();
-	$today = date("Y-m-d 00:00:00");
+
+	$dateTime = DateTime::createFromFormat('d/m/Y', $_POST['input2Date']);
+  	$today = $dateTime->format('Y-m-d 00:00:00');
 	$uid = $_SESSION['userID'];
 
 	if ($select_stmt2 = $db->prepare("SELECT distinct(customer) FROM booking WHERE status = 'Invoiced'")) {

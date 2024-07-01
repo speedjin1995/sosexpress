@@ -247,7 +247,7 @@ else{
             <div class="col-4">
               <div class="form-group">
                 <label class="labelStatus">Customer *</label>
-                <select class="form-control" id="customerNo" name="customerNo" required>
+                <select class="form-control" id="customerNo" name="customerNo" readonly>
                   <option value="" selected disabled hidden>Please Select</option>
                   <?php while($rowCustomer=mysqli_fetch_assoc($customers3)){ ?>
                     <option value="<?=$rowCustomer['id'] ?>"><?=$rowCustomer['customer_name'] ?></option>

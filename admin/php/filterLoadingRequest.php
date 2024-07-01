@@ -69,6 +69,17 @@ if($_POST['doNumber'] != null && $_POST['doNumber'] != '' && $_POST['doNumber'] 
   $searchQuery .= " and do_request.do_number like '%".$_POST['doNumber']."%'";
 }
 
+if($_POST['printedDate'] != null && $_POST['printedDate'] != '' && $_POST['printedDate'] != '-'){
+  $searchQuery .= " and do_request.do_number like '%".$_POST['doNumber']."%'";
+  $dateTime = DateTime::createFromFormat('d/m/Y', $_POST['printedDate']);
+  $printDateTime = $dateTime->format('Y-m-d 00:00:00');
+	$searchQuery .= " and do_request.printed_date = '".$printDateTime."'";
+}
+
+if($_POST['lorry'] != null && $_POST['lorry'] != '' && $_POST['lorry'] != '-'){
+  $searchQuery .= " and do_request.veh_no like '%".$_POST['lorry']."%'";
+}
+
 if($searchValue != ''){
   $searchQuery .= " and (hypermarket.name like '%".$searchValue."%' or 
        outlet.name like '%".$searchValue."%' or

@@ -168,7 +168,29 @@ else{
                   <input class="form-control" type="text" placeholder="DO Number" id="doSearch" name="doSearch">
                 </div>
               </div>
-              <div class="col-6"></div>
+
+              <div class="col-3">
+                <div class="form-group">
+                  <label>Lorry No </label>
+                  <select class="form-control select2" id="lorryFilter" name="lorryFilter" style="width: 100%;">
+                    <option value="" selected disabled hidden>Please Select</option>
+                    <?php while($rowvehicles3=mysqli_fetch_assoc($vehicles3)){ ?>
+                      <option value="<?=$rowvehicles3['veh_number'] ?>"><?=$rowvehicles3['veh_number'] ?></option>
+                    <?php } ?>
+                  </select>
+                </div>
+              </div>
+
+              <div class="form-group col-3">
+                <label>Printed Date:</label>
+                <div class="input-group date" id="printDatePicker" data-target-input="nearest">
+                  <input type="text" class="form-control datetimepicker-input" data-target="#printDatePicker" id="printDate"/>
+                  <div class="input-group-append" data-target="#printDatePicker" data-toggle="datetimepicker">
+                    <div class="input-group-text"><i class="fa fa-calendar"></i></div>
+                  </div>
+                </div>
+              </div>
+              
               <div class="col-3">
                 <button type="button" class="btn btn-block bg-gradient-warning btn-sm"  id="filterSearch">
                   <i class="fas fa-search"></i>
@@ -237,6 +259,8 @@ else{
 
         <div class="modal-body">
           <input type="hidden" class="form-control" id="id" name="id">
+          <input type="hidden" class="form-control" id="jsonDataField" name="jsonDataField">
+
           <div class="row">
             <div class="col-3">
               <div class="form-group">
@@ -316,7 +340,7 @@ else{
               <div class="form-group">
                 <label for="rate">Outlet *</label>
                 <select class="form-control" style="width: 100%;" id="outlets" name="outlets" ></select>
-                <input class="form-control" type="text" placeholder="DO No." id="direct_store" name="direct_store" >
+                <select id="direct_store" name="direct_store"></select>
               </div>
             </div>
           </div>
@@ -335,7 +359,14 @@ else{
             <div class="col-3">
               <div class="form-group">
                 <label>DO No.</label>
-                <input class="form-control" type="text" placeholder="DO No." id="do_no" name="do_no" >
+                <div class="input-group">
+                  <input class="form-control" type="text" placeholder="DO No." id="do_no" name="do_no" >
+                  <div class="input-group-append">
+                    <button class="btn btn-outline-secondary" type="button" id="openModalBtn">
+                      <i class="fas fa-plus"></i>
+                    </button>
+                  </div>
+                </div>
               </div>
             </div>
             <div class="col-3">
@@ -541,6 +572,15 @@ else{
                     <option value="<?=$rowUser['id'] ?>"><?=$rowUser['name'] ?></option>
                   <?php } ?>
                 </select>
+              </div>
+              <div class="form-group">
+                <label>Printed Date *</label>
+                <div class="input-group date" id="printDatePicker2" data-target-input="nearest">
+                  <input type="text" class="form-control datetimepicker-input" data-target="#printDatePicker2" id="printDate2" name="printDate2"/>
+                  <div class="input-group-append" data-target="#printDatePicker2" data-toggle="datetimepicker">
+                    <div class="input-group-text"><i class="fa fa-calendar"></i></div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>  
@@ -813,12 +853,45 @@ else{
   </div>
 </div>
 
+<div class="modal fade" id="doModal">
+  <div class="modal-dialog modal-xl" style="max-width: 90%;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="doModalLabel">Enter DO and PO Numbers</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+              <table class="table" id="doPoTable">
+                  <thead>
+                      <tr>
+                          <th scope="col">DO Number</th>
+                          <th scope="col">PO Number</th>
+                          <th scope="col">Action</th>
+                      </tr>
+                  </thead>
+                  <tbody>
+                      <!-- Rows will be dynamically added here -->
+                  </tbody>
+              </table>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-success" id="addRowBtn">Add Row</button>
+              <button type="button" class="btn btn-primary" id="saveRowsBtn">Save</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script>
 var pricingCount = $("#pricingTable").find(".details").length;
 var similarCount = 0;
 var pricingCount2 = $("#pricingTable2").find(".details").length;
 var pricingJSON = '[]';
 var do_number = '';
+var editoutlet = '';
+var iseditOutler = false;
 
 $(function () {
   $("#zoneHidden").hide();
@@ -908,6 +981,18 @@ $(function () {
     defaultDate: ''
   });
 
+  $('#printDatePicker').datetimepicker({
+    icons: { time: 'far fa-clock' },
+    format: 'DD/MM/YYYY',
+    defaultDate: ''
+  });
+
+  $('#printDatePicker2').datetimepicker({
+    icons: { time: 'far fa-clock' },
+    format: 'DD/MM/YYYY',
+    defaultDate: new Date
+  });
+
   var fromDateI = $('#fromDate').val();
   var toDateI= $('#toDate').val();
   var stateI = $('#stateFilter').val() ? $('#stateFilter').val() : '';
@@ -917,6 +1002,8 @@ $(function () {
   var outletsI = $('#outletsFilter').val() ? $('#outletsFilter').val() : '';
   var statusI = $('#statusFilter').val() ? $('#statusFilter').val() : '';
   var doSearchI = $('#doSearch').val() ? $('#doSearch').val() : '';
+  var printDateI = $('#printDate').val() ? $('#printDate').val() : '';
+  var lorryI = $('#lorryFilter').val() ? $('#lorryFilter').val() : '';
 
   var table = $("#weightTable").DataTable({
     "responsive": true,
@@ -941,7 +1028,9 @@ $(function () {
         hypermarket: hypermarketI,
         outlets: outletsI,
         status: statusI,
-        doNumber: doSearchI
+        doNumber: doSearchI,
+        printedDate: printDateI,
+        lorry: lorryI
       } 
     },
     'columns': [
@@ -1140,6 +1229,8 @@ $(function () {
     var outletsFilter = $('#outletsFilter').val() ? $('#outletsFilter').val() : '';
     var statusFilter = $('#statusFilter').val() ? $('#statusFilter').val() : '';
     var doSearchI = $('#doSearch').val() ? $('#doSearch').val() : '';
+    var printDateI = $('#printDate').val() ? $('#printDate').val() : '';
+    var lorryI = $('#lorryFilter').val() ? $('#lorryFilter').val() : '';
 
     //Destroy the old Datatable
     $("#weightTable").DataTable().clear().destroy();
@@ -1166,7 +1257,9 @@ $(function () {
           hypermarket: hypermarketFilter,
           outlets: outletsFilter,
           status: statusFilter,
-          doNumber: doSearchI
+          doNumber: doSearchI,
+          printedDate: printDateI,
+          lorry: lorryI
         } 
       },
       'columns': [
@@ -1379,15 +1472,16 @@ $(function () {
 
     if($('#states').val() && $('#zones').val() && $('#hypermarket').val() && $('#hypermarket').val() != '0'){
       $('#extendModal').find('#outlets').empty();
-      //$('#extendModal').find("#direct_store").attr('required', false);
-      //$('#extendModal').find('#outlets').attr('required', true);
+      $('#extendModal').find("#direct_store").attr('required', false);
+      $('#extendModal').find('#outlets').attr('required', true);
       $('#extendModal').find('#outlets').show();
-      $('#extendModal').find("#direct_store").hide();
+      $('#extendModal').find('#direct_store').data('select2').$container.hide();
 
       $.post('php/listOutlets.php', {states: $('#states').val(), zones: $('#zones').val(), hypermarket: $('#hypermarket').val()}, function(data){
         var obj = JSON.parse(data);
         
         if(obj.status === 'success'){
+          $('#extendModal').find('#outlets').html('');
           for(var i=0; i<obj.message.length; i++){
             $('#extendModal').find('#outlets').append('<option value="'+obj.message[i].id+'">'+obj.message[i].name+'</option>')
           }
@@ -1404,9 +1498,10 @@ $(function () {
     else{
       $('#extendModal').find('#outlets').attr('required', false);
       $('#extendModal').find('#outlets').hide();
-      $('#extendModal').find("#direct_store").show();
-      //$('#extendModal').find("#direct_store").attr('required', true);
+      $('#extendModal').find('#direct_store').data('select2').$container.show();
+      $('#extendModal').find("#direct_store").attr('required', true);
       $('#extendModal').find("#direct_store").val('');
+      //$('#extendModal').find('.select2-container').show();
     }
   });
 
@@ -1414,14 +1509,16 @@ $(function () {
     if($('#states').val() && $('#zones').val() && $('#hypermarket').val() && $('#hypermarket').val() != '0'){
       $('#extendModal').find('#outlets').empty();
       $('#extendModal').find("#direct_store").attr('required', false);
-      //$('#extendModal').find('#outlets').attr('required', true);
+      $('#extendModal').find('#outlets').attr('required', true);
       $('#extendModal').find('#outlets').show();
-      $('#extendModal').find("#direct_store").hide();
+      $('#extendModal').find('#direct_store').data('select2').$container.hide();
+      //$('#extendModal').find('.select2-container').hide();
 
       $.post('php/listOutlets.php', {states: $('#states').val(), zones: $('#zones').val(), hypermarket: $('#hypermarket').val()}, function(data){
         var obj = JSON.parse(data);
         
         if(obj.status === 'success'){
+          $('#extendModal').find('#outlets').html('');
           for(var i=0; i<obj.message.length; i++){
             $('#extendModal').find('#outlets').append('<option value="'+obj.message[i].id+'">'+obj.message[i].name+'</option>')
           }
@@ -1438,9 +1535,10 @@ $(function () {
     else{
       $('#extendModal').find('#outlets').attr('required', false);
       $('#extendModal').find('#outlets').hide();
-      $('#extendModal').find("#direct_store").show();
-      //$('#extendModal').find("#direct_store").attr('required', true);
+      $('#extendModal').find('#direct_store').data('select2').$container.show();
+      $('#extendModal').find("#direct_store").attr('required', true);
       $('#extendModal').find("#direct_store").val('');
+      //$('#extendModal').find('.select2-container').show();
     }
   });
 
@@ -1448,17 +1546,25 @@ $(function () {
     if($('#states').val() && $('#zones').val() && $('#hypermarket').val() && $('#hypermarket').val() != '0'){
       $('#extendModal').find('#outlets').empty();
       $('#extendModal').find("#direct_store").attr('required', false);
-      //$('#extendModal').find('#outlets').attr('required', true);
+      $('#extendModal').find('#outlets').attr('required', true);
       $('#extendModal').find('#outlets').show();
-      $('#extendModal').find("#direct_store").hide();
+      $('#extendModal').find('#direct_store').data('select2').$container.hide();
+      //$('#extendModal').find('.select2-container').hide();
 
       $.post('php/listOutlets.php', {states: $('#states').val(), zones: $('#zones').val(), hypermarket: $('#hypermarket').val()}, function(data){
         var obj = JSON.parse(data);
         
         if(obj.status === 'success'){
+          $('#extendModal').find('#outlets').html('');
           for(var i=0; i<obj.message.length; i++){
             $('#extendModal').find('#outlets').append('<option value="'+obj.message[i].id+'">'+obj.message[i].name+'</option>')
           }
+
+          setTimeout(() => {
+            if(iseditOutler){
+              $('#extendModal').find('#outlets').val(editoutlet);
+            }
+          }, 500);
         }
         else if(obj.status === 'failed'){
           toastr["error"](obj.message, "Failed:");
@@ -1472,10 +1578,59 @@ $(function () {
     else{
       $('#extendModal').find('#outlets').attr('required', false);
       $('#extendModal').find('#outlets').hide();
-      $('#extendModal').find("#direct_store").show();
-      //$('#extendModal').find("#direct_store").attr('required', true);
+      $('#extendModal').find('#direct_store').data('select2').$container.show();
+      $('#extendModal').find("#direct_store").attr('required', true);
+      //$('#extendModal').find('.select2-container').show();
       $('#extendModal').find("#direct_store").val('');
     }
+  });
+
+  $('#direct_store').select2({
+    ajax: {
+      url: 'php/getDirectStore.php',
+      dataType: 'json',
+      data: function (params) {
+        var query = {
+          search: params.term,
+          states: $('#states').val() ? $('#states').val() : '',
+          zones: $('#zones').val() ? $('#zones').val() : '',
+          hyper: $('#hypermarket').val() ? $('#hypermarket').val() : '',
+          type: 'public'
+        };
+        return query;
+      },
+      delay: 250,
+      processResults: function (data) {
+        var resultsArray = [];
+
+        // Assuming data.message is an object
+        for (var key in data.message) {
+          if (data.message.hasOwnProperty(key)) {
+            resultsArray.push({
+              id: data.message[key].name, // Use the property key as the id
+              text: data.message[key].name // Use the name property as the text
+            });
+          }
+        }
+
+        return {
+          results: resultsArray
+        };
+      },
+      cache: true,
+    },
+    minimumInputLength: 1,
+    placeholder: 'Search for options...',
+    tags: true,
+    createTag: function (params) {
+      if ($.trim(params.term) === '') {
+        return null;
+      }
+      return {
+        id: params.term,
+        text: params.term
+      };
+    },
   });
 
   $(".add-price").click(function(){
@@ -1594,6 +1749,39 @@ $(function () {
     $(this).parents('.details').find('input[id^="price"]').trigger('change');
   });
 
+  $('#openModalBtn').on('click', function () {
+    if($('#doPoTable tbody tr').length > 0){
+      $('#doModal').modal('show');
+    }
+    else{
+      $('#doPoTable tbody').empty();
+      addRow2($('#do_no').val(), $('#po_no').val()); // Pass default values to the addRow function
+      $('#doModal').modal('show');
+    }
+  });
+
+  $('#addRowBtn').on('click', function () {
+    addRow();
+  });
+
+  $('#saveRowsBtn').on('click', function () {
+    var rowsData = [];
+
+    // Iterate through each row in the table
+    $('#doPoTable tbody tr').each(function () {
+      var doNumber = $(this).find('td:nth-child(1) input').val();
+      var poNumber = $(this).find('td:nth-child(2) input').val();
+
+      // Add row data to the array
+      rowsData.push({ doNumber: doNumber, poNumber: poNumber });
+    });
+
+    // Convert the array to JSON
+    var jsonData = JSON.stringify(rowsData);
+    $('#jsonDataField').val(jsonData);
+    $('#doModal').modal('hide');
+  });
+
   $("#pricingTable").on('change', 'input[id^="unit_price"]', function(){
     var totalAmount = 0;
     var itemPrice = parseFloat($(this).parents('.details').find('input[id^="quantity_in"]').val()) || 0;
@@ -1691,6 +1879,7 @@ $(function () {
       $("#printDOModal").find('#id').val(selectedIds);
       $("#printDOModal").find('#driver').val('');
       $("#printDOModal").find('#lorry').val('');
+      $("#printDOModal").find('#printDate2').val(formatDate2(new Date()));
       $("#printDOModal").modal("show");
 
       $('#printDOForm').validate({
@@ -1887,7 +2076,7 @@ function edit(id) {
       setReadOnly('#extendModal #actual_ctn', isReadOnly);
       setReadOnly('#extendModal #need_grn', isReadOnly);
       setReadOnly('#extendModal #loadingTime', isReadOnly);
-      setReadOnly('#extendModal #direct_store', isReadOnly);
+      setDisabled('#extendModal #direct_store', isReadOnly);
       setReadOnly('#extendModal #notes', isReadOnly);
 
       $('#extendModal').find('#id').val(obj.message.id);
@@ -1924,23 +2113,30 @@ function edit(id) {
       $('#extendModal').find('#notes').val(obj.message.note);
 
       if(obj.message.hypermarket == '0'){
+        // Define the value and text for the new option
+        var newOption = new Option(obj.message.direct_store, obj.message.direct_store, false, false);
+        
+        // Append the new option to the select element
         $('#extendModal').find('#hypermarket').trigger('change');
         $('#extendModal').find('#outlets').empty().val(obj.message.outlet);
         $('#extendModal').find('#outlets').attr('required', false);
-        //$('#extendModal').find('#direct_store').attr('required', true);
-        $('#extendModal').find('#direct_store').val(obj.message.direct_store);
+        $('#extendModal').find('#direct_store').attr('required', true);
+        $('#extendModal').find('#direct_store').data('select2').$container.show();
+        $('#extendModal').find('#direct_store').append(newOption).trigger('change');
         $('#extendModal').find('#outlets').hide();
-        $('#extendModal').find("#direct_store").show();
-        //$('#extendModal').find('.select2-container').show();
+        iseditOutler = false;
       }
       else{
         $('#extendModal').find('#hypermarket').trigger('change');
         //$('#extendModal').find('#zones').empty().val(obj.message.zone);
-        //$('#extendModal').find('#outlets').attr('required', true);
+        $('#extendModal').find('#outlets').attr('required', true);
         $('#extendModal').find('#outlets').show();
+        $('#extendModal').find('#outlets').val(obj.message.outlet);
         $('#extendModal').find('#direct_store').val('');
-        $('#extendModal').find("#direct_store").hide();
+        $('#extendModal').find('#direct_store').data('select2').$container.hide();
         //$('#extendModal').find('.select2-container').hide();
+        editoutlet = obj.message.outlet;
+        iseditOutler = true;
       }
       
       $('#extendModal').find('#pricingTable').html('');
@@ -1986,6 +2182,20 @@ function edit(id) {
             $(this).tooltip('hide');
           });
         }
+      }
+
+      var doDetails = obj.message.do_details || []; // Assuming do_details is an array of objects
+      $('#jsonDataField').val(JSON.stringify(doDetails));
+      $('#doPoTable tbody').empty();
+
+      // Populate doPoTable with data from doDetails
+      for (var i = 0; i < doDetails.length; i++) {
+        var newRow = '<tr>' +
+          '<td><input type="text" class="form-control" value="' + doDetails[i].doNumber + '"></td>' +
+          '<td><input type="text" class="form-control" value="' + doDetails[i].poNumber + '"></td>' +
+          '<td><button type="button" class="btn btn-danger removeRowBtn">Remove</button></td>' +
+          '</tr>';
+        $('#doPoTable tbody').append(newRow);
       }
       
       $('#extendModal').modal('show');
@@ -2272,5 +2482,29 @@ function setReadOnly(selector, readOnly) {
 
 function setDisabled(selector, disabled) {
   $(selector).attr('disabled', disabled);
+}
+
+function addRow() {
+  var newRow = '<tr>' +
+      '<td><input type="text" class="form-control" placeholder="Enter DO Number"></td>' +
+      '<td><input type="text" class="form-control" placeholder="Enter PO Number"></td>' +
+      '<td><button type="button" class="btn btn-danger removeRowBtn">Remove</button></td>' +
+      '</tr>';
+  
+  // Append the new row to the table
+  $('#doPoTable tbody').append(newRow);
+  $('#doPoTable tbody tr:last-child td:first-child input').focus();
+}
+
+function addRow2(defaultDONumber, defaultPONumber) {
+    var newRow = '<tr>' +
+        '<td><input type="text" class="form-control" placeholder="Enter DO Number" value="' + defaultDONumber + '"></td>' +
+        '<td><input type="text" class="form-control" placeholder="Enter PO Number" value="' + defaultPONumber + '"></td>' +
+        '<td><button type="button" class="btn btn-danger removeRowBtn">Remove</button></td>' +
+        '</tr>';
+  
+    // Append the new row to the table
+    $('#doPoTable tbody').append(newRow);
+    $('#doPoTable tbody tr:last-child td:first-child input').focus();
 }
 </script>

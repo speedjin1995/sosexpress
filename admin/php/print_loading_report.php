@@ -142,6 +142,8 @@ if(isset($_POST['id'])){
             }*/
         }
 
+        usort($results, 'sortByOutlet');
+
         $message = '<html>
             <head>
                 <style>
@@ -281,4 +283,8 @@ else{
     ); 
 }
 
+
+function sortByOutlet($a, $b) {
+    return strcmp($a['outlet'], $b['outlet']);
+}
 ?>
