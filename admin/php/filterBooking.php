@@ -39,12 +39,12 @@ if($searchValue != ''){
 }
 
 ## Total number of records without filtering
-$sel = mysqli_query($db,"select count(*) as allcount from booking, customers, users WHERE (booking.checker = users.id OR booking.checker IS NULL) AND booking.customer = customers.id AND booking.deleted = '0'");
+$sel = mysqli_query($db,"select count(*) as allcount from booking, customers WHERE booking.customer = customers.id AND booking.deleted = '0'");
 $records = mysqli_fetch_assoc($sel);
 $totalRecords = $records['allcount'];
 
 ## Total number of record with filtering
-$sel = mysqli_query($db,"select count(*) as allcount from booking, customers, users WHERE (booking.checker = users.id OR booking.checker IS NULL) AND booking.customer = customers.id AND booking.deleted = '0'".$searchQuery);
+$sel = mysqli_query($db,"select count(*) as allcount from booking, customers WHERE booking.customer = customers.id AND booking.deleted = '0'".$searchQuery);
 $records = mysqli_fetch_assoc($sel);
 $totalRecordwithFilter = $records['allcount'];
 

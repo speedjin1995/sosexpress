@@ -7,6 +7,7 @@ session_start();
 if(isset($_POST['id'], $_POST['totalAmount'])){
 	$id = filter_input(INPUT_POST, 'id', FILTER_SANITIZE_STRING);
     $totalAmount = filter_input(INPUT_POST, 'totalAmount', FILTER_SANITIZE_STRING);
+    $payment_term = filter_input(INPUT_POST, 'payment_term', FILTER_SANITIZE_STRING);
 
     $sent_date = null;
 	$back_date = null;
@@ -109,7 +110,15 @@ if(isset($_POST['id'], $_POST['totalAmount'])){
     }
 
     if(isset($_POST['grn_received']) && $_POST['grn_received'] != null && $_POST['grn_received'] != ''){
-        if(count($pricing_details) > 0){
+        if(count($pricing_details) <= 0 && $payment_term != 'Cash'){
+            echo json_encode(
+                array(
+                    "status"=> "failed", 
+                    "message"=> "Please enter the price"
+                )
+            ); 
+        }
+        else{
             if ($update_stmt = $db->prepare("UPDATE do_request SET grn_upload=?, sent_date=?, back_date=?, grn_receive=?, pricing_details=?, total_price=?, status=?, note=? WHERE id=?")){
                 $update_stmt->bind_param('sssssssss', $jobLog, $sent_date, $back_date, $grn_receive, $pricing, $totalAmount, $status, $noting, $id);
                 
@@ -143,14 +152,6 @@ if(isset($_POST['id'], $_POST['totalAmount'])){
                     )
                 );
             }
-        }
-        else{
-            echo json_encode(
-                array(
-                    "status"=> "failed", 
-                    "message"=> "Please enter the price"
-                )
-            ); 
         }
     }
     else{

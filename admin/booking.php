@@ -1322,6 +1322,14 @@ $(function () {
           for(var i=0; i<obj.message.length; i++){
             $('#doModal').find('#outlets').append('<option value="'+obj.message[i].id+'">'+obj.message[i].name+'</option>')
           }
+
+          $('#spinnerLoading').show();
+          setTimeout(() => {
+            if(iseditOutler){
+              $('#extendModal').find('#outlets').val(editoutlet);
+              $('#spinnerLoading').hide();
+            }
+          }, 500);
         }
         else if(obj.status === 'failed'){
           toastr["error"](obj.message, "Failed:");

@@ -259,6 +259,7 @@ else{
 
         <div class="modal-body">
           <input type="hidden" class="form-control" id="id" name="id">
+          <input type="hidden" class="form-control" id="payment_term" name="payment_term">
           <input type="hidden" class="form-control" id="jsonDataField" name="jsonDataField">
 
           <div class="row">
@@ -439,11 +440,11 @@ else{
             </div>
           </div>
 
-          <div class="row">
+          <div class="row" id="pricingDetailsTable1">
             <h4>Particular</h4>
             <button style="margin-left:auto;margin-right: 25px;" type="button" class="btn btn-primary add-price">Add Items</button>
           </div>
-          <table style="width: 100%;">
+          <table style="width: 100%;" id="pricingDetailsTable2">
             <thead>
               <tr>
                 <th>Notes</th>
@@ -1121,14 +1122,12 @@ $(function () {
 
   $('#sentOnDate').datetimepicker({
     icons: { time: 'far fa-clock' },
-    format: 'YYYY-MM-DD',
-    defaultDate: new Date
+    format: 'YYYY-MM-DD'
   });
 
   $('#backOnDate').datetimepicker({
     icons: { time: 'far fa-clock' },
-    format: 'YYYY-MM-DD',
-    defaultDate: new Date,
+    format: 'YYYY-MM-DD'
   });
 
   $('#stateFilter').on('change', function(){
@@ -1701,22 +1700,29 @@ $(function () {
     // Iterate through the pricingJson array
     for (var i = 0; i < pricingJson.length; i++) {
       var item = pricingJson[i];
-      var matchLength = 0;
-      var maxMatchLength = 0;
-
-      // Compare size and item.size character by character
-      for (var j = 0; j < item.size.length && j < item.size.length; j++) {
-        if (size[j] === item.size[j]) {
-          matchLength++;
-        } else {
-          break;
-        }
-      }
-
-      // Update matchedItem if we found a longer match
-      if (matchLength > maxMatchLength) {
-          maxMatchLength = matchLength;
+      if(item.size == size){
+          debugger;
           matchedItem = item;
+          break;
+      }
+      else{
+          var matchLength = 0;
+          var maxMatchLength = 0;
+    
+          // Compare size and item.size character by character
+          for (var j = 0; j < item.size.length && j < item.size.length; j++) {
+            if (size[j] === item.size[j]) {
+              matchLength++;
+            } else {
+              break;
+            }
+          }
+    
+          // Update matchedItem if we found a longer match
+          if (matchLength > maxMatchLength) {
+              maxMatchLength = matchLength;
+              matchedItem = item;
+          }
       }
     }
 
@@ -2087,6 +2093,24 @@ function edit(id) {
       $('#extendModal').find('#hypermarket').val(obj.message.hypermarket);
       $('#extendModal').find('#states').val(obj.message.states);
       $('#extendModal').find('#on_hold').val(obj.message.hold);
+
+      if(obj.message.back_date != null && obj.message.back_date != ''){
+        $('#extendModal').find('#back_on_date').val(formatDate(new Date(obj.message.back_date)));
+      }
+      else{
+        $('#extendModal').find('#back_on_date').val('');
+      }
+
+      if(obj.message.sent_date != null && obj.message.sent_date != ''){
+        $('#extendModal').find('#sent_on_date').val(formatDate(new Date(obj.message.sent_date)));
+      }
+      else if(obj.message.printed_date != null && obj.message.printed_date != ''){
+        $('#extendModal').find('#sent_on_date').val(formatDate(new Date(obj.message.printed_date)));
+      }
+      else{
+        $('#extendModal').find('#sent_on_date').val('');
+      }
+
       pricingJSON = obj.message.pricing;
 
       $('#extendModal').find('#zones').empty();
@@ -2181,7 +2205,20 @@ function edit(id) {
           }, function () {
             $(this).tooltip('hide');
           });
+          
+          pricingCount++;
         }
+      }
+
+      $('#payment_term').val(obj.message.payment_term);
+
+      if(obj.message.payment_term == 'Cash'){
+        $("#pricingDetailsTable1").hide();
+        $("#pricingDetailsTable2").hide();
+      }
+      else{
+        $("#pricingDetailsTable1").show();
+        $("#pricingDetailsTable2").show();
       }
 
       var doDetails = obj.message.do_details || []; // Assuming do_details is an array of objects

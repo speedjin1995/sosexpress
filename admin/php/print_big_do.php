@@ -236,7 +236,7 @@ if(isset($_POST['id'], $_POST['driver'], $_POST['lorry'], $_POST['checker'], $_P
 
                     $count = 0;
                     for($j=0; $j<count($result); $j++) {
-                        $message .= '<tr><td>'.$result[$j]['index'].'</td><td>'.$result[$j]['customer'].'</td><td>'.$result[$j]['notes'].'</td><td>'.$result[$j]['po'].'</td><td>'.$result[$j]['do'].'</td><td style="text-align: center;">'.$result[$j]['carton'].'</td></tr>';
+                        $message .= '<tr><td>'.$result[$j]['index'].'</td><td>'.$result[$j]['customer'].'</td><td>'.$result[$j]['po'].'</td><td>'.$result[$j]['do'].'</td><td style="text-align: center;">'.$result[$j]['carton'].'</td></tr>';
                         $count += (int)$result[$j]['carton'];
 
                         $update_stmt = $db->prepare("UPDATE do_request SET checker = ?, veh_no = ?, printed_date = ?, status = 'Printed' WHERE id = ?");

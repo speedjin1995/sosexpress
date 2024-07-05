@@ -42,11 +42,15 @@ if(isset($_POST['userID'])){
                 $message["direct_store"] = $row['direct_store'];
                 $message["status"] = $row['status'];
                 $message["reason"] = $row["reason"];
+                $message["back_date"] = $row['back_date'] ?? '';
+                $message["sent_date"] = $row["sent_date"] ?? '';
+                $message["printed_date"] = $row["printed_date"] ?? '';
+                $message["payment_term"] = 'Days';
                 $message["hold"] = $row["hold"];
                 $message["similar_requests_count"] = 0;
                 $message["pricing_details"] = ($row['pricing_details'] != null && $row['pricing_details'] != '') ? json_decode($row['pricing_details'], true) : [];
 
-                if ($pricing_stmt = $db->prepare("SELECT pricing FROM customers WHERE id=?")) {
+                if ($pricing_stmt = $db->prepare("SELECT payment_term, pricing FROM customers WHERE id=?")) {
                     $pricing_stmt->bind_param('s', $message["customer"]);
                     
                     // Execute the prepared query.
@@ -56,7 +60,7 @@ if(isset($_POST['userID'])){
                         // Check if there are any rows returned
                         if ($pricing_row = $pricing_result->fetch_assoc()) {
                             $message["pricing"] = $pricing_row['pricing'];
-                            
+                            $message["payment_term"] = $pricing_row['payment_term'];
                             // Now $pricing contains the pricing information for the customer obtained from the customers table
                             // You can use this pricing information as needed in your application
                         }

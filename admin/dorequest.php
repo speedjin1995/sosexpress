@@ -330,9 +330,9 @@ else{
                 <div class="input-group">
                   <input class="form-control" type="text" placeholder="DO No." id="do_no" name="do_no">
                   <div class="input-group-append">
-                    <button class="btn btn-outline-secondary" type="button" id="openModalBtn">
-                      <i class="fas fa-plus"></i>
-                    </button>
+                      <button class="btn btn-outline-secondary" type="button" id="openModalBtn">
+                        <i class="fas fa-plus"></i>
+                      </button>
                   </div>
                 </div>
               </div>
@@ -541,10 +541,15 @@ $(function () {
         className: 'select-checkbox',
         orderable: false,
         render: function (data, type, row) {
-          return '<input type="checkbox" class="select-checkbox" id="checkbox_' + data + '" value="'+data+'"/>';
+            if (row.status == 'Created') { // Assuming 'isInvoiced' is a boolean field in your row data
+              return '<input type="checkbox" class="select-checkbox" id="checkbox_' + data + '" value="'+data+'"/>';
+            } 
+            else {
+              return ''; // Return an empty string or any other placeholder if the item is invoiced
+            }
+          //return '<input type="checkbox" class="select-checkbox" id="checkbox_' + data + '" value="'+data+'"/>';
         }
       },
-      //{ data: 'no' },
       { data: 'customer_name' },
       { data: 'hypermarket' },
       { data: 'outlet' },
@@ -768,13 +773,19 @@ $(function () {
       },
       'columns': [
         {
-          // Add a checkbox with a unique ID for each row
-          data: 'id', // Assuming 'serialNo' is a unique identifier for each row
-          className: 'select-checkbox',
-          orderable: false,
-          render: function (data, type, row) {
-            return '<input type="checkbox" class="select-checkbox" id="checkbox_' + data + '" value="'+data+'"/>';
-          }
+            // Add a checkbox with a unique ID for each row
+            data: 'id', // Assuming 'serialNo' is a unique identifier for each row
+            className: 'select-checkbox',
+            orderable: false,
+            render: function (data, type, row) {
+                if (row.status == 'Created') { // Assuming 'isInvoiced' is a boolean field in your row data
+                  return '<input type="checkbox" class="select-checkbox" id="checkbox_' + data + '" value="'+data+'"/>';
+                } 
+                else {
+                  return ''; // Return an empty string or any other placeholder if the item is invoiced
+                }
+              //return '<input type="checkbox" class="select-checkbox" id="checkbox_' + data + '" value="'+data+'"/>';
+            }
         },
         //{ data: 'no' },
         { data: 'customer_name' },

@@ -139,10 +139,11 @@ if(isset($_POST['bookingDate'], $_POST['deliveryDate'], $_POST['cancellationDate
                                 )
                             );
 
-                            if ($update_stmt3 = $db->prepare("SELECT * FROM booking WHERE customer=? AND booking_date >= ?")) {
+                            if ($update_stmt3 = $db->prepare("SELECT * FROM booking WHERE customer=? AND booking_date >= ? AND booking_date <= ?")) {
                                 $booking_date2 = DateTime::createFromFormat('d/m/Y', str_replace(',', '', explode(" ", $booking_date2)[0]));
+                                $booking_date3 = $booking_date2->format('Y-m-d 23:59:59');
                                 $booking_date2 = $booking_date2->format('Y-m-d 00:00:00');
-                                $update_stmt3->bind_param('ss', $customer, $booking_date2);
+                                $update_stmt3->bind_param('sss', $customer, $booking_date2, $booking_date3);
                                 
                                 // Execute the prepared query.
                                 if ($update_stmt3->execute()) {
@@ -218,10 +219,11 @@ if(isset($_POST['bookingDate'], $_POST['deliveryDate'], $_POST['cancellationDate
                     )
                 );
                 
-                if ($update_stmt = $db->prepare("SELECT * FROM booking WHERE customer=? AND booking_date >= ?")) {
+                if ($update_stmt = $db->prepare("SELECT * FROM booking WHERE customer=? AND booking_date >= ? AND booking_date <= ?")) {
                     $booking_date2 = DateTime::createFromFormat('d/m/Y', str_replace(',', '', explode(" ", $booking_date2)[0]));
+                    $booking_date3 = $booking_date2->format('Y-m-d 23:59:59');
                     $booking_date2 = $booking_date2->format('Y-m-d 00:00:00');
-                    $update_stmt->bind_param('ss', $customer, $booking_date2);
+                    $update_stmt->bind_param('sss', $customer, $booking_date2, $booking_date3);
                     
                     // Execute the prepared query.
                     if ($update_stmt->execute()) {
