@@ -1731,6 +1731,7 @@ function editRow(id) {
       $('#doModal').find('#actual_ctn').val(obj.message.actual_carton);
       $('#doModal').find('#need_grn').val(obj.message.need_grn);
       $('#doModal').find('#loadingTime').val(obj.message.loading_time);
+      $('#doModal').find('#on_hold').val(obj.message.hold);
 
       if(obj.message.hypermarket == '0'){
         // Define the value and text for the new option
