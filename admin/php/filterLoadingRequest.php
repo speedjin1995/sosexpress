@@ -150,6 +150,7 @@ while($row = mysqli_fetch_assoc($empRecords)) {
     "need_grn"=>$row['need_grn'],
     "loading_time"=>$row['loading_time'],
     "direct_store"=>$row['direct_store'],
+    "grns"=>($row['grn_upload'] != null ? json_decode($row['grn_upload'], true) : []),
     "status"=>$row['status'],
     "reason"=>$reason,
     "pricing_details" => ($row['pricing_details'] != null && $row['pricing_details'] != '') ? json_decode($row['pricing_details'], true) : []

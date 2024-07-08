@@ -197,7 +197,7 @@ if(isset($_POST['id'])){
                 </style>
             </head>
             <body>
-            <br><br><br>
+            <br><br>
             <table style="width:100%">
                 <tbody>
                     <tr>
@@ -207,9 +207,6 @@ if(isset($_POST['id'])){
                         <td style="width:20%">
                             <span></span>
                         </td>
-                        <td style="width:20%">
-                            <span><span>
-                        </td>
                         <td style="width:40%">
                             <span>&nbsp;&nbsp;&nbsp;&nbsp;'.$todayDate.'</span>
                         </td>
@@ -218,7 +215,7 @@ if(isset($_POST['id'])){
                         <td style="width:40%">
                             <span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'.$driverName.'<span>
                         </td>
-                        <td colspan="2">
+                        <td style="width:20%">
                             <span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span>
                         </td>
                         <td style="width:40%">
@@ -232,10 +229,10 @@ if(isset($_POST['id'])){
                 $message .= '<table style="width:100%">
                 <tbody>
                     <tr>
-                        <td colspan="12" style="text-align:center;font-size: 10px;">' . $results[$k]['outlet'] . '</td>
+                        <td colspan="12" style="text-align:center;font-size: 12px;">' . $results[$k]['outlet'] . '</td>
                     </tr>
                     <tr>
-                        <td colspan="12" style="text-align:center;font-size: 10px;">&nbsp;&nbsp;&nbsp;&nbsp;</td>
+                        <td colspan="12" style="text-align:center;font-size: 12px;">&nbsp;&nbsp;&nbsp;&nbsp;</td>
                     </tr>';
 
                 $results2 = $results[$k]['items'];
@@ -245,15 +242,15 @@ if(isset($_POST['id'])){
 
                     if($results2[$j]['term'] == 'Cash'){
                         $message .= '<tr>
-                            <td width="37.795px" style="font-size: 10px;">' . $results2[$j]['delivery'] . '</td>
-                            <td width="41.575px" style="font-size: 10px;">' . $results2[$j]['cancellation'] . '</td>
-                            <td width="192.756px" style="font-size: 10px;">' . $results2[$j]['customer'] . '</td>
-                            <td width="30.236px" style="font-size: 10px;">' . $results2[$j]['status'] . '</td>
-                            <td width="113.386px" style="font-size: 10px;">' . $results2[$j]['po'] . '</td>
-                            <td width="132.283px" style="font-size: 10px;">' . $results2[$j]['do'] . '</td>
-                            <td width="30.236px" style="font-size: 10px;">' . $results2[$j]['carton'] . '</td>
-                            <td width="30.236px" style="font-size: 10px;">' . $results2[$j]['hold'] . '</td>
-                            <td colspan="6" style="font-size: 10px;">' . $results2[$j]['notes'] . '</td>
+                            <td width="37.795px" style="font-size: 12px;">' . $results2[$j]['delivery'] . '</td>
+                            <td width="41.575px" style="font-size: 12px;">' . $results2[$j]['cancellation'] . '</td>
+                            <td width="192.756px" style="font-size: 12px;">' . $results2[$j]['customer'] . '</td>
+                            <td width="30.236px" style="font-size: 12px;">' . $results2[$j]['status'] . '</td>
+                            <td width="113.386px" style="font-size: 12px;">' . $results2[$j]['po'] . '</td>
+                            <td width="132.283px" style="font-size: 12px;">' . $results2[$j]['do'] . '</td>
+                            <td width="30.236px" style="font-size: 12px;">' . $results2[$j]['carton'] . '</td>
+                            <td width="30.236px" style="font-size: 12px;">' . $results2[$j]['hold'] . '</td>
+                            <td colspan="6" style="font-size: 12px;">' . $results2[$j]['notes'] . '</td>
                         </tr>';
                     }
                     else{
@@ -263,19 +260,19 @@ if(isset($_POST['id'])){
                         // Loop to create pricing columns
                         for ($i = 0; $i < 5; $i++) {
                             if ($i < $pricingCount) {
-                                $pring .= '<td width="37.795px" style="font-size: 10px;">';
+                                $pring .= '<td width="37.795px" style="font-size: 12px;">';
                                 $pring .= $results2[$j]['pricing'][$i]['size'] . '<br>' . $results2[$j]['pricing'][$i]['price'];
                                 $pring .= '</td>';
                             } 
                             else {
-                                $pring .= '<td width="37.795px" style="font-size: 10px;"></td>'; // Empty columns if less than 5 pricing items
+                                $pring .= '<td width="37.795px" style="font-size: 12px;"></td>'; // Empty columns if less than 5 pricing items
                             }
                         }
                     
                         // Loop to add extra pricing columns if more than 5
                         if ($pricingCount > 5) {
                             for ($i = 5; $i < $pricingCount && $i < 11; $i++) {
-                                $pring .= '<td width="37.795px" style="font-size: 10px;">';
+                                $pring .= '<td width="37.795px" style="font-size: 12px;">';
                                 $pring .= $results2[$j]['pricing'][$i]['size'] . '<br>' . $results2[$j]['pricing'][$i]['price'];
                                 $pring .= '</td>';
                             }
@@ -286,16 +283,16 @@ if(isset($_POST['id'])){
                     
                         // Create the message with adjusted colspan
                         $message .= '<tr>
-                                        <td width="37.795px" style="font-size: 10px;">' . $results2[$j]['delivery'] . '</td>
-                                        <td width="41.575px" style="font-size: 10px;">' . $results2[$j]['cancellation'] . '</td>
-                                        <td width="192.756px" style="font-size: 10px;">' . $results2[$j]['customer'] . '</td>
-                                        <td width="30.236px" style="font-size: 10px;">' . $results2[$j]['status'] . '</td>
-                                        <td width="113.386px" style="font-size: 10px;">' . $results2[$j]['po'] . '</td>
-                                        <td width="132.283px" style="font-size: 10px;">' . $results2[$j]['do'] . '</td>
-                                        <td width="30.236px" style="font-size: 10px;">' . $results2[$j]['carton'] . '</td>
-                                        <td width="30.236px" style="font-size: 10px;">' . $results2[$j]['hold'] . '</td>'
+                                        <td width="37.795px" style="font-size: 12px;">' . $results2[$j]['delivery'] . '</td>
+                                        <td width="41.575px" style="font-size: 12px;">' . $results2[$j]['cancellation'] . '</td>
+                                        <td width="192.756px" style="font-size: 12px;">' . $results2[$j]['customer'] . '</td>
+                                        <td width="30.236px" style="font-size: 12px;">' . $results2[$j]['status'] . '</td>
+                                        <td width="113.386px" style="font-size: 12px;">' . $results2[$j]['po'] . '</td>
+                                        <td width="132.283px" style="font-size: 12px;">' . $results2[$j]['do'] . '</td>
+                                        <td width="30.236px" style="font-size: 12px;">' . $results2[$j]['carton'] . '</td>
+                                        <td width="30.236px" style="font-size: 12px;">' . $results2[$j]['hold'] . '</td>'
                                         . $pring .
-                                        '<td colspan="' . $colspan . '" style="font-size: 10px;">' . $results2[$j]['notes'] . '</td>
+                                        '<td colspan="' . $colspan . '" style="font-size: 12px;">' . $results2[$j]['notes'] . '</td>
                                     </tr>';
                     }
                     

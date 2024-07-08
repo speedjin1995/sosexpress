@@ -446,7 +446,7 @@ $(function () {
             }
           }
 
-          if(row.status == 'Invoiced'){
+          if(row.status == 'Invoiced' || row.status == 'Cancelled'){
             return '';
           }
           else{

@@ -426,7 +426,7 @@ else{
             <div class="col-3">
               <div class="form-group">
                 <label>GRN File</label>
-                <input class="form-control" type="file" placeholder="GRN No." id="grn_files" name="grn_files">
+                <input class="form-control" type="file" placeholder="GRN No." id="grn_files" name="grn_files[]" multiple>
               </div>
             </div>
           </div>
@@ -1940,6 +1940,12 @@ $(function () {
       alert("Please select at least one DO to Load.");
     }
   });
+
+  $('#grn_received').on('change', function (){
+    if($(this).val()){
+      $('#back_on_date').val(formatDate(new Date()));
+    }
+  });
 });
 
 function format(row) {
@@ -1996,6 +2002,17 @@ function format(row) {
     '</p></div><div class="col-md-6"><p>Reason: ' + row.reason +
     '</p></div></div>';
 
+  if (row.grns.length > 0) {
+    for (var j = 0; j < row.grns.length; j++) {
+        var item = row.grns[j]; // Corrected index to 'j'
+        var fileName = 'file' + (j + 1); // Generate file name as file1, file2, etc.
+        
+        returnString += '<a href="https://sosexpress.dqit4u.com/admin/' + encodeURIComponent(item.toString()) + '" target="_blank" class="list-group-item list-group-item-action">' +
+            '<strong>' + fileName + '</strong></a>';
+    }
+  }
+
+
   if (row.pricing_details.length > 0) {
     returnString += '<h4>Pricing</h4><table style="width: 100%;"><thead><tr><th>Notes</th><th>Quantity</th><th>Price/Size</th><th>Unit Price</th><th>Amount</th></tr></thead><tbody>'
     var total = 0;
@@ -2026,7 +2043,6 @@ function format(row) {
 
   return returnString;
 }
-
 
 function formatNormal (row) {
   return '<div class="row"><div class="col-md-3"><p>Customer Name: '+row.customer_name+
@@ -2093,6 +2109,7 @@ function edit(id) {
       $('#extendModal').find('#hypermarket').val(obj.message.hypermarket);
       $('#extendModal').find('#states').val(obj.message.states);
       $('#extendModal').find('#on_hold').val(obj.message.hold);
+      $('#extendModal').find('#grn_received').val(obj.message.grn_receive);
 
       if(obj.message.back_date != null && obj.message.back_date != ''){
         $('#extendModal').find('#back_on_date').val(formatDate(new Date(obj.message.back_date)));

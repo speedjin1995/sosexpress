@@ -82,7 +82,10 @@ if(isset($_POST['id'], $_POST['totalAmount'])){
 
     if(isset($_POST['grn_received']) && $_POST['grn_received'] != null && $_POST['grn_received'] != ''){
         $grn_receive = filter_input(INPUT_POST, 'grn_received', FILTER_SANITIZE_STRING);
-        $status = 'Invoiced';
+
+        if(isset($_POST['backOnDate']) && $_POST['backOnDate'] != null && $_POST['backOnDate'] != ''){
+            $status = 'Invoiced';
+        }
     }
     
     if(isset($_POST['notes']) && $_POST['notes'] != null && $_POST['notes'] != ''){
@@ -93,23 +96,31 @@ if(isset($_POST['id'], $_POST['totalAmount'])){
     $storeFolder = '../grns';  // Removed '../' from the store folder path
     $storeFolder2 = 'grns';  // Removed '../' from the store folder path
     $filename = $_FILES['grn_files']['name'];
-    $jobLog = null;
+    $jobLog = array();
     
-    if (!empty($_FILES['grn_files']['name'])) {
-        // File was uploaded successfully
-        $tempFile = $_FILES['grn_files']['tmp_name'];
-        $temp = explode(".", $_FILES["grn_files"]["name"]);
-        $newfilename = $filename . '.' . end($temp);
-        $targetPath = dirname(__FILE__) . $ds . $storeFolder . $ds;
-        $targetFile = $targetPath . $newfilename;
+    if (isset($_FILES['grn_files'])) {
+        // Loop through each uploaded file
+        foreach ($_FILES['grn_files']['name'] as $key => $name) {
+            // Check if the file was uploaded successfully
+            if ($_FILES['grn_files']['error'][$key] === UPLOAD_ERR_OK) {
+                $tempFile = $_FILES['grn_files']['tmp_name'][$key];
+                $temp = explode(".", $_FILES["grn_files"]["name"][$key]);
+                $extension = end($temp);
+                $timestamp = time(); // Get the current timestamp
+                $newfilename = $timestamp . '-' . $key . '.' . $extension; // Unique filename using timestamp and key
+                $targetPath = dirname(__FILE__) . $ds . $storeFolder . $ds;
+                $targetFile = $targetPath . $newfilename;
     
-        if (move_uploaded_file($tempFile, $targetFile)) {
-            // File moved successfully
-            $jobLog = $storeFolder2 . $ds . $newfilename; // Assigning $jobLog with the relative path
+                if (move_uploaded_file($tempFile, $targetFile)) {
+                    // File moved successfully
+                    $jobLog[] = $storeFolder2 . $ds . $newfilename; // Assigning $jobLog with the relative path
+                } 
+            } 
         }
     }
 
-    if(isset($_POST['grn_received']) && $_POST['grn_received'] != null && $_POST['grn_received'] != ''){
+    if(isset($_POST['grn_received']) && $_POST['grn_received'] != null && $_POST['grn_received'] != ''
+    && isset($_POST['backOnDate']) && $_POST['backOnDate'] != null && $_POST['backOnDate'] != ''){
         if(count($pricing_details) <= 0 && $payment_term != 'Cash'){
             echo json_encode(
                 array(
@@ -120,6 +131,7 @@ if(isset($_POST['id'], $_POST['totalAmount'])){
         }
         else{
             if ($update_stmt = $db->prepare("UPDATE do_request SET grn_upload=?, sent_date=?, back_date=?, grn_receive=?, pricing_details=?, total_price=?, status=?, note=? WHERE id=?")){
+                $jobLog = json_encode($jobLog);
                 $update_stmt->bind_param('sssssssss', $jobLog, $sent_date, $back_date, $grn_receive, $pricing, $totalAmount, $status, $noting, $id);
                 
                 // Execute the prepared query.
@@ -156,6 +168,7 @@ if(isset($_POST['id'], $_POST['totalAmount'])){
     }
     else{
         if ($update_stmt = $db->prepare("UPDATE do_request SET grn_upload=?, sent_date=?, back_date=?, grn_receive=?, pricing_details=?, total_price=?, note=? WHERE id=?")){
+            $jobLog = json_encode($jobLog);
             $update_stmt->bind_param('ssssssss', $jobLog, $sent_date, $back_date, $grn_receive, $pricing, $totalAmount, $noting, $id);
             
             // Execute the prepared query.

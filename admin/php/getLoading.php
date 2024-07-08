@@ -44,6 +44,7 @@ if(isset($_POST['userID'])){
                 $message["reason"] = $row["reason"];
                 $message["back_date"] = $row['back_date'] ?? '';
                 $message["sent_date"] = $row["sent_date"] ?? '';
+                $message["grn_receive"] = $row["grn_receive"] ?? '';
                 $message["printed_date"] = $row["printed_date"] ?? '';
                 $message["payment_term"] = 'Days';
                 $message["hold"] = $row["hold"];
