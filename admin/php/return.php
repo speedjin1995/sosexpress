@@ -16,7 +16,7 @@ if(isset($_POST['returnDate'], $_POST['customerNo'], $_POST['totalCarton'], $_PO
 	$collectionType = "Self Collect";
 	$collectionDate = null;
 	$return_type = "return";
-	$today = date("Y-m-d 00:00:00");
+	$today = date("Y-m-01 00:00:00");
 	$returnDate = $returnDate." 00:00:00";
 	$status = 'Created';
 

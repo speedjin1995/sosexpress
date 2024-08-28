@@ -43,7 +43,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $pricing_details[] = array(
                 "particular" => $notes,
                 "quantity_in" => $quantity_in[$i],
-                "size" => $size[$i],
+                "size" => $size[$i] ?? '',
                 "unit_price" => $unit_price[$i],
                 "price" => $price[$i],
                 "unit" => $unit[$i] ?? ''

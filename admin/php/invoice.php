@@ -17,7 +17,7 @@ if(isset($_POST['customerNo'], $_POST['inputDate'], $_POST['totalAmount'])){
     $today = date("Y-m-d 00:00:00");
     $uid = $_SESSION['userID'];
 
-    if(isset($_POST['grn_no'])){
+    if(isset($_POST['purchaseId'])){
         $purchaseId = $_POST['purchaseId'];
     }
 
@@ -127,18 +127,19 @@ if(isset($_POST['customerNo'], $_POST['inputDate'], $_POST['totalAmount'])){
                                     if(!$insert_stmt2->execute()){
                                         $success = false;
                                     }
+                                    
+                                    $insert_stmt2->close();
                                 }
                             }
                         }
 
                         if($success){
-                            $insert_stmt2->close();
                             $db->close();
             
                             echo json_encode(
                                 array(
                                     "status"=> "success", 
-                                    "message"=> "Invoiced"
+                                    "message"=> "Invoiced with invoice number ".$firstChar
                                 )
                             );
                         }

@@ -348,14 +348,15 @@ else{
       <input type="text" class="form-control" id="grn_no" placeholder="Enter GRN/RTV" required>
     </td>
     <td>
-      <select class="form-control" style="width: 100%;" id="hypermarket" required>
+      <select class="form-control select2" style="width: 100%;" id="hypermarket" required>
         <?php while($row2=mysqli_fetch_assoc($hypermarket)){ ?>
           <option value="<?=$row2['id'] ?>"><?=$row2['name'] ?></option>
         <?php } ?>
       </select>
     </td>
     <td>
-      <select class="form-control select2" style="width: 100%;" id="location" required></select>
+      <!--select class="form-control select2" style="width: 100%;" id="location" name="location" required></select-->
+      <select id="location" name="location" style="width: 200px"></select>
     </td>
     <td>
       <input type="number" class="form-control" id="carton"  placeholder="Enter ..." required>
@@ -665,12 +666,63 @@ $(function () {
     $("#pricingTable").find('#grn_no:last').attr('name', 'grn_no['+pricingCount+']').attr("id", "grn_no" + pricingCount);
     $("#pricingTable").find('#hypermarket:last').attr('name', 'hypermarket['+pricingCount+']').attr("id", "hypermarket" + pricingCount);
     $("#pricingTable").find('#location:last').attr('name', 'location['+pricingCount+']').attr("id", "location" + pricingCount);
+    //$("#pricingTable").find('#direct_store:last').attr('name', 'direct_store['+pricingCount+']').attr("id", "direct_store" + pricingCount);
     $("#pricingTable").find('#carton:last').attr('name', 'carton['+pricingCount+']').attr("id", "carton" + pricingCount);
     $("#pricingTable").find('#reason:last').attr('name', 'reason['+pricingCount+']').attr("id", "reason" + pricingCount).val("1");
     $("#pricingTable").find('#other_reason').attr('name', 'other_reason['+pricingCount+']').attr("id", "other_reason" + pricingCount);
     $("#pricingTable").find('#warehouse:last').attr('name', 'warehouse['+pricingCount+']').attr("id", "warehouse" + pricingCount);
     $("#pricingTable").find('#price:last').attr('name', 'price['+pricingCount+']').attr("id", "price" + pricingCount);
 
+    $("#location" + pricingCount).select2({
+      ajax: {
+        url: 'php/getDirectStore.php',
+        dataType: 'json',
+        data: function (params) {
+          debugger;
+          var query = {
+            search: params.term,
+            states: '',
+            zones: '',
+            hyper: $(this).parents('.details').find('select[id^="hypermarket"]').val() ? $(this).parents('.details').find('select[id^="hypermarket"]').val() : '',
+            type: 'public'
+          };
+          return query;
+        },
+        delay: 250,
+        processResults: function (data) {
+          var resultsArray = [];
+
+          // Assuming data.message is an object
+          for (var key in data.message) {
+            if (data.message.hasOwnProperty(key)) {
+              resultsArray.push({
+                id: data.message[key].name, // Use the property key as the id
+                text: data.message[key].name // Use the name property as the text
+              });
+            }
+          }
+
+          return {
+            results: resultsArray
+          };
+        },
+        cache: true,
+      },
+      minimumInputLength: 1,
+      placeholder: 'Search for options...',
+      tags: true,
+      createTag: function (params) {
+        if ($.trim(params.term) === '') {
+          return null;
+        }
+        return {
+          id: params.term,
+          text: params.term
+        };
+      },
+    });
+
+    //$("#location" + pricingCount).data('select2').$container.hide();
     $("#other_reason" + pricingCount).hide();
     pricingCount++;
   });
@@ -701,26 +753,37 @@ $(function () {
   $("#pricingTable").on('change', 'select[id^="hypermarket"]', function(){
     var element = $(this).parents('.details').find('select[id^="location"]');
     element.html('');
-    $.post('php/retrieveOutlets.php', {hypermarket: $(this).val()}, function(data){
-      var obj = JSON.parse(data);
-      
-      if(obj.status === 'success'){
-        for(var i=0; i<obj.message.length; i++){
-          element.append('<option value="'+obj.message[i].id+'">'+obj.message[i].name+'</option>')
-        }
 
-        $(element).select2({
-          allowClear: true
-        });
-      }
-      else if(obj.status === 'failed'){
-        toastr["error"](obj.message, "Failed:");
-      }
-      else{
-        toastr["error"]("Something wrong when pull data", "Failed:");
-      }
-      $('#spinnerLoading').hide();
-    });
+    /*if($(this).val() != '0'){
+      $.post('php/retrieveOutlets.php', {hypermarket: $(this).val()}, function(data){
+        var obj = JSON.parse(data);
+        
+        if(obj.status === 'success'){
+          for(var i=0; i<obj.message.length; i++){
+            element.append('<option value="'+obj.message[i].id+'">'+obj.message[i].name+'</option>')
+          }
+
+          $(element).select2({
+            allowClear: true
+          });
+        }
+        else if(obj.status === 'failed'){
+          toastr["error"](obj.message, "Failed:");
+        }
+        else{
+          toastr["error"]("Something wrong when pull data", "Failed:");
+        }
+        $('#spinnerLoading').hide();
+      });
+    }
+    else{
+      $(this).parents('.details').find('select[id^="location"]').attr('required', false);
+      $(this).parents('.details').find('select[id^="location"]').hide();
+      $(this).parents('.details').find('select[id^="direct_store"]').data('select2').$container.show();
+      $(this).parents('.details').find('select[id^="direct_store"]').attr('required', true);
+      $(this).parents('.details').find('select[id^="direct_store"]').val('');
+    }*/
+    
   });
 
   $("#pricingTable").on('change', 'select[id^="reason"]', function(){
@@ -984,12 +1047,62 @@ function edit(id) {
         $("#pricingTable").find('#hypermarket:last').attr('name', 'hypermarket['+pricingCount+']').attr("id", "hypermarket" + pricingCount).val(details[i].hypermarket);
         $('#pricingTable').find("#hypermarket" + pricingCount).trigger('change');
         $("#pricingTable").find('#location:last').attr('name', 'location['+pricingCount+']').attr("id", "location" + pricingCount).val(details[i].location).trigger('change');
+        //$("#pricingTable").find('#direct_store:last').attr('name', 'direct_store['+pricingCount+']').attr("id", "direct_store" + pricingCount);
         $("#pricingTable").find('#carton:last').attr('name', 'carton['+pricingCount+']').attr("id", "carton" + pricingCount).val(details[i].carton);
         $("#pricingTable").find('#reason:last').attr('name', 'reason['+pricingCount+']').attr("id", "reason" + pricingCount).val(details[i].reason);
         $("#pricingTable").find('#other_reason').attr('name', 'other_reason['+pricingCount+']').attr("id", "other_reason" + pricingCount).val(details[i].other_reason);
         $("#pricingTable").find('#warehouse:last').attr('name', 'warehouse['+pricingCount+']').attr("id", "warehouse" + pricingCount).val(details[i].warehouse);
         $("#pricingTable").find('#price:last').attr('name', 'price['+pricingCount+']').attr("id", "price" + pricingCount).val(details[i].price);
 
+        $("#location" + pricingCount).select2({
+          ajax: {
+            url: 'php/getDirectStore.php',
+            dataType: 'json',
+            data: function (params) {
+              var query = {
+                search: params.term,
+                states: '',
+                zones: '',
+                hyper: $("#hypermarket" + pricingCount).val() ? $("#hypermarket" + pricingCount).val() : '',
+                type: 'public'
+              };
+              return query;
+            },
+            delay: 250,
+            processResults: function (data) {
+              var resultsArray = [];
+
+              // Assuming data.message is an object
+              for (var key in data.message) {
+                if (data.message.hasOwnProperty(key)) {
+                  resultsArray.push({
+                    id: data.message[key].name, // Use the property key as the id
+                    text: data.message[key].name // Use the name property as the text
+                  });
+                }
+              }
+
+              return {
+                results: resultsArray
+              };
+            },
+            cache: true,
+          },
+          minimumInputLength: 1,
+          placeholder: 'Search for options...',
+          tags: true,
+          createTag: function (params) {
+            if ($.trim(params.term) === '') {
+              return null;
+            }
+            return {
+              id: params.term,
+              text: params.term
+            };
+          },
+        });
+
+        //$("#location" + pricingCount).data('select2').$container.hide();
         $("#other_reason" + pricingCount).hide();
         pricingCount++;
       }

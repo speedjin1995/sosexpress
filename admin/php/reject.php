@@ -18,11 +18,12 @@ if(isset($_POST['customerNo'], $_POST['totalCarton'], $_POST['totalAmount2'], $_
 	$collectionType = 'Self Collect';
 	$collectionDate = null;
 	$return_type = "reject";
-	$today = date("Y-m-d 00:00:00");
+	$today = date("Y-m-01 00:00:00");
 
 	$grn_no = $_POST['grn_no'];
 	$carton = $_POST['carton'];
 	$reason = $_POST['reason'];
+	$uom = $_POST['uom'];
 	$other_reason = $_POST['other_reason'];
 	$warehouse = $_POST['warehouse'];
 	$price = $_POST['price'];
@@ -49,9 +50,10 @@ if(isset($_POST['customerNo'], $_POST['totalCarton'], $_POST['totalAmount2'], $_
 			"grn_no" => $grn,
 			"hypermarket" => $hypermarket,
 			"location" => $outlets,
-			"carton" => $carton[$i],
+			"carton" => $carton[$i] ?? "0",
+			"uom" => $uom[$i] ?? "",
 			"warehouse" => $warehouse[$i] ?? "",
-			"price" => $warehouse[$i] ?? "",
+			"price" => $price[$i] ?? "0.00",
 			"reason" => $res,
 			"other_reason" => $others
 		);

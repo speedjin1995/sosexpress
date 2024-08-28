@@ -40,6 +40,7 @@ else{
   $drivers2 = $db->query("SELECT * FROM drivers WHERE deleted = '0'");
   $users = $db->query("SELECT * FROM users WHERE deleted = '0'");
   $units = $db->query("SELECT * FROM units WHERE deleted = '0'");
+  $units2 = $db->query("SELECT * FROM units WHERE deleted = '0'");
 }
 ?>
 
@@ -502,6 +503,7 @@ else{
               <tr>
                 <th>DO No.</th>
                 <th>Carton</th>
+                <th>UOM</th>
                 <th>Reason</th>
                 <th>Warehouse</th>
                 <th>Amount</th>
@@ -513,7 +515,7 @@ else{
               <tr>
                 <th></th>
                 <th><input type="number" class="form-control" id="totalCarton" name="totalCarton" value="0.00" readonly></th>
-                <th colspan="2" style="text-align:right;">Total Amount</th>
+                <th colspan="3" style="text-align:right;">Total Amount</th>
                 <th><input type="number" class="form-control" id="totalAmount2" name="totalAmount2" value="0.00" readonly></th>
                 <th></th>
                 <th></th>
@@ -811,10 +813,18 @@ else{
 <script type="text/html" id="pricingDetails2">
   <tr class="details">
     <td>
-      <input type="text" class="form-control" id="grn_no"  placeholder="Enter ...">
+      <input type="text" class="form-control" id="grn_no" placeholder="Enter ...">
     </td>
     <td>
-      <input type="number" class="form-control" id="carton"  placeholder="Enter ..." required>
+      <input type="number" class="form-control" id="carton" placeholder="Enter ..." required>
+    </td>
+    <td>
+      <select class="form-control" style="width: 100%;" id="uom">
+        <option value="" selected disabled hidden>Please Select</option>
+        <?php while($rowUnit=mysqli_fetch_assoc($units2)){ ?>
+          <option value="<?=$rowUnit['units'] ?>"><?=$rowUnit['units'] ?></option>
+        <?php } ?>
+      </select>
     </td>
     <td>
       <select class="form-control" style="width: 100%;" id="reason" required>
@@ -1817,6 +1827,7 @@ $(function () {
     $("#pricingTable2").find('#remove:last').attr("id", "remove" + pricingCount2);
 
     $("#pricingTable2").find('#grn_no:last').attr('name', 'grn_no['+pricingCount2+']').attr("id", "grn_no" + pricingCount2).val(do_number);
+    $("#pricingTable2").find('#uom:last').attr('name', 'uom['+pricingCount2+']').attr("id", "uom" + pricingCount2);
     $("#pricingTable2").find('#carton:last').attr('name', 'carton['+pricingCount2+']').attr("id", "carton" + pricingCount2);
     $("#pricingTable2").find('#reason:last').attr('name', 'reason['+pricingCount2+']').attr("id", "reason" + pricingCount2).val("1");
     $("#pricingTable2").find('#other_reason').attr('name', 'other_reason['+pricingCount2+']').attr("id", "other_reason" + pricingCount2);
